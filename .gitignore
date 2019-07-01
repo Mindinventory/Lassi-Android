@@ -151,13 +151,7 @@ Thumbs.db
 # virtual machine crash logs (Reference: http://www.java.com/en/download/help/error_hotspot.xml)
 hs_err_pid*
 
-### AndroidStudio Patch ###
-
-!/gradle/wrapper/gradle-wrapper.jar
-
-
 # Package Files #
-*.jar
 *.nar
 *.zip
 *.tar.gz
