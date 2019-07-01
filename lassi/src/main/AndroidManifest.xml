@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.lassi">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application android:supportsRtl="true">
+        <activity
+            android:name="com.lassi.presentation.mediadirectory.LassiMediaPickerActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" />
+        <activity android:name="com.lassi.presentation.camera.CameraActivity" />
+        <activity
+            android:name="com.lassi.presentation.cropper.CropImageActivity"
+            android:resizeableActivity="false"
+            android:screenOrientation="portrait"
+            android:supportsPictureInPicture="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.lassi.presentation.videopreview.VideoPreviewActivity"
+            android:theme="@style/AppTheme" />
+
+    </application>
+</manifest>

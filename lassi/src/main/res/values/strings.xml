@@ -1,0 +1,22 @@
+<resources>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="selected_items">%s/%s items selected</string>
+    <string name="directory_with_item_count">%s (%s)</string>
+
+    <!--Cropper-->
+    <string name="crop_image_menu_rotate_left">Rotate counter clockwise</string>
+    <string name="crop_image_menu_rotate_right">Rotate</string>
+    <string name="crop_image_menu_crop">Crop</string>
+    <string name="crop_image_menu_flip">Flip</string>
+    <string name="crop_image_menu_flip_horizontally">Flip horizontally</string>
+    <string name="crop_image_menu_flip_vertically">Flip vertically</string>
+    <string name="pick_image_intent_chooser_title">Select source</string>
+    <string name="crop_image_activity_no_permissions">Cancelling, required permissions are not granted</string>
+    <string name="crop_image_activity_title"></string>
+    <string name="camera">Camera</string>
+    <string name="done">DONE</string>
+    <string name="already_selected_max_items">Already selected max items</string>
+    <string name="camera_audio_permission_rational">Camera and/or Audio permissions are not granted. Please allow it from setting.</string>
+    <string name="storage_permission_rational">Storage permission is not granted. Please allow it from setting.</string>
+</resources>
