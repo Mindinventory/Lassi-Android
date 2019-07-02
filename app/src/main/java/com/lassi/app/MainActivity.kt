@@ -1,13 +1,9 @@
 package com.lassi.app
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.lassi.app.adapter.SelectedMediaAdapter
-import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.KeyUtils.MEDIA_REQUEST_CODE
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
@@ -17,9 +13,6 @@ import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMediaCallback {
-    override fun onMediaSelected(selectedMedia: ArrayList<MiMedia>?) {
-        selectedMediaAdapter.setList(selectedMedia)
-    }
 
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter() }
 
@@ -49,7 +42,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMe
                     .setCropAspectRatio(1, 1)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                startActivity(intent)
             }
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
@@ -68,21 +61,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMe
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                startActivity(intent)
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            when (requestCode) {
-                MEDIA_REQUEST_CODE -> {
-                    val selectedMedia =
-                        data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                    selectedMediaAdapter.setList(selectedMedia)
-                }
-            }
-        }
+    override fun onMediaSelected(selectedMedia: ArrayList<MiMedia>?) {
+        selectedMediaAdapter.setList(selectedMedia)
     }
 }

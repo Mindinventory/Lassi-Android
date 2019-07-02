@@ -2,7 +2,6 @@ package com.lassi.common.utils
 
 object KeyUtils {
     const val REQUEST_PERMISSIONS_REQUEST_CODE = 102
-    const val MEDIA_REQUEST_CODE = 100
     const val SELECTED_MEDIA = "selected_media"
     const val SELECTED_FOLDER = "selected_folder"
     const val DEFAULT_MEDIA_COUNT = 1
