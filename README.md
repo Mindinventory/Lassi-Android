@@ -87,10 +87,7 @@ Lassi is simplest way to pick media (either image or video)
                     }
                 }
             }
-            
-            ...
         }  
-        
     ``` 
     
 ### Requirements
