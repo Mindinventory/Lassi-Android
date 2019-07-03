@@ -24,7 +24,6 @@ import com.lassi.R
 import com.lassi.common.utils.*
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
-import com.lassi.domain.media.LassiOption
 import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 import kotlinx.android.synthetic.main.crop_image_activity.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -384,21 +383,11 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                     cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
                 val miMedia = MiMedia(id, name, path, 0)
 
-                if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
-                    val selectedMedia = ArrayList<MiMedia>().apply {
-                        add(miMedia)
-                    }
-                    val intent = Intent().apply {
-                        putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
-                    }
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
-                } else {
-                    val intent = Intent(this, LassiMediaPickerActivity::class.java).apply {
-                        putExtra(KeyUtils.SELECTED_MEDIA, miMedia)
-                    }
-                    startActivity(intent)
+                val intent = Intent().apply {
+                    putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             } catch (e: Exception) {
                 Logger.e(logTag, "onNewIntent $e")
             } finally {

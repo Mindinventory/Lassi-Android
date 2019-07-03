@@ -9,6 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
@@ -16,14 +17,13 @@ import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils.SETTINGS_REQUEST_CODE
 import com.lassi.data.common.VideoRecord
-import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
+import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.cameraview.audio.Audio
 import com.lassi.presentation.cameraview.audio.Flash
 import com.lassi.presentation.cameraview.audio.Mode
@@ -32,15 +32,13 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.CameraView.PERMISSION_REQUEST_CODE
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
-import com.lassi.presentation.common.LassiBaseViewModelActivity
+import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.cropper.CropImage
-import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_camera.*
-import kotlinx.android.synthetic.main.toolbar.*
 import java.io.File
 
-class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnClickListener {
+class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
     private val lassiConfig = LassiConfig.getConfig()
@@ -62,13 +60,13 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
 
     override fun onResume() {
         super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
         if (checkPermissions(cameraView.audio))
             cameraView.open()
     }
 
     override fun initViews() {
         super.initViews()
-        setSupportActionBar(toolbar)
         ivCaptureImage.setOnClickListener(this)
         ivFlipCamera.setOnClickListener(this)
         ivFlash.setOnClickListener(this)
@@ -86,9 +84,7 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
             override fun onVideoTaken(video: VideoResult) {
                 super.onVideoTaken(video)
                 stopVideoRecording()
-                VideoPreviewActivity.setVideoResult(video)
-                val intent = Intent(this@CameraActivity, VideoPreviewActivity::class.java)
-                startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+                VideoPreviewActivity.startVideoPreview(activity, video.file.absolutePath)
             }
         })
         initCamera()
@@ -96,20 +92,10 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
 
     override fun initLiveDataObservers() {
         super.initLiveDataObservers()
-        viewModel.cropImageLiveData.observe(this, SafeObserver(this::beginCrop))
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
-    }
-
-    private fun beginCrop(source: Uri) {
-        CropImage.activity(source)
-            .setGuidelines(CropImageView.Guidelines.ON)
-            .setAllowFlipping(false)
-            .setAllowRotation(false)
-            .setOutputCompressQuality(70)
-            .setCropShape(lassiConfig.cropType)
-            .setAspectRatio(lassiConfig.cropAspectRatio)
-            .setOutputUri(source)
-            .start(this)
+        viewModel.cropImageLiveData.observe(this, SafeObserver {
+            CropUtils.beginCrop(requireActivity(), it)
+        })
     }
 
     private fun toggleCamera() {
@@ -135,7 +121,7 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
             R.id.ivFlash -> {
                 //Check whether the flashlight is available or not?
                 val isFlashAvailable =
-                    packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
+                    requireContext().packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
                 if (isFlashAvailable) {
                     if (cameraMode == Mode.PICTURE) {
                         when (cameraView.flash) {
@@ -197,11 +183,6 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
         ivFlash.setImageResource(R.drawable.ic_flash_auto_white)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>,
         grantResults: IntArray
@@ -220,18 +201,18 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
     }
 
     private fun showPermissionDisableAlert() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setMessage(getString(R.string.camera_audio_permission_rational))
             .setPositiveButton(R.string.ok) { _, _ ->
                 val intent = Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", packageName, null)
+                    data = Uri.fromParts("package", requireContext().packageName, null)
                 }
                 startActivityForResult(intent, SETTINGS_REQUEST_CODE)
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
-                finish()
+                activity?.supportFragmentManager?.popBackStack()
             }.show()
     }
 
@@ -244,24 +225,30 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
         var needsAudio = audio == Audio.ON
 
         needsCamera =
-            needsCamera && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+            needsCamera && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
         needsAudio =
-            needsAudio && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
+            needsAudio && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
 
         return !needsCamera && !needsAudio
     }
 
     private fun requestForPermissions() {
         if (ContextCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this,
+                requireActivity(),
                 arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
                 PERMISSION_REQUEST_CODE
             )
@@ -275,10 +262,12 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
         } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
             && resultCode == Activity.RESULT_OK
         ) {
-            val selectedMedia =
-                data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-            Lassi.selectedMediaCallback?.onMediaSelected(selectedMedia)
-            finish()
+            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
+                activity?.setResult(Activity.RESULT_OK, data)
+                activity?.finish()
+            } else {
+                activity?.supportFragmentManager?.popBackStack()
+            }
         }
     }
 
@@ -288,5 +277,10 @@ class CameraActivity : LassiBaseViewModelActivity<CameraViewModel>(), View.OnCli
         else {
             requestForPermissions()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
 }

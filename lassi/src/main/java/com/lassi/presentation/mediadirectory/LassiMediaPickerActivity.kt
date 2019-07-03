@@ -1,7 +1,9 @@
 package com.lassi.presentation.mediadirectory
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.view.Menu
 import android.view.MenuItem
@@ -9,18 +11,22 @@ import android.view.WindowManager
 import androidx.lifecycle.ViewModelProviders
 import com.lassi.R
 import com.lassi.common.utils.ColorUtils.getColor
+import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
-import com.lassi.presentation.builder.Lassi
-import com.lassi.presentation.camera.CameraActivity
+import com.lassi.domain.media.LassiOption
+import com.lassi.domain.media.MediaType
+import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
 import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.media.SelectedMediaViewModel
+import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.toolbar.*
+import java.io.File
 
 class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
     private var menuDone: MenuItem? = null
@@ -32,7 +38,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         return ViewModelProviders.of(this)[SelectedMediaViewModel::class.java]
     }
 
-    private val miFolderViewModel by lazy {
+    private val folderViewModel by lazy {
         ViewModelProviders.of(
             this, FolderViewModelFactory(this)
         )[FolderViewModel::class.java]
@@ -56,14 +62,26 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
-        supportFragmentManager.beginTransaction()
-            .replace(
-                R.id.ftContainer,
-                FolderFragment.newInstance()
-            )
-            .commitAllowingStateLoss()
+        initiateFragment()
     }
 
+    private fun initiateFragment() {
+        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.ftContainer,
+                    CameraFragment()
+                )
+                .commitAllowingStateLoss()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.ftContainer,
+                    FolderFragment.newInstance()
+                )
+                .commitAllowingStateLoss()
+        }
+    }
 
     private fun setThemeAttributes() {
         with(LassiConfig.getConfig()) {
@@ -119,26 +137,30 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     }
 
     private fun setSelectedMediaResult() {
-        /*val intent = Intent().apply {
-            putParcelableArrayListExtra(
-                KeyUtils.SELECTED_MEDIA,
-                viewModel.selectedMediaLiveData.value
-            )
+        // Allow crop for single image
+        if (LassiConfig.getConfig().maxCount == 1) {
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
+                CropUtils.beginCrop(this, uri)
+            } else {
+                VideoPreviewActivity.startVideoPreview(
+                    this,
+                    viewModel.selectedMediaLiveData.value!![0].path!!
+                )
+            }
+        } else {
+            setResultOk(viewModel.selectedMediaLiveData.value)
         }
-        setResult(Activity.RESULT_OK, intent)*/
-
-        Lassi.selectedMediaCallback?.onMediaSelected(viewModel.selectedMediaLiveData.value)
-        finish()
     }
 
     private fun initCamera() {
         if (viewModel.selectedMediaLiveData.value?.size == LassiConfig.getConfig().maxCount) {
             ToastUtils.showToast(this, R.string.already_selected_max_items)
         } else {
-            startActivityForResult(
-                Intent(this, CameraActivity::class.java),
-                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
-            )
+            supportFragmentManager.beginTransaction()
+                .add(R.id.ftContainer, CameraFragment())
+                .addToBackStack(CameraFragment::class.java.simpleName)
+                .commitAllowingStateLoss()
         }
     }
 
@@ -152,15 +174,44 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     }
 
 
-    override fun onNewIntent(data: Intent?) {
-        super.onNewIntent(data)
-        if (data != null) {
-            if (data.hasExtra(KeyUtils.SELECTED_MEDIA)) {
-                val miMedia = data.getParcelableExtra<MiMedia>(KeyUtils.SELECTED_MEDIA)
-                LassiConfig.getConfig().selectedMedias.add(miMedia)
-                viewModel.addSelectedMedia(miMedia)
-                miFolderViewModel.fetchFolders()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
+            && resultCode == Activity.RESULT_OK
+        ) {
+            if (data != null) {
+                if (data.hasExtra(KeyUtils.SELECTED_MEDIA)) {
+                    val selectedMedia =
+                        data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                    LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
+                    viewModel.addAllSelectedMedia(selectedMedia)
+                    folderViewModel.fetchFolders()
+                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
+                        supportFragmentManager.popBackStack()
+                    }
+                } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
+                    val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
+                    if (LassiConfig.getConfig().maxCount == 1) {
+                        setResultOk(arrayListOf(selectedMedia))
+
+                    } else {
+                        LassiConfig.getConfig().selectedMedias.add(selectedMedia)
+                        viewModel.addSelectedMedia(selectedMedia)
+                        folderViewModel.fetchFolders()
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
+                            supportFragmentManager.popBackStack()
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
+        val intent = Intent().apply {
+            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+        }
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

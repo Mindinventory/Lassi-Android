@@ -7,7 +7,6 @@ import com.lassi.domain.media.MediaRepository
 import com.lassi.presentation.common.LassiBaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 
 class FolderViewModel(
     private val mediaRepository: MediaRepository

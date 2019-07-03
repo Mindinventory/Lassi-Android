@@ -1,9 +1,12 @@
 package com.lassi.app
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.lassi.app.adapter.SelectedMediaAdapter
+import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
@@ -12,8 +15,9 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMediaCallback {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    private val MEDIA_REQUEST_CODE = 100
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +34,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMe
             R.id.btnImagePicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(5)
+                    .setMaxCount(1)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
@@ -38,16 +42,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMe
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
-                    .setCropType(CropImageView.CropShape.RECTANGLE)
+                    .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .build()
-                startActivity(intent)
+                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+
             }
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(5)
+                    .setMaxCount(1)
                     .setGridSize(3)
                     .setMinTime(15)
                     .setMaxTime(30)
@@ -61,12 +66,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Lassi.SelectedMe
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
                     .build()
-                startActivity(intent)
+                startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
         }
     }
 
-    override fun onMediaSelected(selectedMedia: ArrayList<MiMedia>?) {
-        selectedMediaAdapter.setList(selectedMedia)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == MEDIA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedMedia =
+                data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+            selectedMediaAdapter.setList(selectedMedia)
+        }
     }
 }
