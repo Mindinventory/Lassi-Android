@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.MediaController
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.FilePickerUtils
@@ -19,39 +20,44 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
-import com.lassi.domain.media.LassiOption
-import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseActivity
-import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
+import com.lassi.presentation.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_video_preview.*
 import kotlinx.android.synthetic.main.toolbar.*
+import java.io.File
 
 class VideoPreviewActivity : LassiBaseActivity() {
 
     private val logTag = VideoPreviewActivity::class.java.simpleName
-
+    private var videoPath: String? = null
     override fun getContentResource() = R.layout.activity_video_preview
+
+    companion object {
+        fun startVideoPreview(activity: FragmentActivity?, videoPath: String) {
+            val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
+                putExtra(KeyUtils.VIDEO_PATH, videoPath)
+            }
+            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+        }
+    }
 
     override fun initViews() {
         super.initViews()
         toolbar.title = ""
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         setThemeAttributes()
-
         playVideo()
-
-        if (videoResult == null) {
+        if (intent == null) {
             finish()
             return
         }
-
+        videoPath = intent.getStringExtra(KeyUtils.VIDEO_PATH)
         val controller = MediaController(this)
         controller.setAnchorView(videoView)
         controller.setMediaPlayer(videoView)
         videoView.setMediaController(controller)
-        videoView.setVideoURI(Uri.fromFile(videoResult?.file))
+        videoView.setVideoURI(Uri.fromFile(File(videoPath)))
     }
 
     private fun setThemeAttributes() {
@@ -85,13 +91,6 @@ class VideoPreviewActivity : LassiBaseActivity() {
         videoView.start()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!isChangingConfigurations) {
-            setVideoResult(null)
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.video_preview_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -100,7 +99,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menuDone -> {
-                videoResult?.file?.path?.let {
+                videoPath?.let {
                     FilePickerUtils.notifyGalleryUpdateNewFile(
                         this,
                         it,
@@ -129,35 +128,17 @@ class VideoPreviewActivity : LassiBaseActivity() {
                     cursor.getLong(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION))
                 val miMedia = MiMedia(id, name, path, duration)
 
-                if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
-                    val selectedMedia = ArrayList<MiMedia>().apply {
-                        add(miMedia)
-                    }
-                    val intent = Intent().apply {
-                        putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
-                    }
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
-                } else {
-                    val intent = Intent(this, LassiMediaPickerActivity::class.java).apply {
-                        putExtra(KeyUtils.SELECTED_MEDIA, miMedia)
-                    }
-                    startActivity(intent)
+                val intent = Intent().apply {
+                    putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+
             } catch (e: Exception) {
                 Logger.e(logTag, "onNewIntent $e")
             } finally {
                 cursor.close()
             }
-        }
-    }
-
-    companion object {
-
-        private var videoResult: VideoResult? = null
-
-        fun setVideoResult(result: VideoResult?) {
-            videoResult = result
         }
     }
 }

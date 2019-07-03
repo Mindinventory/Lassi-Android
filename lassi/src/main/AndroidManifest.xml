@@ -8,19 +8,19 @@
 
     <application android:supportsRtl="true">
         <activity
-            android:name="com.lassi.presentation.mediadirectory.LassiMediaPickerActivity"
+            android:name=".presentation.mediadirectory.LassiMediaPickerActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name="com.lassi.presentation.camera.CameraActivity" />
         <activity
-            android:name="com.lassi.presentation.cropper.CropImageActivity"
+            android:name=".presentation.cropper.CropImageActivity"
             android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.lassi.presentation.videopreview.VideoPreviewActivity"
+            android:name=".presentation.videopreview.VideoPreviewActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-
     </application>
 </manifest>

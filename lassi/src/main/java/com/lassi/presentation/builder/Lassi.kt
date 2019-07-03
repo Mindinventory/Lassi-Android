@@ -5,25 +5,16 @@ import android.content.Intent
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.lassi.common.utils.KeyUtils
-import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.presentation.camera.CameraActivity
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 
 class Lassi(private val context: Context) {
+
     private var lassiConfig = LassiConfig()
-
-    companion object {
-        var selectedMediaCallback: SelectedMediaCallback? = null
-    }
-
-    init {
-        selectedMediaCallback = context as? SelectedMediaCallback
-    }
 
     /**
      * Limit max item selection
@@ -79,6 +70,9 @@ class Lassi(private val context: Context) {
         return this
     }
 
+    /**
+     * Add comma separated supported files types ex. png, jpeg
+     */
     fun setSupportedFileTypes(vararg fileTypes: String): Lassi {
         lassiConfig.supportedFileType = fileTypes.toMutableList()
         return this
@@ -153,13 +147,6 @@ class Lassi(private val context: Context) {
      */
     fun build(): Intent {
         LassiConfig.setConfig(lassiConfig)
-        return if (lassiConfig.lassiOption == LassiOption.CAMERA)
-            Intent(context, CameraActivity::class.java)
-        else
-            Intent(context, LassiMediaPickerActivity::class.java)
-    }
-
-    interface SelectedMediaCallback {
-        fun onMediaSelected(media: ArrayList<MiMedia>? = ArrayList())
+        return Intent(context, LassiMediaPickerActivity::class.java)
     }
 }

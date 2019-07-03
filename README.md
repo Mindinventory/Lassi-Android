@@ -74,14 +74,18 @@ Lassi is simplest way to pick media (either image or video)
     ```
     
         
-* Step 2. Implement Lassi.SelectedMediaCallback and override onMediaSelected function to get Lassi result.
+* Step 2. override onActivityResult function to get Lassi result.
     
-    ```kotlin      
-        MainActivity : AppCompatActivity(), Lassi.SelectedMediaCallback
-            
-            ...
-            override fun onMediaSelected(selectedMedia: ArrayList<MiMedia>?) {
-               // Do needful with your selectedMedia 
+    ```kotlin        
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                when (requestCode) {
+                    MEDIA_REQUEST_CODE -> {
+                        val selectedMedia = data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                        // Do needful with your selectedMedia 
+                    }
+                }
             }
             
             ...
