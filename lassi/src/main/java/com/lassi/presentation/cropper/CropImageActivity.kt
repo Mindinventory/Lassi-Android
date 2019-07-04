@@ -26,7 +26,6 @@ import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 import kotlinx.android.synthetic.main.crop_image_activity.*
-import kotlinx.android.synthetic.main.toolbar.*
 import java.io.File
 import java.io.IOException
 

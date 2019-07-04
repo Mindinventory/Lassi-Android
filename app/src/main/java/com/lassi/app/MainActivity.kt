@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnImagePicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(1)
+                    .setMaxCount(4)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
+                    .enableFlip(true)
+                    .enableRotate(true)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
 
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(1)
+                    .setMaxCount(4)
                     .setGridSize(3)
                     .setMinTime(15)
                     .setMaxTime(30)

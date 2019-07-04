@@ -25,7 +25,7 @@ import com.lassi.presentation.common.LassiBaseViewModelActivity
 import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.videopreview.VideoPreviewActivity
-import kotlinx.android.synthetic.main.toolbar.*
+import kotlinx.android.synthetic.main.activity_media_picker.*
 import java.io.File
 
 class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
@@ -51,18 +51,24 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     override fun initViews() {
         super.initViews()
-        with(LassiConfig.getConfig()) {
-            toolbar.title =
-                String.format(
-                    getString(R.string.selected_items),
-                    selectedMedias.size,
-                    maxCount
-                )
-        }
+        setToolbarTitle(LassiConfig.getConfig().selectedMedias)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         initiateFragment()
+    }
+
+    private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {
+        val maxCount = LassiConfig.getConfig().maxCount
+        if (maxCount > 1) {
+            toolbar.title = String.format(
+                getString(R.string.selected_items),
+                selectedMedias.size,
+                maxCount
+            )
+        } else {
+            toolbar.title = ""
+        }
     }
 
     private fun initiateFragment() {
@@ -165,11 +171,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     }
 
     private fun handleSelectedMedia(selectedMedias: ArrayList<MiMedia>) {
-        toolbar.title = String.format(
-            getString(R.string.selected_items),
-            selectedMedias.size,
-            LassiConfig.getConfig().maxCount
-        )
+        setToolbarTitle(selectedMedias)
         menuDone?.isVisible = !selectedMedias.isNullOrEmpty()
     }
 

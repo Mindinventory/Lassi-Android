@@ -23,7 +23,6 @@ import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
 import com.lassi.presentation.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_video_preview.*
-import kotlinx.android.synthetic.main.toolbar.*
 import java.io.File
 
 class VideoPreviewActivity : LassiBaseActivity() {

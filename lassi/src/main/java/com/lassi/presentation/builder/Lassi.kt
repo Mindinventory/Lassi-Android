@@ -143,6 +143,22 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Enable flip image option while image cropping
+     */
+    fun enableFlip(enableFlipImage: Boolean): Lassi {
+        lassiConfig.enableFlipImage = enableFlipImage
+        return this
+    }
+
+    /**
+     * Enable rotate image option while image cropping
+     */
+    fun enableRotate(enableRotateImage: Boolean): Lassi {
+        lassiConfig.enableRotateImage = enableRotateImage
+        return this
+    }
+
+    /**
      * Start LassiMediaPickerActivity with config
      */
     fun build(): Intent {
