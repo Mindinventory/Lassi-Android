@@ -27,7 +27,9 @@ data class LassiConfig(
     var maxTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
     var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
     var supportedFileType: MutableList<String> = mutableListOf(),
-    var cropAspectRatio: AspectRatio = AspectRatio.of(1, 1)
+    var cropAspectRatio: AspectRatio = AspectRatio.of(1, 1),
+    var enableFlipImage: Boolean = false,
+    var enableRotateImage: Boolean = false
 ) : Parcelable {
     companion object {
 
@@ -51,6 +53,8 @@ data class LassiConfig(
                 cropType = lassiConfig.cropType
                 supportedFileType = lassiConfig.supportedFileType
                 cropAspectRatio = lassiConfig.cropAspectRatio
+                enableFlipImage = lassiConfig.enableFlipImage
+                enableRotateImage = lassiConfig.enableRotateImage
             }
         }
 

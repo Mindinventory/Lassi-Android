@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_media.*
 import java.util.*
 
 class MediaAdapter(
-    private val onImageClick: (selectedMedias: ArrayList<MiMedia>) -> Unit
+    private val onItemClick: (selectedMedias: ArrayList<MiMedia>) -> Unit
 ) : RecyclerView.Adapter<MediaAdapter.MyViewHolder>() {
     private val logTag = MediaAdapter::class.java.simpleName
     private val images = ArrayList<MiMedia>()
@@ -74,13 +74,23 @@ class MediaAdapter(
                 }
 
                 containerView.setOnClickListener {
-                    isSelect = !isSelect
-                    if (!isSelect) {
-                        removeSelected(miMedia, adapterPosition)
+                    if (LassiConfig.getConfig().maxCount > 1) {
+                        isSelect = !isSelect
+                        if (!isSelect) {
+                            removeSelected(miMedia, adapterPosition)
+                        } else {
+                            addSelected(miMedia, adapterPosition)
+                        }
                     } else {
-                        addSelected(miMedia, adapterPosition)
+                        with(LassiConfig.getConfig()) {
+                            if (selectedMedias.size != maxCount) {
+                                selectedMedias.add(0, miMedia)
+                            } else {
+                                selectedMedias[0] = miMedia
+                            }
+                        }
                     }
-                    onImageClick(LassiConfig.getConfig().selectedMedias)
+                    onItemClick(LassiConfig.getConfig().selectedMedias)
                 }
             }
         }

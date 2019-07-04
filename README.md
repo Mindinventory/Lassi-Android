@@ -41,7 +41,7 @@ Lassi is simplest way to pick media (either image or video)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.0.3'
+            implementation 'com.github.Mindinventory:Lassi:0.0.4'
         }
     ``` 
 
@@ -69,6 +69,8 @@ Lassi is simplest way to pick media (either image or video)
                 .setErrorDrawable(R.drawable.ic_image_placeholder)
                 .setCropType(CropImageView.CropShape.RECTANGLE) // choose shape for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .setCropAspectRatio(1, 1) // define crop aspect ratio for cropping after capturing an image from camera (for MediaType.IMAGE only)
+                .enableFlip(true) // Enable flip image option while image cropping (for MediaType.IMAGE only)
+                .enableRotate(true) // Enable rotate image option while image cropping (for MediaType.IMAGE only)
                 .build()
             startActivityForResult(intent, MEDIA_REQUEST_CODE)
     ```
@@ -107,7 +109,7 @@ Lassi is simplest way to pick media (either image or video)
 
 # LICENSE!
 
-MiMediaPicker is [MIT-licensed](/LICENSE).
+Lassi is [MIT-licensed](/LICENSE).
 
 # Let us know!
 We’d be really happy if you send us links to your projects where you use our component. Just send an email to sales@mindinventory.com And do let us know if you have any questions or suggestion regarding our work.
