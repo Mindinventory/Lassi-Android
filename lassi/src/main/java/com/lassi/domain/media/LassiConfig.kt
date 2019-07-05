@@ -61,5 +61,9 @@ data class LassiConfig(
         fun getConfig(): LassiConfig {
             return mediaPickerConfig
         }
+
+        fun isSingleMediaSelection(): Boolean {
+            return (mediaPickerConfig.maxCount == 1 || mediaPickerConfig.lassiOption == LassiOption.CAMERA)
+        }
     }
 }

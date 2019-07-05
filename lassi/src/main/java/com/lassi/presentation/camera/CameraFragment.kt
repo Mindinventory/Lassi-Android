@@ -1,7 +1,6 @@
 package com.lassi.presentation.camera
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -22,7 +21,6 @@ import com.lassi.common.utils.KeyUtils.SETTINGS_REQUEST_CODE
 import com.lassi.data.common.VideoRecord
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
-import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.cameraview.audio.Audio
 import com.lassi.presentation.cameraview.audio.Flash
@@ -33,7 +31,6 @@ import com.lassi.presentation.cameraview.controls.CameraView.PERMISSION_REQUEST_
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
-import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
@@ -187,6 +184,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         requestCode: Int, permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
             var valid = true
             for (grantResult in grantResults) {
@@ -201,19 +199,22 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     }
 
     private fun showPermissionDisableAlert() {
-        AlertDialog.Builder(requireContext())
-            .setMessage(getString(R.string.camera_audio_permission_rational))
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setMessage(R.string.camera_audio_permission_rational)
+            .setCancelable(false)
             .setPositiveButton(R.string.ok) { _, _ ->
                 val intent = Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", requireContext().packageName, null)
+                    data = Uri.fromParts("package", activity?.packageName, null)
                 }
                 startActivityForResult(intent, SETTINGS_REQUEST_CODE)
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
-                activity?.supportFragmentManager?.popBackStack()
-            }.show()
+            .setNegativeButton(R.string.cancel) { _, _ ->
+                activity?.onBackPressed()
+            }
+        val permissionDialog = alertDialog.create()
+        permissionDialog.setCancelable(false)
+        permissionDialog.show()
     }
 
     private fun checkPermissions(audio: Audio): Boolean {
@@ -222,6 +223,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
 
         var needsCamera = true
+        var needsStoragePermission = true
         var needsAudio = audio == Audio.ON
 
         needsCamera =
@@ -229,13 +231,18 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                 requireContext(),
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
+        needsStoragePermission =
+            needsStoragePermission && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
         needsAudio =
             needsAudio && ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
 
-        return !needsCamera && !needsAudio
+        return !needsCamera && !needsAudio && !needsStoragePermission
     }
 
     private fun requestForPermissions() {
@@ -245,11 +252,17 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
                 PERMISSION_REQUEST_CODE
             )
         }
@@ -259,15 +272,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SETTINGS_REQUEST_CODE) {
             initCamera()
-        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
-            && resultCode == Activity.RESULT_OK
-        ) {
-            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
-                activity?.setResult(Activity.RESULT_OK, data)
-                activity?.finish()
-            } else {
-                activity?.supportFragmentManager?.popBackStack()
-            }
         }
     }
 

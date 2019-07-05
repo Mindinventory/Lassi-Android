@@ -144,7 +144,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun setSelectedMediaResult() {
         // Allow crop for single image
-        if (LassiConfig.getConfig().maxCount == 1) {
+        if (LassiConfig.isSingleMediaSelection()) {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
                 val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
                 CropUtils.beginCrop(this, uri)
@@ -193,9 +193,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     }
                 } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
                     val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
-                    if (LassiConfig.getConfig().maxCount == 1) {
+                    if (LassiConfig.isSingleMediaSelection()) {
                         setResultOk(arrayListOf(selectedMedia))
-
                     } else {
                         LassiConfig.getConfig().selectedMedias.add(selectedMedia)
                         viewModel.addSelectedMedia(selectedMedia)

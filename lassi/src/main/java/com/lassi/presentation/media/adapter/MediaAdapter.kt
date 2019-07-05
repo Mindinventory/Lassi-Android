@@ -8,8 +8,8 @@ import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
+import com.lassi.common.utils.DurationUtils.getDuration
 import com.lassi.common.utils.Logger
-import com.lassi.common.utils.getDuration
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import kotlinx.android.extensions.LayoutContainer
