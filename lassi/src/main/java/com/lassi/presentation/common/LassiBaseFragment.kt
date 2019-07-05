@@ -31,15 +31,6 @@ abstract class LassiBaseFragment : Fragment() {
         initViews()
     }
 
-    override fun onStart() {
-        super.onStart()
-        initOnBackPressed()
-    }
-
-    @CallSuper
-    protected open fun initOnBackPressed() {
-    }
-
     @CallSuper
     protected open fun initViews() {
     }

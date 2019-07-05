@@ -665,15 +665,18 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
         Context c = getContext();
         boolean needsCamera = true;
+        boolean needsStoragePermission = true;
+
         boolean needsAudio = audio == Audio.ON;
 
         needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
         needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+        needsStoragePermission = needsStoragePermission && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
-        if (needsCamera || needsAudio) {
-            requestPermissions(needsCamera, needsAudio);
+        if (needsCamera || needsAudio || needsStoragePermission) {
+            requestPermissions(needsCamera, needsAudio, needsStoragePermission);
             return false;
         }
         return true;
@@ -1492,7 +1495,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
     // If we end up here, we're in M.
     @TargetApi(Build.VERSION_CODES.M)
-    private void requestPermissions(boolean requestCamera, boolean requestAudio) {
+    private void requestPermissions(boolean requestCamera, boolean requestAudio, boolean requestStoragePermission) {
         Activity activity = null;
         Context context = getContext();
         while (context instanceof ContextWrapper) {
@@ -1505,6 +1508,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         List<String> permissions = new ArrayList<>();
         if (requestCamera) permissions.add(Manifest.permission.CAMERA);
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
+        if (requestStoragePermission) permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (activity != null) {
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);

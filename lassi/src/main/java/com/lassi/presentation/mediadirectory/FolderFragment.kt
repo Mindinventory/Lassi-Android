@@ -19,6 +19,7 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.mediadirectory.Folder
 import com.lassi.domain.common.SafeObserver
@@ -37,33 +38,28 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         }
     }
 
-    private var mediaPickerConfig = LassiConfig.getConfig()
     private val folderAdapter by lazy { FolderAdapter(this::onItemClick) }
 
     override fun getContentResource() = R.layout.fragment_media_picker
 
     override fun buildViewModel(): FolderViewModel {
         return ViewModelProviders.of(
-            this, FolderViewModelFactory(requireActivity())
+            requireActivity(), FolderViewModelFactory(requireActivity())
         )[FolderViewModel::class.java]
     }
 
     override fun initViews() {
         super.initViews()
-        rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
+        rvMedia.layoutManager = GridLayoutManager(context, LassiConfig.getConfig().gridSize)
         rvMedia.adapter = folderAdapter
-        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+        rvMedia.addItemDecoration(GridSpacingItemDecoration(LassiConfig.getConfig().gridSize, 10))
         progressBar.indeterminateDrawable.setColorFilter(
             ColorUtils.getColor(
                 requireContext(),
-                mediaPickerConfig.progressBarColor
+                LassiConfig.getConfig().progressBarColor
             ),
             PorterDuff.Mode.MULTIPLY
         )
-    }
-
-    override fun initOnBackPressed() {
-        super.initOnBackPressed()
         checkPermission()
     }
 
@@ -143,12 +139,13 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     private fun showPermissionDisableAlert() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setMessage(R.string.storage_permission_rational)
+        alertDialog.setCancelable(false)
         alertDialog.setPositiveButton(R.string.ok) { _, _ ->
-            val intent = Intent()
-            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-            val uri = Uri.fromParts("package", activity?.packageName, null)
-            intent.data = uri
-            startActivity(intent)
+            val intent = Intent().apply {
+                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                data = Uri.fromParts("package", activity?.packageName, null)
+            }
+            startActivityForResult(intent, KeyUtils.SETTINGS_REQUEST_CODE)
         }
         alertDialog.setNegativeButton(R.string.cancel) { _, _ ->
             activity?.onBackPressed()
@@ -168,4 +165,15 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Logger.d("FolderFragment", "onResume")
+        if (requestCode == KeyUtils.SETTINGS_REQUEST_CODE) {
+            checkPermission()
+        } else {
+            activity?.supportFragmentManager?.popBackStack()
+        }
+    }
+
 }

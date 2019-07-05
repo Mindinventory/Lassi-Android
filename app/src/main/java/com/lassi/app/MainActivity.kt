@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .enableRotate(true)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
-
             }
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
