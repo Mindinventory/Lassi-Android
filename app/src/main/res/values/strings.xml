@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MiMediaPickerExample</string>
+    <string name="app_name">Lassi sample</string>
     <string name="selected_media">Selected Media</string>
     <string name="open_video_picker">Open Video Picker</string>
     <string name="open_image_picker">Open Image Picker</string>
