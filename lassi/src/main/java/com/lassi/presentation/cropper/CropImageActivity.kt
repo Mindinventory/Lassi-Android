@@ -388,7 +388,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             } catch (e: Exception) {
-                Logger.e(logTag, "onNewIntent $e")
+                Logger.e(logTag, "onFileScanComplete $e")
             } finally {
                 cursor.close()
             }

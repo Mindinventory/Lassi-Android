@@ -134,7 +134,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
                 finish()
 
             } catch (e: Exception) {
-                Logger.e(logTag, "onNewIntent $e")
+                Logger.e(logTag, "onFileScanComplete $e")
             } finally {
                 cursor.close()
             }

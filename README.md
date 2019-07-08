@@ -41,7 +41,7 @@ Lassi is simplest way to pick media (either image or video)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.0.5'
+            implementation 'com.github.Mindinventory:Lassi:0.0.6'
         }
     ``` 
 

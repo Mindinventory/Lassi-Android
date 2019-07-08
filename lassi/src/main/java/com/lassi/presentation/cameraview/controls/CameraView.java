@@ -31,6 +31,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
 import com.lassi.R;
+import com.lassi.domain.media.LassiConfig;
+import com.lassi.domain.media.MediaType;
 import com.lassi.presentation.cameraview.audio.Audio;
 import com.lassi.presentation.cameraview.audio.Control;
 import com.lassi.presentation.cameraview.audio.Facing;
@@ -665,18 +667,17 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
         Context c = getContext();
         boolean needsCamera = true;
-        boolean needsStoragePermission = true;
-
-        boolean needsAudio = audio == Audio.ON;
+        boolean needsStorage = true;
+        boolean needsAudio = LassiConfig.Companion.getConfig().getMediaType() == MediaType.VIDEO && audio == Audio.ON;
 
         needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
         needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
-        needsStoragePermission = needsStoragePermission && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
-        if (needsCamera || needsAudio || needsStoragePermission) {
-            requestPermissions(needsCamera, needsAudio, needsStoragePermission);
+        if (needsCamera || needsAudio || needsStorage) {
+            requestPermissions(needsCamera, needsAudio, needsStorage);
             return false;
         }
         return true;

@@ -17,6 +17,8 @@
     <string name="camera">Camera</string>
     <string name="done">DONE</string>
     <string name="already_selected_max_items">Already selected max items</string>
-    <string name="camera_audio_permission_rational">Camera, Audio and/or Storage permissions are not granted. Please allow it from setting.</string>
+    <string name="camera_audio_storage_permission_rational">Camera, Audio and/or Storage permissions are not granted. Please allow it from setting.</string>
+    <string name="camera_storage_permission_rational">Camera and/or Storage permissions are not granted. Please allow it from setting.</string>
     <string name="storage_permission_rational">Storage permission is not granted. Please allow it from setting.</string>
+    <string name="min_video_recording_time_error">Record video longer then %s</string>
 </resources>

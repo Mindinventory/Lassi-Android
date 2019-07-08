@@ -18,6 +18,7 @@ import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils.SETTINGS_REQUEST_CODE
+import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.VideoRecord
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
@@ -38,7 +39,6 @@ import java.io.File
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
-    private val lassiConfig = LassiConfig.getConfig()
 
     override fun buildViewModel(): CameraViewModel {
         return ViewModelProviders.of(this)[CameraViewModel::class.java]
@@ -48,7 +48,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
 
     override fun getBundle() {
         super.getBundle()
-        cameraMode = if (lassiConfig.mediaType == MediaType.VIDEO) {
+        cameraMode = if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
             Mode.VIDEO
         } else {
             Mode.PICTURE
@@ -143,6 +143,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             is VideoRecord.Start -> startVideoRecording(videoRecord.item)
             is VideoRecord.Timer -> tvTimer.text = videoRecord.item
             is VideoRecord.End -> stopVideoRecording()
+            is VideoRecord.Error -> showVideoError(videoRecord.minVideoTime)
         }
     }
 
@@ -158,6 +159,13 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             ivFlipCamera.show()
             tvTimer.hide()
         }
+    }
+
+    private fun showVideoError(minVideoTime: String) {
+        ToastUtils.showToast(
+            requireContext(),
+            String.format(getString(R.string.min_video_recording_time_error), minVideoTime)
+        )
     }
 
     private fun flashOn() {
@@ -199,8 +207,13 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     }
 
     private fun showPermissionDisableAlert() {
+        val alertMessage = if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+            R.string.camera_audio_storage_permission_rational
+        } else {
+            R.string.camera_storage_permission_rational
+        }
         val alertDialog = AlertDialog.Builder(requireContext())
-            .setMessage(R.string.camera_audio_permission_rational)
+            .setMessage(alertMessage)
             .setCancelable(false)
             .setPositiveButton(R.string.ok) { _, _ ->
                 val intent = Intent().apply {
@@ -223,26 +236,29 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
 
         var needsCamera = true
-        var needsStoragePermission = true
-        var needsAudio = audio == Audio.ON
+        var needsStorage = true
+        var needsAudio = LassiConfig.getConfig().mediaType == MediaType.VIDEO && audio == Audio.ON
 
         needsCamera =
             needsCamera && ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
             ) != PackageManager.PERMISSION_GRANTED
-        needsStoragePermission =
-            needsStoragePermission && ActivityCompat.checkSelfPermission(
+
+        needsStorage =
+            needsStorage && ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
-        needsAudio =
-            needsAudio && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.RECORD_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
 
-        return !needsCamera && !needsAudio && !needsStoragePermission
+        if (needsAudio)
+            needsAudio =
+                needsAudio && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+
+        return !needsCamera && !needsAudio && !needsStorage
     }
 
     private fun requestForPermissions() {
@@ -257,14 +273,23 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                PERMISSION_REQUEST_CODE
+            val permissions = mutableListOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
+            val needsAudio =
+                LassiConfig.getConfig().mediaType == MediaType.VIDEO
+                        && cameraView.audio == Audio.ON
+                        && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+
+            // Request audio permission only for video recording
+            if (needsAudio) {
+                permissions.add(Manifest.permission.RECORD_AUDIO)
+            }
+            requestPermissions(permissions.toTypedArray(), PERMISSION_REQUEST_CODE)
         }
     }
 
