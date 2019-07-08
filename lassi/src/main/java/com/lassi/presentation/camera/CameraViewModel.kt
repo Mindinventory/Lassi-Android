@@ -108,7 +108,7 @@ class CameraViewModel : LassiBaseViewModel() {
             val isDirectoryCreated = File(storageDir.path).mkdirs()
             Logger.d(logTag, "isDirectoryCreated >> $isDirectoryCreated")
         } else {
-            Logger.d(logTag, "directory alredy exists")
+            Logger.d(logTag, "directory already exists")
         }
         val videoFile = File.createTempFile(
             "VID-",  // prefix
@@ -125,8 +125,10 @@ class CameraViewModel : LassiBaseViewModel() {
             "stopVideoRecording : ${(minVideoTime)} , $remainingVideoTime"
         )
         if (minVideoTime >= remainingVideoTime) {
-            return
+            startVideoRecord.value =
+                VideoRecord.Error(TimerUtils.formatTimeInMinuteSecond(minVideoTime))
+        } else {
+            startVideoRecord.value = VideoRecord.End()
         }
-        startVideoRecord.value = VideoRecord.End()
     }
 }

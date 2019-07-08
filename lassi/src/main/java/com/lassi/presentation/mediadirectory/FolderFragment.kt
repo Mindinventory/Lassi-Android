@@ -19,7 +19,6 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.mediadirectory.Folder
 import com.lassi.domain.common.SafeObserver
@@ -168,7 +167,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Logger.d("FolderFragment", "onResume")
         if (requestCode == KeyUtils.SETTINGS_REQUEST_CODE) {
             checkPermission()
         } else {
