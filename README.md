@@ -3,7 +3,7 @@
 
 Lassi is simplest way to pick media (either image or video) 
 
-### Lassi Image picker
+### Lassi Image and Video picker
 ![image](/media/image-picker.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](/media/image-picker-camera.gif)
 
 ### Key features
