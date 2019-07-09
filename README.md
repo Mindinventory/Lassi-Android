@@ -6,16 +6,13 @@ Lassi is simplest way to pick media (either image or video)
 ### Lassi Image picker
 ![image](/media/image-picker.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](/media/image-picker-camera.gif)
 
-### Lassi Video picker
-![image](/media/video-picker.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](/media/video-picker-camera.gif)
-
 ### Key features
 
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
 * Filter videos by min and max time
-* Enable/lassiOption camera from media picker
+* Enable/disable camera from LassiOption
 
 # Usage
 
