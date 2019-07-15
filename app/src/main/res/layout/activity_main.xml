@@ -15,7 +15,6 @@
         android:text="@string/open_image_picker"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toStartOf="@+id/btnVideoPicker"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,9 +28,35 @@
         android:text="@string/open_video_picker"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnImagePicker"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnDocPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="OPEN DOC PICKER"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnAudioPicker"
+        app:layout_constraintTop_toBottomOf="@+id/btnVideoPicker" />
+
+    <Button
+        android:id="@+id/btnAudioPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="OPEN AUDIO PICKER"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@+id/btnDocPicker"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnImagePicker" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSelectedMedia"
@@ -42,8 +67,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnImagePicker"
+        app:layout_constraintTop_toBottomOf="@+id/btnAudioPicker"
         app:spanCount="2"
         tools:listitem="@layout/row_selected_media" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

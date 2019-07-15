@@ -6,11 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lassi.app.R
 import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
+import com.lassi.common.utils.ImageUtils
 import com.lassi.data.media.MiMedia
 import kotlinx.android.synthetic.main.row_selected_media.view.*
 import java.util.*
 
-class SelectedMediaAdapter : RecyclerView.Adapter<SelectedMediaAdapter.MediaViewHolder>() {
+class SelectedMediaAdapter(private val onItemClicked: (miMedia: MiMedia) -> Unit) :
+    RecyclerView.Adapter<SelectedMediaAdapter.MediaViewHolder>() {
 
     private val selectedMedias = ArrayList<MiMedia>()
 
@@ -33,9 +35,10 @@ class SelectedMediaAdapter : RecyclerView.Adapter<SelectedMediaAdapter.MediaView
     }
 
     inner class MediaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(dataBind: MiMedia) {
-            with(dataBind) {
-                itemView.ivSelectedMediaThumbnail.loadImage(path)
+        fun bind(miMedia: MiMedia) {
+            itemView.ivSelectedMediaThumbnail.loadImage(ImageUtils.getThumb(miMedia))
+            itemView.setOnClickListener {
+                onItemClicked(miMedia)
             }
         }
     }

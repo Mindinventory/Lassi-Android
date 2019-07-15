@@ -1,9 +1,12 @@
 package com.lassi.app
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
@@ -14,17 +17,21 @@ import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private val MEDIA_REQUEST_CODE = 100
-    private val selectedMediaAdapter by lazy { SelectedMediaAdapter() }
+    private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btnImagePicker.setOnClickListener(this)
         btnVideoPicker.setOnClickListener(this)
+        btnAudioPicker.setOnClickListener(this)
+        btnDocPicker.setOnClickListener(this)
         rvSelectedMedia.adapter = selectedMediaAdapter
         rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
     }
@@ -58,14 +65,43 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setMinTime(15)
                     .setMaxTime(30)
                     .setMediaType(MediaType.VIDEO)
-                    .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
-                    .setPlaceHolder(R.drawable.ic_image_placeholder)
-                    .setErrorDrawable(R.drawable.ic_image_placeholder)
+                    .setPlaceHolder(R.drawable.ic_video_placeholder)
+                    .setErrorDrawable(R.drawable.ic_video_placeholder)
                     .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
+                    .build()
+                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+            }
+
+            R.id.btnAudioPicker -> {
+                val intent = Lassi(this)
+                    .setMediaType(MediaType.AUDIO)
+                    .setMaxCount(4)
+                    .setGridSize(2)
+                    .setPlaceHolder(R.drawable.ic_audio_placeholder)
+                    .setErrorDrawable(R.drawable.ic_audio_placeholder)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setProgressBarColor(R.color.colorAccent)
+                    .build()
+                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+            }
+            R.id.btnDocPicker -> {
+                val intent = Lassi(this)
+                    .setMediaType(MediaType.DOC)
+                    .setMaxCount(4)
+                    .setGridSize(2)
+                    .setPlaceHolder(R.drawable.ic_document_placeholder)
+                    .setErrorDrawable(R.drawable.ic_document_placeholder)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setSupportedFileTypes("pdf", "odt", "doc", "docs", "txt", "ppt", "pptx")
+                    .setProgressBarColor(R.color.colorAccent)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
@@ -79,5 +115,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
             selectedMediaAdapter.setList(selectedMedia)
         }
+    }
+
+    private fun getMimeType(uri: Uri): String? {
+        return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
+            contentResolver.getType(uri)
+        } else {
+            val fileExtension = MimeTypeMap.getFileExtensionFromUrl(
+                uri.toString()
+            )
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                fileExtension.toLowerCase()
+            )
+        }
+    }
+
+    private fun onItemClicked(miMedia: MiMedia) {
+        val file = File(miMedia.path)
+        val fileUri = Uri.fromFile(file)
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, getMimeType(fileUri))
+        }
+        startActivity(Intent.createChooser(intent, "Open file"))
     }
 }

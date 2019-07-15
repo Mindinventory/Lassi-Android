@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.lassi.R
-import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
 import com.lassi.common.utils.DurationUtils.getDuration
+import com.lassi.common.utils.ImageUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
@@ -63,11 +63,10 @@ class MediaAdapter(
         fun bind(miMedia: MiMedia) {
             with(miMedia) {
                 var isSelect = isSelected(this)
-                tvFolderName.hide()
+                tvFolderName.text = miMedia.name
                 viewAlpha.alpha = if (isSelect) 0.5f else 0.0f
                 ivSelect.isVisible = isSelect
-
-                ivFolderThumbnail.loadImage(path)
+                ivFolderThumbnail.loadImage(ImageUtils.getThumb(this))
                 if (duration != 0L) {
                     tvDuration.visibility = View.VISIBLE
                     tvDuration.text = getDuration(duration)
