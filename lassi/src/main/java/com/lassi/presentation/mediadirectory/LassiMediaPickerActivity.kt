@@ -23,6 +23,7 @@ import com.lassi.domain.media.MediaType
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
 import com.lassi.presentation.cropper.CropImage
+import com.lassi.presentation.docs.DocsFragment
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_media_picker.*
@@ -80,12 +81,21 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 )
                 .commitAllowingStateLoss()
         } else {
-            supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.ftContainer,
-                    FolderFragment.newInstance()
-                )
-                .commitAllowingStateLoss()
+            if (LassiConfig.getConfig().mediaType == MediaType.DOC) {
+                supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.ftContainer,
+                        DocsFragment()
+                    )
+                    .commitAllowingStateLoss()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.ftContainer,
+                        FolderFragment.newInstance()
+                    )
+                    .commitAllowingStateLoss()
+            }
         }
     }
 

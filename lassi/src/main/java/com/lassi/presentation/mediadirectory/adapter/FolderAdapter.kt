@@ -8,6 +8,7 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
 import com.lassi.common.extenstions.show
+import com.lassi.common.utils.ImageUtils
 import com.lassi.data.mediadirectory.Folder
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_media.*
@@ -42,7 +43,7 @@ class FolderAdapter(
             with(folder) {
                 tvFolderName.show()
                 tvDuration.hide()
-                ivFolderThumbnail.loadImage(medias[0].path)
+                ivFolderThumbnail.loadImage(ImageUtils.getThumb(medias[0]))
                 tvFolderName.text = String.format(
                     tvFolderName.context.getString(R.string.directory_with_item_count),
                     folderName,

@@ -1,9 +1,9 @@
 # Lassi
 [![](https://jitpack.io/v/Mindinventory/Lassi.svg)](https://jitpack.io/#Mindinventory/Lassi)
 
-Lassi is simplest way to pick media (either image or video) 
+Lassi is simplest way to pick media (either image, video, audio or doc) 
 
-### Lassi Image and Video picker
+### Lassi Media picker
 ![image](/media/image-picker.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](/media/image-picker-camera.gif)
 
 ### Key features
@@ -38,7 +38,7 @@ Lassi is simplest way to pick media (either image or video)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.0.6'
+            implementation 'com.github.Mindinventory:Lassi:0.0.7'
         }
     ``` 
 

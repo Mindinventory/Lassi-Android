@@ -24,6 +24,7 @@ import com.lassi.data.mediadirectory.Folder
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
+import com.lassi.domain.media.MediaType
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.media.MediaFragment
@@ -156,7 +157,13 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menuCamera)?.isVisible =
-            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
+                || LassiConfig.getConfig().mediaType == MediaType.VIDEO
+            ) {
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+            } else {
+                false
+            }
         return super.onPrepareOptionsMenu(menu)
     }
 
