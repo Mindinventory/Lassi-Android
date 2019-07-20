@@ -52,7 +52,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY or CAMERA_AND_GALLERY
                 .setMaxCount(5)
                 .setGridSize(3)
-                .setMediaType(MediaType.VIDEO) // MediaType : VIDEO or IMAGE
+                .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC
                 .setMinTime(15) // for MediaType.VIDEO only
                 .setMaxTime(30) // for MediaType.VIDEO only
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
