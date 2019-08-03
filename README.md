@@ -38,7 +38,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.0.7'
+            implementation 'com.github.Mindinventory:Lassi:0.0.8'
         }
     ``` 
 
