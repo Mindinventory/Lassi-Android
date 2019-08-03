@@ -27,7 +27,7 @@ data class LassiConfig(
     var maxTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
     var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
     var supportedFileType: MutableList<String> = mutableListOf(),
-    var cropAspectRatio: AspectRatio = AspectRatio.of(1, 1),
+    var cropAspectRatio: AspectRatio? = null,
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false
 ) : Parcelable {

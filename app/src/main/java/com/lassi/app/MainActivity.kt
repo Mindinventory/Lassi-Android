@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
@@ -18,7 +19,6 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -132,10 +132,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun onItemClicked(miMedia: MiMedia) {
         val file = File(miMedia.path)
-        val fileUri = Uri.fromFile(file)
+        val fileUri = FileProvider.getUriForFile(
+            this,
+            applicationContext.packageName + ".fileprovider",
+            file
+        )
+
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(fileUri, getMimeType(fileUri))
         }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(Intent.createChooser(intent, "Open file"))
     }
 }

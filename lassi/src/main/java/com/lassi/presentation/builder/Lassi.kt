@@ -39,7 +39,7 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Media type (MediaType.IMAGE, MediaType.VIDEO)
+     * Media type (MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC)
      */
     fun setMediaType(mediaType: MediaType): Lassi {
         lassiConfig.mediaType = mediaType
@@ -138,7 +138,9 @@ class Lassi(private val context: Context) {
      * Set crop Aspect ratio
      */
     fun setCropAspectRatio(x: Int, y: Int): Lassi {
-        lassiConfig.cropAspectRatio = AspectRatio.of(x, y)
+        val aspectX = if (x < 0) 1 else x
+        val aspectY = if (y < 0) 1 else y
+        lassiConfig.cropAspectRatio = AspectRatio.of(aspectX, aspectY)
         return this
     }
 
