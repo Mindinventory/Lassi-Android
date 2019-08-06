@@ -165,4 +165,12 @@ class Lassi(private val context: Context) {
         LassiConfig.setConfig(lassiConfig)
         return Intent(context, LassiMediaPickerActivity::class.java)
     }
+
+    /**
+     * Show/Hide image Lable
+     */
+    fun showSizeLabel(enableLabel: Boolean): Lassi {
+        lassiConfig.showFileSizeLabel = enableLabel
+        return this
+    }
 }

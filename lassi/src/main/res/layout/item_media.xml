@@ -17,6 +17,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_image_placeholder" />
 
+    <TextView
+        android:id="@+id/tvFileSize"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blackTrans50"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="tvImageSize" />
+
     <View
         android:id="@+id/viewAlpha"
         android:layout_width="0dp"
