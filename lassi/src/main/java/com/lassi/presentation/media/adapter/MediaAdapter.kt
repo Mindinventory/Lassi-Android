@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_media.*
 import java.util.*
 
 class MediaAdapter(
-        private val onItemClick: (selectedMedias: ArrayList<MiMedia>) -> Unit
+    private val onItemClick: (selectedMedias: ArrayList<MiMedia>) -> Unit
 ) : RecyclerView.Adapter<MediaAdapter.MyViewHolder>() {
     private val logTag = MediaAdapter::class.java.simpleName
     private val images = ArrayList<MiMedia>()
@@ -59,12 +59,12 @@ class MediaAdapter(
     }
 
     inner class MyViewHolder(override val containerView: View) :
-            RecyclerView.ViewHolder(containerView), LayoutContainer {
+        RecyclerView.ViewHolder(containerView), LayoutContainer {
         fun bind(miMedia: MiMedia) {
             with(miMedia) {
                 if (LassiConfig.getConfig().showFileSizeLabel == true) {
                     tvFileSize.visibility = View.VISIBLE
-                }else{
+                } else {
                     tvFileSize.visibility = View.INVISIBLE
                 }
                 var isSelect = isSelected(this)

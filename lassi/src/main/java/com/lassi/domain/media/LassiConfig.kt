@@ -12,26 +12,26 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class LassiConfig(
-        @ColorRes var toolbarColor: Int = android.R.color.black,
-        @ColorRes var statusBarColor: Int = android.R.color.black,
-        @ColorRes var toolbarResourceColor: Int = android.R.color.white,
-        @ColorRes var progressBarColor: Int = android.R.color.black,
-        @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
-        @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
-        var selectedMedias: ArrayList<MiMedia> = ArrayList(),
-        var mediaType: MediaType = MediaType.IMAGE,
-        var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
-        var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
-        var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
-        var minTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
-        var maxTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
-        var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
-        var supportedFileType: MutableList<String> = mutableListOf(),
-        var cropAspectRatio: AspectRatio = AspectRatio.of(1, 1),
-        var enableFlipImage: Boolean = false,
-        var enableRotateImage: Boolean = false,
-        var showFileSizeLabel: Boolean = false,
-        var supportedFileSize: Int = KeyUtils.DEFAULT_SUPPORTED_FILE_SIZE
+    @ColorRes var toolbarColor: Int = android.R.color.black,
+    @ColorRes var statusBarColor: Int = android.R.color.black,
+    @ColorRes var toolbarResourceColor: Int = android.R.color.white,
+    @ColorRes var progressBarColor: Int = android.R.color.black,
+    @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
+    @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
+    var selectedMedias: ArrayList<MiMedia> = ArrayList(),
+    var mediaType: MediaType = MediaType.IMAGE,
+    var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
+    var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
+    var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
+    var minTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
+    var maxTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
+    var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
+    var supportedFileType: MutableList<String> = mutableListOf(),
+    var cropAspectRatio: AspectRatio = AspectRatio.of(1, 1),
+    var enableFlipImage: Boolean = false,
+    var enableRotateImage: Boolean = false,
+    var showFileSizeLabel: Boolean = false,
+    var supportedFileSize: Int = KeyUtils.DEFAULT_SUPPORTED_FILE_SIZE
 ) : Parcelable {
     companion object {
 

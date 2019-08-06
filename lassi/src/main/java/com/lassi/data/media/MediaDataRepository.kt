@@ -37,61 +37,61 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
                     val bucket = cursor.getString(cursor.getColumnIndex(projection[3]))
                     val size = cursor.getInt(cursor.getColumnIndex(projection[4]))
                     val albumCoverPath =
-                            if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
-                                val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
-                                getAlbumArt(albumId)
-                            } else {
-                                ""
-                            }
+                        if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                            val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
+                            getAlbumArt(albumId)
+                        } else {
+                            ""
+                        }
                     val duration =
-                            if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                                cursor.getLong(cursor.getColumnIndex(projection[4]))
-                            } else {
-                                0
-                            }
+                        if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                            cursor.getLong(cursor.getColumnIndex(projection[4]))
+                        } else {
+                            0
+                        }
 
                     val file = makeSafeFile(path)
                     if (file != null && file.exists()) {
                         if (LassiConfig.getConfig().mediaType == MediaType.VIDEO ||
-                                LassiConfig.getConfig().mediaType == MediaType.AUDIO
+                            LassiConfig.getConfig().mediaType == MediaType.AUDIO
                         ) {
                             if (minTimeInMillis > KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                    maxTimeInMillis > KeyUtils.DEFAULT_VIDEO_DURATION
+                                maxTimeInMillis > KeyUtils.DEFAULT_VIDEO_DURATION
                             ) {
                                 if (duration in minTimeInMillis..maxTimeInMillis) {
                                     addFileToFolder(
-                                            bucket,
-                                            MiMedia(id, name, path, duration, albumCoverPath)
+                                        bucket,
+                                        MiMedia(id, name, path, duration, albumCoverPath)
                                     )
                                 }
                             } else if (minTimeInMillis == KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                    maxTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
+                                maxTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
                             ) {
                                 if (duration <= maxTimeInMillis) {
                                     addFileToFolder(
-                                            bucket,
-                                            MiMedia(id, name, path, duration, albumCoverPath)
+                                        bucket,
+                                        MiMedia(id, name, path, duration, albumCoverPath)
                                     )
                                 }
                             } else if (maxTimeInMillis == KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                    minTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
+                                minTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
                             ) {
                                 if (minTimeInMillis <= duration) {
                                     addFileToFolder(
-                                            bucket,
-                                            MiMedia(id, name, path, duration, albumCoverPath)
+                                        bucket,
+                                        MiMedia(id, name, path, duration, albumCoverPath)
                                     )
                                 }
                             } else {
                                 addFileToFolder(
-                                        bucket,
-                                        MiMedia(id, name, path, duration, albumCoverPath)
+                                    bucket,
+                                    MiMedia(id, name, path, duration, albumCoverPath)
                                 )
                             }
                         } else {
                             addFileToFolder(
-                                    bucket,
-                                    MiMedia(id, name, path, duration, albumCoverPath, size)
+                                bucket,
+                                MiMedia(id, name, path, duration, albumCoverPath, size)
                             )
                         }
                     }
@@ -111,8 +111,8 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
      * Add file to folder
      */
     private fun addFileToFolder(
-            bucket: String,
-            miMedia: MiMedia
+        bucket: String,
+        miMedia: MiMedia
     ) {
         if (isFileTypeSupported(miMedia.path)) {
             var folder = folderMap[bucket]
@@ -160,32 +160,32 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
     private fun getProjections(): Array<String> {
         return when (LassiConfig.getConfig().mediaType) {
             MediaType.IMAGE -> arrayOf(
-                    MediaStore.Images.Media._ID,
-                    MediaStore.Images.Media.TITLE,
-                    MediaStore.Images.Media.DATA,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.SIZE
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.TITLE,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE
             )
             MediaType.VIDEO -> arrayOf(
-                    MediaStore.Video.Media._ID,
-                    MediaStore.Video.Media.TITLE,
-                    MediaStore.Video.Media.DATA,
-                    MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Video.VideoColumns.DURATION
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.TITLE,
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Video.VideoColumns.DURATION
             )
             MediaType.AUDIO -> arrayOf(
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.TITLE,
-                    MediaStore.Audio.Media.DATA,
-                    MediaStore.Audio.Media.ALBUM,
-                    MediaStore.Audio.AudioColumns.DURATION,
-                    MediaStore.Audio.Media.ALBUM_ID
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.AudioColumns.DURATION,
+                MediaStore.Audio.Media.ALBUM_ID
             )
             else -> arrayOf(
-                    MediaStore.Files.FileColumns._ID,
-                    MediaStore.Files.FileColumns.TITLE,
-                    MediaStore.Files.FileColumns.DATA,
-                    MediaStore.Files.FileColumns.PARENT
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.Files.FileColumns.TITLE,
+                MediaStore.Files.FileColumns.DATA,
+                MediaStore.Files.FileColumns.PARENT
             )
         }
     }
@@ -193,43 +193,43 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
     private fun query(projection: Array<String>): Cursor? {
         return when (LassiConfig.getConfig().mediaType) {
             MediaType.IMAGE -> context.contentResolver.query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    MediaStore.Images.Media.DATE_ADDED
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Images.Media.DATE_ADDED
             )
             MediaType.VIDEO -> context.contentResolver.query(
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    MediaStore.Video.Media.DATE_ADDED
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Video.Media.DATE_ADDED
             )
             MediaType.AUDIO -> context.contentResolver.query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    MediaStore.Audio.Media.DATE_ADDED
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Audio.Media.DATE_ADDED
             )
             MediaType.DOC -> {
                 val mimeTypes = mutableListOf<String>()
                 LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
                     MimeTypeMap
-                            .getSingleton()
-                            .getMimeTypeFromExtension(mimeType)?.let {
-                                mimeTypes.add("'$it'")
-                            }
+                        .getSingleton()
+                        .getMimeTypeFromExtension(mimeType)?.let {
+                            mimeTypes.add("'$it'")
+                        }
                 }
                 val selectionMimeType =
-                        MediaStore.Files.FileColumns.MIME_TYPE + " IN (${mimeTypes.joinToString()})"
+                    MediaStore.Files.FileColumns.MIME_TYPE + " IN (${mimeTypes.joinToString()})"
                 context.contentResolver.query(
-                        MediaStore.Files.getContentUri("external"),
-                        projection,
-                        selectionMimeType,
-                        null,
-                        MediaStore.Video.Media.DATE_ADDED
+                    MediaStore.Files.getContentUri("external"),
+                    projection,
+                    selectionMimeType,
+                    null,
+                    MediaStore.Video.Media.DATE_ADDED
                 )
             }
         }
@@ -241,19 +241,19 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
     private fun getAlbumArt(albumId: String): String {
         var albumCoverPath = ""
         val cursorAlbum = context.contentResolver.query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                arrayOf(
-                        MediaStore.Audio.Albums._ID,
-                        MediaStore.Audio.Albums.ALBUM_ART
-                ),
-                MediaStore.Audio.Albums._ID + "=" + albumId,
-                null, null
+            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+            arrayOf(
+                MediaStore.Audio.Albums._ID,
+                MediaStore.Audio.Albums.ALBUM_ART
+            ),
+            MediaStore.Audio.Albums._ID + "=" + albumId,
+            null, null
         )
 
         if (cursorAlbum != null) {
             if (cursorAlbum.count > 0 && cursorAlbum.moveToFirst()) {
                 albumCoverPath = cursorAlbum.getStringOrNull(
-                        cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
+                    cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
                 ) ?: ""
             }
         }
