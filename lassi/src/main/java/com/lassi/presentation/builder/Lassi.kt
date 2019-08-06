@@ -22,7 +22,7 @@ class Lassi(private val context: Context) {
     fun setMaxCount(maxCount: Int): Lassi {
         // handle negative input
         lassiConfig.maxCount =
-            if (maxCount < 0) KeyUtils.DEFAULT_MEDIA_COUNT else maxCount
+                if (maxCount < 0) KeyUtils.DEFAULT_MEDIA_COUNT else maxCount
         return this
     }
 
@@ -167,10 +167,29 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Show/Hide image Lable
+     * Show/Hide image Label
      */
     fun showSizeLabel(enableLabel: Boolean): Lassi {
         lassiConfig.showFileSizeLabel = enableLabel
+        return this
+    }
+
+    /**
+     * supported files Size in bytes
+     */
+    fun setSupportedFileSize(minFileSize: Int): Lassi {
+        // bytes,kb,mb sizes that changes accordingly
+//        val minFileSize =  minFileSize * 1024
+
+        if (minFileSize < 1024) {
+//            minFileSize.toString() = String.valueOf(fileSize).concat("B");
+//        } else if (fileSize > 1024 && fileSize < (1024 * 1024)) {
+//            modifiedFileSize = String.valueOf(Math.round((fileSize / 1024 * 100.0)) / 100.0).concat("KB");
+//        } else {
+//            modifiedFileSize = String.valueOf(Math.round((fileSize / (1024 * 1204) * 100.0)) / 100.0).concat("MB");
+        }
+
+        lassiConfig.supportedFileSize = minFileSize
         return this
     }
 }

@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .enableFlip(true)
                         .enableRotate(true)
                         .showSizeLabel(true)
+                        .setSupportedFileSize(10000)
                         .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
