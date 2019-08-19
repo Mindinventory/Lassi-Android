@@ -26,6 +26,8 @@ import android.util.Pair;
 
 import androidx.exifinterface.media.ExifInterface;
 
+import com.lassi.common.utils.Logger;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -85,6 +87,7 @@ final class BitmapUtils {
                 is.close();
             }
         } catch (Exception ignored) {
+            Logger.INSTANCE.e("BitmapUtils", "rotateBitmapByExif >> " + ignored);
         }
         return ei != null ? rotateBitmapByExif(bitmap, ei) : new RotateBitmapResult(bitmap, 0);
     }
@@ -142,6 +145,8 @@ final class BitmapUtils {
             return new BitmapSampled(bitmap, options.inSampleSize);
 
         } catch (Exception e) {
+            Logger.INSTANCE.e("BitmapUtils", "decodeSampledBitmap >> " + e);
+
             throw new RuntimeException(
                     "Failed to load sampled bitmap: " + uri + "\r\n" + e.getMessage(), e);
         }
@@ -180,6 +185,8 @@ final class BitmapUtils {
                                 flipVertically);
                 return new BitmapSampled(cropBitmap, scale);
             } catch (OutOfMemoryError e) {
+                Logger.INSTANCE.e("BitmapUtils", "cropBitmapObjectHandleOOM >> " + e);
+
                 scale *= 2;
                 if (scale > 8) {
                     throw e;
@@ -283,6 +290,8 @@ final class BitmapUtils {
                         flipVertically,
                         sampleMulti);
             } catch (OutOfMemoryError e) {
+                Logger.INSTANCE.e("BitmapUtils", "cropBitmap >> " + e);
+
                 // if OOM try to increase the sampling to lower the memory usage
                 sampleMulti *= 2;
                 if (sampleMulti > 16) {
@@ -415,7 +424,7 @@ final class BitmapUtils {
             }
             return uri;
         } catch (Exception e) {
-            Log.w("AIC", "Failed to write bitmap to temp file for image-cropper save instance state", e);
+            Log.e("BitmapUtils", "Failed to write bitmap to temp file for image-cropper save instance state", e);
             return null;
         }
     }
@@ -472,7 +481,7 @@ final class BitmapUtils {
                 }
             }
         } catch (Exception e) {
-            Log.w("AIC", "Failed to resize cropped image, return bitmap before resize", e);
+            Log.e("BitmapUtils", "Failed to resize cropped image, return bitmap before resize", e);
         }
         return bitmap;
     }
@@ -521,6 +530,8 @@ final class BitmapUtils {
             result = bitmapSampled.bitmap;
             sampleSize = bitmapSampled.sampleSize;
         } catch (Exception ignored) {
+            Logger.INSTANCE.e("BitmapUtils", "cropBitmap >> " + ignored);
+
         }
 
         if (result != null) {
@@ -538,6 +549,8 @@ final class BitmapUtils {
                                     result, points, rect, degreesRotated, fixAspectRatio, aspectRatioX, aspectRatioY);
                 }
             } catch (OutOfMemoryError e) {
+                Logger.INSTANCE.e("BitmapUtils", "cropBitmap >> " + e);
+
                 if (result != null) {
                     result.recycle();
                 }
@@ -618,11 +631,15 @@ final class BitmapUtils {
                 }
             }
         } catch (OutOfMemoryError e) {
+            Logger.INSTANCE.e("BitmapUtils", "cropBitmap >> " + e);
+
             if (result != null) {
                 result.recycle();
             }
             throw e;
         } catch (Exception e) {
+            Logger.INSTANCE.e("BitmapUtils", "cropBitmap >> " + e);
+
             throw new RuntimeException(
                     "Failed to load sampled bitmap: " + loadedImageUri + "\r\n" + e.getMessage(), e);
         }
@@ -661,6 +678,7 @@ final class BitmapUtils {
                 return BitmapFactory.decodeStream(stream, EMPTY_RECT, options);
             } catch (OutOfMemoryError e) {
                 options.inSampleSize *= 2;
+                Logger.INSTANCE.e("BitmapUtils", "decodeImage >> " + e);
             } finally {
                 closeSafe(stream);
             }
@@ -692,9 +710,11 @@ final class BitmapUtils {
                     return new BitmapSampled(decoder.decodeRegion(rect, options), options.inSampleSize);
                 } catch (OutOfMemoryError e) {
                     options.inSampleSize *= 2;
+                    Logger.INSTANCE.e("BitmapUtils", "decodeSampledBitmapRegion >> " + e);
                 }
             } while (options.inSampleSize <= 512);
         } catch (Exception e) {
+            Logger.INSTANCE.e("BitmapUtils", "decodeSampledBitmapRegion >> " + e);
             throw new RuntimeException(
                     "Failed to load sampled bitmap: " + uri + "\r\n" + e.getMessage(), e);
         } finally {
@@ -852,7 +872,9 @@ final class BitmapUtils {
             // Return largest texture size found, or default
             return Math.max(maximumTextureSize, IMAGE_MAX_BITMAP_DIMENSION);
         } catch (Exception e) {
+            Logger.INSTANCE.e("BitmapUtils", "getMaxTextureSize >> " + e);
             return IMAGE_MAX_BITMAP_DIMENSION;
+
         }
     }
 
@@ -867,6 +889,7 @@ final class BitmapUtils {
             try {
                 closeable.close();
             } catch (IOException ignored) {
+                Logger.INSTANCE.e("BitmapUtils", "closeSafe >> " + ignored);
             }
         }
     }

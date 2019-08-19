@@ -111,14 +111,15 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
      * Add file to folder
      */
     private fun addFileToFolder(
-        bucket: String,
+        bucket: String?,
         miMedia: MiMedia
     ) {
+        val bucketName = bucket ?: "0"
         if (isFileTypeSupported(miMedia.path)) {
-            var folder = folderMap[bucket]
+            var folder = folderMap[bucketName]
             if (folder == null) {
-                folder = Folder(bucket)
-                folderMap[bucket] = folder
+                folder = Folder(bucketName)
+                folderMap[bucketName] = folder
             }
             folder.medias.add(miMedia)
         }

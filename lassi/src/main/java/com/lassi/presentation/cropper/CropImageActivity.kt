@@ -81,8 +81,8 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         toolbar.title = ""
         setSupportActionBar(toolbar)
         val bundle = intent.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)
-        cropImageUri = bundle.getParcelable(CropImage.CROP_IMAGE_EXTRA_SOURCE)
-        cropImageOptions = bundle.getParcelable(CropImage.CROP_IMAGE_EXTRA_OPTIONS)
+        cropImageUri = bundle?.getParcelable(CropImage.CROP_IMAGE_EXTRA_SOURCE)
+        cropImageOptions = bundle?.getParcelable(CropImage.CROP_IMAGE_EXTRA_OPTIONS)
 
         if (savedInstanceState == null) {
             if (cropImageUri == null || cropImageUri == Uri.EMPTY) {
