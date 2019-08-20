@@ -7,7 +7,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
-            android:requestLegacyExternalStorage="true" android:name=".LassiController"
+            android:requestLegacyExternalStorage="true"
+            android:name=".LassiController"
             android:supportsRtl="true">
         <activity
                 android:name=".presentation.mediadirectory.LassiMediaPickerActivity"

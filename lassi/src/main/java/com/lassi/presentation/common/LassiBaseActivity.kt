@@ -1,7 +1,6 @@
 package com.lassi.presentation.common
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import com.livefront.bridge.Bridge
@@ -34,7 +33,6 @@ abstract class LassiBaseActivity : AppCompatActivity() {
         return intent.hasExtra(key)
     }
 
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Bridge.saveInstanceState(this, outState)
@@ -45,5 +43,4 @@ abstract class LassiBaseActivity : AppCompatActivity() {
         super.onDestroy()
         Bridge.clear(this)
     }
-
 }

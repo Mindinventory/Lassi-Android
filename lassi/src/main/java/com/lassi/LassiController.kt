@@ -7,10 +7,6 @@ import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
 import io.reactivex.annotations.Nullable
 
-
-/**
- * Created by MI-197 on 20/8/19.
- */
 open class LassiController : Application() {
     override fun onCreate() {
         super.onCreate()

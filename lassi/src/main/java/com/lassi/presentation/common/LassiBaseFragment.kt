@@ -9,9 +9,6 @@ import androidx.fragment.app.Fragment
 import com.livefront.bridge.Bridge
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import android.os.Parcelable
-
-
 
 abstract class LassiBaseFragment : Fragment() {
 
@@ -56,5 +53,4 @@ abstract class LassiBaseFragment : Fragment() {
         super.onDestroy()
         Bridge.clear(this)
     }
-
 }

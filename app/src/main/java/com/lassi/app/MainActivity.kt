@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnImagePicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(4)
+                    .setMaxCount(1)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
-
             R.id.btnAudioPicker -> {
                 val intent = Lassi(this)
                     .setMediaType(MediaType.AUDIO)
