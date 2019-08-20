@@ -3,6 +3,7 @@ package com.lassi.presentation.common
 import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import com.livefront.bridge.Bridge
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -19,6 +20,7 @@ abstract class LassiBaseActivity : AppCompatActivity() {
         getBundle()
         setContentView(getContentResource())
         initViews()
+        Bridge.restoreInstanceState(this, savedInstanceState)
     }
 
     @CallSuper
@@ -29,5 +31,16 @@ abstract class LassiBaseActivity : AppCompatActivity() {
 
     fun hasExtra(key: String): Boolean {
         return intent.hasExtra(key)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Bridge.saveInstanceState(this, outState)
+        outState.clear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Bridge.clear(this)
     }
 }
