@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
+
             R.id.btnAudioPicker -> {
                 val intent = Lassi(this)
                     .setMediaType(MediaType.AUDIO)

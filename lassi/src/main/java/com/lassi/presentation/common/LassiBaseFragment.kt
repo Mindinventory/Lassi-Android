@@ -37,6 +37,7 @@ abstract class LassiBaseFragment : Fragment() {
     }
 
     protected fun Disposable.collect() = compositeDisposable.add(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Bridge.restoreInstanceState(this, savedInstanceState)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -26,6 +27,10 @@ import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.docs.DocsFragment
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.videopreview.VideoPreviewActivity
+import com.livefront.bridge.Bridge
+import com.livefront.bridge.SavedStateHandler
+import io.reactivex.annotations.NonNull
+import io.reactivex.annotations.Nullable
 import kotlinx.android.synthetic.main.activity_media_picker.*
 import java.io.File
 
@@ -52,6 +57,13 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     override fun initViews() {
         super.initViews()
+        Bridge.initialize(applicationContext, object : SavedStateHandler {
+            override fun saveInstanceState(@NonNull target: Any, @NonNull state: Bundle) {
+            }
+
+            override fun restoreInstanceState(@NonNull target: Any, @Nullable state: Bundle?) {
+            }
+        })
         setToolbarTitle(LassiConfig.getConfig().selectedMedias)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
