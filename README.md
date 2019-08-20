@@ -38,7 +38,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.0.9'
+            implementation 'com.github.Mindinventory:Lassi:0.1.0'
         }
     ``` 
 
@@ -99,6 +99,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * [Glide](https://github.com/bumptech/glide) 
 * [CameraView](https://github.com/natario1/CameraView)
 * [Android-Image-Cropper](https://github.com/ArthurHub/Android-Image-Cropper)
+* [Bridge] (https://github.com/livefront/bridge)
 
 ### ProGaurd rules
 
