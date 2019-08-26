@@ -5,9 +5,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.lassi.R
+import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
+import com.lassi.common.extenstions.show
 import com.lassi.common.utils.DurationUtils.getDuration
+import com.lassi.common.utils.FileSizeFormatter
 import com.lassi.common.utils.ImageUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
@@ -64,6 +67,11 @@ class MediaAdapter(
             with(miMedia) {
                 var isSelect = isSelected(this)
                 tvFolderName.text = miMedia.name
+
+                if (LassiConfig.getConfig().showMediaSizeLabel) tvFileSize.show() else tvFileSize.hide()
+
+                tvFileSize.text = FileSizeFormatter.formatFileSize(miMedia.size)
+
                 viewAlpha.alpha = if (isSelect) 0.5f else 0.0f
                 ivSelect.isVisible = isSelect
                 ivFolderThumbnail.loadImage(ImageUtils.getThumb(this))

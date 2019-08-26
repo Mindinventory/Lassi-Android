@@ -1,6 +1,7 @@
 package com.lassi.common.utils
 
 object KeyUtils {
+    const val DEFAULT_SUPPORTED_FILE_SIZE = 1000
     const val REQUEST_PERMISSIONS_REQUEST_CODE = 102
     const val SELECTED_MEDIA = "selected_media"
     const val MEDIA_PREVIEW = "mediaPreview"

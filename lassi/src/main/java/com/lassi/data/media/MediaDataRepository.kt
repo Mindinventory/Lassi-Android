@@ -36,6 +36,7 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
                     val name = cursor.getString(cursor.getColumnIndex(projection[1]))
                     val path = cursor.getString(cursor.getColumnIndex(projection[2]))
                     val bucket = cursor.getString(cursor.getColumnIndex(projection[3]))
+                    val mediaSize = cursor.getLong(cursor.getColumnIndex(projection[4]))
                     val albumCoverPath =
                         if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                             val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
@@ -90,8 +91,8 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
                             }
                         } else {
                             addFileToFolder(
-                                bucket,
-                                MiMedia(id, name, path, duration, albumCoverPath)
+                                    bucket,
+                                    MiMedia(id, name, path, duration, albumCoverPath, mediaSize)
                             )
                         }
                     }
@@ -141,6 +142,10 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
         return false
     }
 
+    private fun isFileSizeSupported(size: Int): Boolean {
+        return LassiConfig.getConfig().supportedFileSize <= size
+    }
+
     /**
      * check if File path is not null
      */
@@ -164,7 +169,8 @@ class MediaDataRepository(private val context: Context) : MediaRepository {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.TITLE,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE
             )
             MediaType.VIDEO -> arrayOf(
                 MediaStore.Video.Media._ID,

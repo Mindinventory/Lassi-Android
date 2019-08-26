@@ -79,6 +79,14 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * supported files Size in mbs
+     */
+    fun setMaxFileSize(maxFileSize: Int): Lassi {
+        lassiConfig.supportedFileSize = maxFileSize
+        return this
+    }
+
+    /**
      * Set toolbar color
      */
     fun setToolbarColor(@ColorRes toolbarColor: Int): Lassi {
@@ -157,6 +165,14 @@ class Lassi(private val context: Context) {
      */
     fun enableRotate(enableRotateImage: Boolean): Lassi {
         lassiConfig.enableRotateImage = enableRotateImage
+        return this
+    }
+
+    /**
+     * Show/Hide image Lable
+     */
+    fun showSizeLabel(enableLabel: Boolean): Lassi {
+        lassiConfig.showMediaSizeLabel = enableLabel
         return this
     }
 

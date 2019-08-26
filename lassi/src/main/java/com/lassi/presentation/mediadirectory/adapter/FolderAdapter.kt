@@ -43,6 +43,7 @@ class FolderAdapter(
             with(folder) {
                 tvFolderName.show()
                 tvDuration.hide()
+                tvFileSize.hide()
                 ivFolderThumbnail.loadImage(ImageUtils.getThumb(medias[0]))
                 tvFolderName.text = String.format(
                     tvFolderName.context.getString(R.string.directory_with_item_count),

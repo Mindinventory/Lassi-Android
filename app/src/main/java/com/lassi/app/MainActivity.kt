@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropAspectRatio(1, 1)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .enableFlip(true)
+                    .setMaxFileSize(10000)                  // always enter size in bytes.
+                    .showSizeLabel(false)
                     .enableRotate(true)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)

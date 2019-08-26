@@ -9,5 +9,6 @@ data class MiMedia(
     var name: String? = null,
     var path: String? = null,
     var duration: Long = 0L,
-    var thumb: String? = null
+    var thumb: String? = null,
+    var size: Long = 0
 ) : Parcelable
