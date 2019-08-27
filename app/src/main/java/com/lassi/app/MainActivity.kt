@@ -52,10 +52,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
-                    .enableFlip(true)
-                    .setMaxFileSize(10000)                  // always enter size in bytes.
-                    .showSizeLabel(false)
-                    .enableRotate(true)
+                    .enableFlip()
+                    .setMaxFileSize(60000)                  // always enter size in bytes.
+                    .showSizeLabel()
+                    .enableRotate()
+                    .hideFileName()
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
@@ -73,6 +74,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setProgressBarColor(R.color.colorAccent)
                     .setPlaceHolder(R.drawable.ic_video_placeholder)
                     .setErrorDrawable(R.drawable.ic_video_placeholder)
+                    .showSizeLabel()
+                    .hideFileName()
                     .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
@@ -89,6 +92,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
+                    .showSizeLabel()
+                    .enableRotate()
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }

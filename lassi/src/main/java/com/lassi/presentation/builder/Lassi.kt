@@ -78,7 +78,7 @@ class Lassi(private val context: Context) {
         return this
     }
 
-    /**
+    /*
      * supported files Size in mbs
      */
     fun setMaxFileSize(maxFileSize: Int): Lassi {
@@ -155,24 +155,32 @@ class Lassi(private val context: Context) {
     /**
      * Enable flip image option while image cropping
      */
-    fun enableFlip(enableFlipImage: Boolean): Lassi {
-        lassiConfig.enableFlipImage = enableFlipImage
+    fun enableFlip(): Lassi {
+        lassiConfig.enableFlipImage = true
         return this
     }
 
     /**
      * Enable rotate image option while image cropping
      */
-    fun enableRotate(enableRotateImage: Boolean): Lassi {
-        lassiConfig.enableRotateImage = enableRotateImage
+    fun enableRotate(): Lassi {
+        lassiConfig.enableRotateImage = true
         return this
     }
 
     /**
      * Show/Hide image Lable
      */
-    fun showSizeLabel(enableLabel: Boolean): Lassi {
-        lassiConfig.showMediaSizeLabel = enableLabel
+    fun showSizeLabel(): Lassi {
+        lassiConfig.showMediaSizeLabel = true
+        return this
+    }
+
+    /**
+     * Show/Hide File Name
+     */
+    fun hideFileName(): Lassi {
+        lassiConfig.hideFileName = false
         return this
     }
 

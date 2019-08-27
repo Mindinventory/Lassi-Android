@@ -68,6 +68,8 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setCropAspectRatio(1, 1) // define crop aspect ratio for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .enableFlip(true) // Enable flip image option while image cropping (for MediaType.IMAGE only)
                 .enableRotate(true) // Enable rotate image option while image cropping (for MediaType.IMAGE only)
+                .showSizeLabel()    // For showing Media Size Label.
+                .hideFileName() // For hiding file name.
                 .build()
             startActivityForResult(intent, MEDIA_REQUEST_CODE)
     ```

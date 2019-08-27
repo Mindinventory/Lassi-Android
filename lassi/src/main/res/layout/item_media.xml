@@ -39,7 +39,7 @@
         android:gravity="center"
         android:singleLine="true"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/ivFolderThumbnail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,16 +49,15 @@
         android:id="@+id/tvFileSize"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:background="@color/blackTrans50"
+        android:elevation="12dp"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
-        tools:text="@string/camera"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDuration" />
+        app:layout_constraintBottom_toTopOf="@+id/tvFolderName"
+        tools:text="@string/camera" />
 
 
     <TextView

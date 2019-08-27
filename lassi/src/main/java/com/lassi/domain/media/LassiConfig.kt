@@ -31,7 +31,8 @@ data class LassiConfig(
     var supportedFileSize: Int = KeyUtils.DEFAULT_SUPPORTED_FILE_SIZE,
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false,
-    var showMediaSizeLabel: Boolean = false
+    var showMediaSizeLabel: Boolean = false,
+    var hideFileName: Boolean = true
 ) : Parcelable {
     companion object {
 
@@ -59,6 +60,7 @@ data class LassiConfig(
                 enableRotateImage = lassiConfig.enableRotateImage
                 supportedFileSize = lassiConfig.supportedFileSize
                 showMediaSizeLabel = lassiConfig.showMediaSizeLabel
+                hideFileName = lassiConfig.hideFileName
             }
         }
 

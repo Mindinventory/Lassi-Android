@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
-        android:id="@+id/ImageView_image"
+        android:id="@+id/imageView_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
@@ -11,13 +11,13 @@
         tools:ignore="contentDescription" />
 
     <com.lassi.presentation.cropper.CropOverlayView
-        android:id="@+id/CropOverlayView"
+        android:id="@+id/cropOverlayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible" />
 
     <ProgressBar
-        android:id="@+id/CropProgressBar"
+        android:id="@+id/cropProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />

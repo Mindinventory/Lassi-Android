@@ -66,6 +66,7 @@ class MediaAdapter(
         fun bind(miMedia: MiMedia) {
             with(miMedia) {
                 var isSelect = isSelected(this)
+                tvFolderName.isVisible = LassiConfig.getConfig().hideFileName
                 tvFolderName.text = miMedia.name
 
                 if (LassiConfig.getConfig().showMediaSizeLabel) tvFileSize.show() else tvFileSize.hide()
