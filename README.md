@@ -99,7 +99,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * [Glide](https://github.com/bumptech/glide) 
 * [CameraView](https://github.com/natario1/CameraView)
 * [Android-Image-Cropper](https://github.com/ArthurHub/Android-Image-Cropper)
-* [Bridge] (https://github.com/livefront/bridge)
+* [Bridge](https://github.com/livefront/bridge)
 
 ### ProGaurd rules
 
