@@ -341,7 +341,7 @@ public class CropImageOptions implements Parcelable {
         activityMenuIconColor = 0;
 
         outputUri = Uri.EMPTY;
-        outputCompressFormat = Bitmap.CompressFormat.JPEG;
+        outputCompressFormat = Bitmap.CompressFormat.PNG;
         outputCompressQuality = 90;
         outputRequestWidth = 0;
         outputRequestHeight = 0;
