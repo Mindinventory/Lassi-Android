@@ -51,9 +51,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setProgressBarColor(R.color.colorAccent)
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
+                    .enableActualCircleCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
-                    .enableFlip(true)
-                    .enableRotate(true)
+                    .enableFlip()
+                    .enableRotate()
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
