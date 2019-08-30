@@ -66,29 +66,30 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setErrorDrawable(R.drawable.ic_image_placeholder)
                 .setCropType(CropImageView.CropShape.RECTANGLE) // choose shape for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .setCropAspectRatio(1, 1) // define crop aspect ratio for cropping after capturing an image from camera (for MediaType.IMAGE only)
-                .enableFlip(true) // Enable flip image option while image cropping (for MediaType.IMAGE only)
-                .enableRotate(true) // Enable rotate image option while image cropping (for MediaType.IMAGE only)
+                .enableFlip() // Enable flip image option while image cropping (for MediaType.IMAGE only)
+                .enableRotate() // Enable rotate image option while image cropping (for MediaType.IMAGE only)
+                .enableActualCircleCrop() // Enable actual circular crop (only for MediaType.Image and CropImageView.CropShape.OVAL)
                 .build()
             startActivityForResult(intent, MEDIA_REQUEST_CODE)
     ```
-    
-        
+
+
 * Step 2. override onActivityResult function to get Lassi result.
-    
-    ```kotlin        
+
+    ```kotlin
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             super.onActivityResult(requestCode, resultCode, data)
             if (resultCode == Activity.RESULT_OK && data != null) {
                 when (requestCode) {
                     MEDIA_REQUEST_CODE -> {
                         val selectedMedia = data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                        // Do needful with your selectedMedia 
+                        // Do needful with your selectedMedia
                     }
                 }
             }
-        }  
-    ``` 
-    
+        }
+    ```
+
 ### Requirements
 
 * minSdkVersion >= 17
@@ -96,10 +97,10 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Library used
 
-* [Glide](https://github.com/bumptech/glide) 
+* [Glide](https://github.com/bumptech/glide)
 * [CameraView](https://github.com/natario1/CameraView)
 * [Android-Image-Cropper](https://github.com/ArthurHub/Android-Image-Cropper)
-* [Bridge](https://github.com/livefront/bridge)
+* [Bridge] (https://github.com/livefront/bridge)
 
 ### ProGaurd rules
 

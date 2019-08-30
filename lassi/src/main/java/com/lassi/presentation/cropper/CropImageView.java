@@ -989,7 +989,7 @@ public class CropImageView extends FrameLayout {
      * @param saveUri the Android Uri to save the cropped image to
      */
     public void saveCroppedImageAsync(Uri saveUri) {
-        saveCroppedImageAsync(saveUri, Bitmap.CompressFormat.JPEG, 90, 0, 0, RequestSizeOptions.NONE);
+        saveCroppedImageAsync(saveUri, Bitmap.CompressFormat.PNG, 90, 0, 0, RequestSizeOptions.NONE);
     }
 
     /**

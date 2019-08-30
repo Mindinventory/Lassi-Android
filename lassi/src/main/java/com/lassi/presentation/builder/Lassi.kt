@@ -127,7 +127,7 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Set crop type
+     * Set crop type(only for MediaType.Image and Single Image Selection)
      */
     fun setCropType(cropType: CropImageView.CropShape): Lassi {
         lassiConfig.cropType = cropType
@@ -147,16 +147,24 @@ class Lassi(private val context: Context) {
     /**
      * Enable flip image option while image cropping
      */
-    fun enableFlip(enableFlipImage: Boolean): Lassi {
-        lassiConfig.enableFlipImage = enableFlipImage
+    fun enableFlip(): Lassi {
+        lassiConfig.enableFlipImage = true
         return this
     }
 
     /**
      * Enable rotate image option while image cropping
      */
-    fun enableRotate(enableRotateImage: Boolean): Lassi {
-        lassiConfig.enableRotateImage = enableRotateImage
+    fun enableRotate(): Lassi {
+        lassiConfig.enableRotateImage = true
+        return this
+    }
+
+    /**
+     * Enable actual circular crop (only for MediaType.Image and CropImageView.CropShape.OVAL)
+     */
+    fun enableActualCircleCrop(): Lassi {
+        lassiConfig.enableActualCircleCrop = true
         return this
     }
 

@@ -29,7 +29,8 @@ data class LassiConfig(
     var supportedFileType: MutableList<String> = mutableListOf(),
     var cropAspectRatio: AspectRatio? = null,
     var enableFlipImage: Boolean = false,
-    var enableRotateImage: Boolean = false
+    var enableRotateImage: Boolean = false,
+    var enableActualCircleCrop: Boolean = false
 ) : Parcelable {
     companion object {
 
@@ -55,6 +56,7 @@ data class LassiConfig(
                 cropAspectRatio = lassiConfig.cropAspectRatio
                 enableFlipImage = lassiConfig.enableFlipImage
                 enableRotateImage = lassiConfig.enableRotateImage
+                enableActualCircleCrop = lassiConfig.enableActualCircleCrop
             }
         }
 

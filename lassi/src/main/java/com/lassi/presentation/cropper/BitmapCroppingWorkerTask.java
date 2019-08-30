@@ -14,9 +14,17 @@ package com.lassi.presentation.cropper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import com.lassi.domain.media.LassiConfig;
+
+import java.io.ByteArrayOutputStream;
 import java.lang.ref.WeakReference;
 
 /**
@@ -254,6 +262,12 @@ final class BitmapCroppingWorkerTask
                 Bitmap bitmap =
                         BitmapUtils.resizeBitmap(bitmapSampled.bitmap, mReqWidth, mReqHeight, mReqSizeOptions);
 
+
+                if (LassiConfig.Companion.getConfig().getCropType() == CropImageView.CropShape.OVAL
+                        && LassiConfig.Companion.getConfig().getEnableActualCircleCrop()) {
+                    bitmap = getCircularBitmap(bitmap);
+                }
+
                 if (mSaveUri == null) {
                     return new Result(bitmap, bitmapSampled.sampleSize);
                 } else {
@@ -269,6 +283,30 @@ final class BitmapCroppingWorkerTask
         } catch (Exception e) {
             return new Result(e, mSaveUri != null);
         }
+    }
+
+    public static Bitmap getCircularBitmap(Bitmap square) {
+        if (square == null) return null;
+        Bitmap output = Bitmap.createBitmap(square.getWidth(), square.getHeight(), Bitmap.Config.ARGB_8888);
+
+        final Rect rect = new Rect(0, 0, square.getWidth(), square.getHeight());
+        Canvas canvas = new Canvas(output);
+
+        int halfWidth = square.getWidth() / 2;
+        int halfHeight = square.getHeight() / 2;
+
+        final Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+
+        canvas.drawCircle(halfWidth, halfHeight, Math.min(halfWidth, halfHeight), paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(square, rect, rect, paint);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        output.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        return output;
     }
 
     /**
