@@ -7,7 +7,6 @@ import android.view.Menu
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
-import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils.SELECTED_FOLDER
 import com.lassi.data.media.MiMedia
@@ -43,10 +42,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
         super.initViews()
         setImageAdapter()
         progressBar.indeterminateDrawable.setColorFilter(
-            ColorUtils.getColor(
-                requireContext(),
-                mediaPickerConfig.progressBarColor
-            ),
+            mediaPickerConfig.progressBarColor,
             PorterDuff.Mode.MULTIPLY
         )
     }

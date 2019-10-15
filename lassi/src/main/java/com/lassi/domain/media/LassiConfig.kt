@@ -1,7 +1,7 @@
 package com.lassi.domain.media
 
+import android.graphics.Color
 import android.os.Parcelable
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.lassi.R
 import com.lassi.common.utils.KeyUtils
@@ -12,10 +12,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class LassiConfig(
-    @ColorRes var toolbarColor: Int = android.R.color.black,
-    @ColorRes var statusBarColor: Int = android.R.color.black,
-    @ColorRes var toolbarResourceColor: Int = android.R.color.white,
-    @ColorRes var progressBarColor: Int = android.R.color.black,
+    var toolbarColor: Int = Color.BLACK,
+    var statusBarColor: Int = Color.BLACK,
+    var toolbarResourceColor: Int = Color.WHITE,
+    var progressBarColor: Int = Color.BLACK,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     var selectedMedias: ArrayList<MiMedia> = ArrayList(),

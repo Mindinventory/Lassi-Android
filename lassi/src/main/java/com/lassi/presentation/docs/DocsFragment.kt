@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiMedia
@@ -42,10 +41,7 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
         super.initViews()
         setImageAdapter()
         progressBar.indeterminateDrawable.setColorFilter(
-            ColorUtils.getColor(
-                requireContext(),
-                mediaPickerConfig.progressBarColor
-            ),
+            mediaPickerConfig.progressBarColor,
             PorterDuff.Mode.MULTIPLY
         )
     }

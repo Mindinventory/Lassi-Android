@@ -14,7 +14,6 @@ import android.widget.MediaController
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.lassi.R
-import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
@@ -63,24 +62,18 @@ class VideoPreviewActivity : LassiBaseActivity() {
         toolbar.title = ""
         with(LassiConfig.getConfig()) {
             toolbar.background =
-                ColorDrawable(ColorUtils.getColor(this@VideoPreviewActivity, toolbarColor))
-            toolbar.setTitleTextColor(
-                ColorUtils.getColor(
-                    this@VideoPreviewActivity,
-                    toolbarResourceColor
-                )
-            )
+                ColorDrawable(toolbarColor)
+            toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@VideoPreviewActivity, R.drawable.ic_back_white)
             upArrow?.setColorFilter(
-                ColorUtils.getColor(this@VideoPreviewActivity, toolbarResourceColor),
+                toolbarResourceColor,
                 PorterDuff.Mode.SRC_ATOP
             )
             supportActionBar?.setHomeAsUpIndicator(upArrow)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor =
-                    ColorUtils.getColor(this@VideoPreviewActivity, statusBarColor)
+                window.statusBarColor = statusBarColor
             }
         }
     }
