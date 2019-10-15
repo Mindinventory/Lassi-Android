@@ -18,8 +18,6 @@ object CropUtils {
         with(LassiConfig.getConfig()) {
             CropImage.activity(source)
                     .setGuidelines(CropImageView.Guidelines.ON)
-                    .setAllowFlipping(false)
-                    .setAllowRotation(false)
                     .setOutputCompressQuality(70)
                     .setCropShape(cropType)
                     .setAspectRatio(cropAspectRatio)
