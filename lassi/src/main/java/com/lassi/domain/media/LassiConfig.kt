@@ -12,10 +12,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class LassiConfig(
-    var toolbarColor: Int = Color.parseColor(KeyUtils.BLACK),
-    var statusBarColor: Int = Color.parseColor(KeyUtils.BLACK),
-    var toolbarResourceColor: Int = Color.parseColor(KeyUtils.WHITE),
-    var progressBarColor: Int = Color.parseColor(KeyUtils.BLACK),
+    var toolbarColor: Int = Color.BLACK,
+    var statusBarColor: Int = Color.BLACK,
+    var toolbarResourceColor: Int = Color.WHITE,
+    var progressBarColor: Int = Color.BLACK,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     var selectedMedias: ArrayList<MiMedia> = ArrayList(),
