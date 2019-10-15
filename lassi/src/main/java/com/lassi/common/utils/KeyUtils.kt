@@ -14,4 +14,6 @@ object KeyUtils {
     const val FIVE_SECOND_INTERVAL = 5 * 1000L
     const val TEN_SECOND_INTERVAL = 10 * 1000L
     const val SETTINGS_REQUEST_CODE = 100
+    const val BLACK = "#000000"
+    const val WHITE = "#FFFFFF"
 }
