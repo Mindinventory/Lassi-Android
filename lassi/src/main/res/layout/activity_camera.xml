@@ -84,7 +84,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/ivCaptureImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ivCaptureImage"
-            app:srcCompat="@drawable/ic_switch_camera_white"
             tools:text="11:30" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
