@@ -30,7 +30,8 @@ data class LassiConfig(
     var cropAspectRatio: AspectRatio? = null,
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false,
-    var enableActualCircleCrop: Boolean = false
+    var enableActualCircleCrop: Boolean = false,
+    var compressionRation: Int = 0
 ) : Parcelable {
     companion object {
 
@@ -57,6 +58,7 @@ data class LassiConfig(
                 enableFlipImage = lassiConfig.enableFlipImage
                 enableRotateImage = lassiConfig.enableRotateImage
                 enableActualCircleCrop = lassiConfig.enableActualCircleCrop
+                compressionRation = lassiConfig.compressionRation
             }
         }
 
