@@ -12,12 +12,7 @@ import java.util.*
 class DocsViewModel(private val mediaRepository: MediaRepository) : LassiBaseViewModel() {
     var fetchDocsLiveData = MutableLiveData<Response<ArrayList<MiMedia>>>()
 
-    override fun loadPage() {
-        super.loadPage()
-        fetchDocs()
-    }
-
-    private fun fetchDocs() {
+    fun fetchDocs() {
         fetchDocsLiveData.value = Response.Loading()
         mediaRepository.fetchDocs()
             .subscribeOn(Schedulers.io())
@@ -28,5 +23,4 @@ class DocsViewModel(private val mediaRepository: MediaRepository) : LassiBaseVie
                 fetchDocsLiveData.value = Response.Error(it)
             }).collect()
     }
-
 }

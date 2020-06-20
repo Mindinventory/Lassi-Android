@@ -17,26 +17,33 @@ object CropUtils {
     fun beginCrop(activity: FragmentActivity, source: Uri) {
         with(LassiConfig.getConfig()) {
             CropImage.activity(source)
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .setOutputCompressQuality(70)
-                    .setCropShape(cropType)
-                    .setAspectRatio(cropAspectRatio)
-                    .setOutputUri(createDirectory(activity))
-                    .setAllowRotation(enableRotateImage)
-                    .setAllowFlipping(enableFlipImage)
-                    .start(activity)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setOutputCompressQuality((100 - compressionRation))
+                .setCropShape(cropType)
+                .setAspectRatio(cropAspectRatio)
+                .setOutputUri(createDirectory(activity))
+                .setAllowRotation(enableRotateImage)
+                .setAllowFlipping(enableFlipImage)
+                .start(activity)
         }
     }
 
     private fun getApplicationName(context: Context): String {
         val applicationInfo = context.applicationInfo
         val stringId = applicationInfo.labelRes
-        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(
+            stringId
+        )
+    }
+
+    private fun getPath(context: Context): String {
+        return Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(
+            context
+        )
     }
 
     private fun createDirectory(context: Context): Uri? {
-        val path = Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(context)
-        path.let {
+        getPath(context).let {
             val storageDir = File(it)
             if (!storageDir.exists()) {
                 storageDir.mkdirs()
@@ -70,12 +77,15 @@ object CropUtils {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
 //        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val storageDir = Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(context)
+        val storageDir =
+            Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(
+                context
+            )
 
         return File.createTempFile(
-                "IMG-${timeStamp}_", /* prefix */
-                ".jpeg", /* suffix */
-                File(storageDir) /* directory */
+            "IMG-${timeStamp}_", /* prefix */
+            ".jpeg", /* suffix */
+            File(storageDir) /* directory */
         )
     }
 }

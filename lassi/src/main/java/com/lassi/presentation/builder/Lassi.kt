@@ -203,6 +203,19 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set compression ration between 0 to 100 (Only for single image selection)
+     */
+    fun setCompressionRation(compressionRation: Int): Lassi {
+        val compression = if (compressionRation > 100) {
+            100
+        } else {
+            compressionRation
+        }
+        lassiConfig.compressionRation = compression
+        return this
+    }
+
+    /**
      * Start LassiMediaPickerActivity with config
      */
     fun build(): Intent {
