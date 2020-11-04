@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.lassi.R
 import com.lassi.common.utils.ColorUtils.getColor
@@ -41,11 +42,11 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     override fun getContentResource() = R.layout.activity_media_picker
 
     override fun buildViewModel(): SelectedMediaViewModel {
-        return ViewModelProviders.of(this)[SelectedMediaViewModel::class.java]
+        return ViewModelProvider(this)[SelectedMediaViewModel::class.java]
     }
 
     private val folderViewModel by lazy {
-        ViewModelProviders.of(
+        ViewModelProvider(
             this, FolderViewModelFactory(this)
         )[FolderViewModel::class.java]
     }
