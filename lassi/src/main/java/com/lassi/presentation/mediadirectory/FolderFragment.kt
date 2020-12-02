@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.ColorUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.common.Response
 import com.lassi.data.mediadirectory.Folder
@@ -54,10 +53,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         rvMedia.adapter = folderAdapter
         rvMedia.addItemDecoration(GridSpacingItemDecoration(LassiConfig.getConfig().gridSize, 10))
         progressBar.indeterminateDrawable.setColorFilter(
-            ColorUtils.getColor(
-                requireContext(),
-                LassiConfig.getConfig().progressBarColor
-            ),
+            LassiConfig.getConfig().progressBarColor,
             PorterDuff.Mode.MULTIPLY
         )
         checkPermission()

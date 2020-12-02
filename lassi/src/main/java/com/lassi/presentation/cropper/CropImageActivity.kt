@@ -113,21 +113,18 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
     private fun setThemeAttributes() {
         with(LassiConfig.getConfig()) {
             toolbar.background =
-                ColorDrawable(ColorUtils.getColor(this@CropImageActivity, toolbarColor))
-            toolbar.setTitleTextColor(
-                ColorUtils.getColor(this@CropImageActivity, toolbarResourceColor)
-            )
+                ColorDrawable(toolbarColor)
+            toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@CropImageActivity, R.drawable.ic_back_white)
             upArrow?.setColorFilter(
-                ColorUtils.getColor(this@CropImageActivity, toolbarResourceColor),
+                toolbarResourceColor,
                 PorterDuff.Mode.SRC_ATOP
             )
             supportActionBar?.setHomeAsUpIndicator(upArrow)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor =
-                    ColorUtils.getColor(this@CropImageActivity, statusBarColor)
+                window.statusBarColor = statusBarColor
             }
         }
     }

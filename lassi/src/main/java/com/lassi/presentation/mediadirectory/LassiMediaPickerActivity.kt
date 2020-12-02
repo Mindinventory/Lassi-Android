@@ -12,7 +12,6 @@ import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.lassi.R
-import com.lassi.common.utils.ColorUtils.getColor
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.KeyUtils
@@ -115,9 +114,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     private fun setThemeAttributes() {
         with(LassiConfig.getConfig()) {
             toolbar.background =
-                ColorDrawable(getColor(this@LassiMediaPickerActivity, toolbarColor))
-            toolbar.setTitleTextColor(getColor(this@LassiMediaPickerActivity, toolbarResourceColor))
-
+                ColorDrawable(toolbarColor)
+            toolbar.setTitleTextColor(toolbarResourceColor)
             supportActionBar?.setHomeAsUpIndicator(
                 changeIconColor(
                     this@LassiMediaPickerActivity,
@@ -127,7 +125,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor = getColor(this@LassiMediaPickerActivity, statusBarColor)
+                window.statusBarColor = statusBarColor
             }
         }
     }

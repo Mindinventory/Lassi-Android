@@ -2,8 +2,10 @@ package com.lassi.presentation.builder
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import com.lassi.common.utils.KeyUtils
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
@@ -79,34 +81,66 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Set toolbar color
+     * Set toolbar color resource
      */
     fun setToolbarColor(@ColorRes toolbarColor: Int): Lassi {
-        lassiConfig.toolbarColor = toolbarColor
+        lassiConfig.toolbarColor = ContextCompat.getColor(context, toolbarColor)
         return this
     }
 
     /**
-     * Set statusBar color (Only applicable for >= Lollipop)
+     * Set toolbar color hex
+     */
+    fun setToolbarColor(toolbarColor: String): Lassi {
+        lassiConfig.toolbarColor = Color.parseColor(toolbarColor)
+        return this
+    }
+
+    /**
+     * Set statusBar color resource (Only applicable for >= Lollipop)
      */
     fun setStatusBarColor(@ColorRes statusBarColor: Int): Lassi {
-        lassiConfig.statusBarColor = statusBarColor
+        lassiConfig.statusBarColor = ContextCompat.getColor(context, statusBarColor)
         return this
     }
 
     /**
-     * Set toolbar resource color
+     * Set statusBar color hex (Only applicable for >= Lollipop)
+     */
+    fun setStatusBarColor(statusBarColor: String): Lassi {
+        lassiConfig.statusBarColor = Color.parseColor(statusBarColor)
+        return this
+    }
+
+    /**
+     * Set toolbar color resource
      */
     fun setToolbarResourceColor(@ColorRes toolbarResourceColor: Int): Lassi {
-        lassiConfig.toolbarResourceColor = toolbarResourceColor
+        lassiConfig.toolbarResourceColor = ContextCompat.getColor(context, toolbarResourceColor)
         return this
     }
 
     /**
-     * Set progressbar color
+     * Set toolbar color hex
+     */
+    fun setToolbarResourceColor(toolbarResourceColor: String): Lassi {
+        lassiConfig.toolbarResourceColor = Color.parseColor(toolbarResourceColor)
+        return this
+    }
+
+    /**
+     * Set progressbar color resource
      */
     fun setProgressBarColor(@ColorRes progressBarColor: Int): Lassi {
-        lassiConfig.progressBarColor = progressBarColor
+        lassiConfig.progressBarColor = ContextCompat.getColor(context, progressBarColor)
+        return this
+    }
+
+    /**
+     * Set progressbar color hex
+     */
+    fun setProgressBarColor(progressBarColor: String): Lassi {
+        lassiConfig.progressBarColor = Color.parseColor(progressBarColor)
         return this
     }
 
@@ -165,6 +199,19 @@ class Lassi(private val context: Context) {
      */
     fun enableActualCircleCrop(): Lassi {
         lassiConfig.enableActualCircleCrop = true
+        return this
+    }
+
+    /**
+     * Set compression ration between 0 to 100 (Only for single image selection)
+     */
+    fun setCompressionRation(compressionRation: Int): Lassi {
+        val compression = if (compressionRation > 100) {
+            100
+        } else {
+            compressionRation
+        }
+        lassiConfig.compressionRation = compression
         return this
     }
 

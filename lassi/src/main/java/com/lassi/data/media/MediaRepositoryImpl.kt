@@ -16,7 +16,7 @@ import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MediaDataRepository(private val context: Context) : MediaRepository {
+class MediaRepositoryImpl(private val context: Context) : MediaRepository {
 
     private val minTimeInMillis = LassiConfig.getConfig().minTime * 1000L
     private val maxTimeInMillis = LassiConfig.getConfig().maxTime * 1000L
