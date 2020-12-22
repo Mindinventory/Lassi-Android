@@ -23,8 +23,11 @@ class Lassi(private val context: Context) {
      */
     fun setMaxCount(maxCount: Int): Lassi {
         // handle negative input
-        lassiConfig.maxCount =
-            if (maxCount < 0) KeyUtils.DEFAULT_MEDIA_COUNT else maxCount
+        lassiConfig.maxCount = if (maxCount < 0) {
+            KeyUtils.DEFAULT_MEDIA_COUNT
+        } else {
+            maxCount
+        }
         return this
     }
 
@@ -60,7 +63,12 @@ class Lassi(private val context: Context) {
      * Filter videos by min time in seconds (only for MediaType.VIDEO)
      */
     fun setMinTime(minTime: Long): Lassi {
-        lassiConfig.minTime = minTime
+        // handle negative input
+        lassiConfig.minTime = if (minTime > 0) {
+            minTime
+        } else {
+            KeyUtils.DEFAULT_DURATION
+        }
         return this
     }
 
@@ -68,7 +76,12 @@ class Lassi(private val context: Context) {
      * Filter videos by max time in seconds (only for MediaType.VIDEO)
      */
     fun setMaxTime(maxTime: Long): Lassi {
-        lassiConfig.maxTime = maxTime
+        // handle negative input
+        lassiConfig.maxTime = if (maxTime > 0) {
+            maxTime
+        } else {
+            KeyUtils.DEFAULT_DURATION
+        }
         return this
     }
 
@@ -216,7 +229,27 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Start LassiMediaPickerActivity with config
+     * Set minimum file size in KB
+     */
+    fun setMinFileSize(fileSize: Long): Lassi {
+        if (fileSize > 0) {
+            lassiConfig.minFileSize = fileSize
+        }
+        return this
+    }
+
+    /**
+     * Set maximum file size in KB
+     */
+    fun setMaxFileSize(fileSize: Long): Lassi {
+        if (fileSize > 0) {
+            lassiConfig.maxFileSize = fileSize
+        }
+        return this
+    }
+
+    /**
+     * Create intent for LassiMediaPickerActivity with config
      */
     fun build(): Intent {
         LassiConfig.setConfig(lassiConfig)

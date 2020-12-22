@@ -3,6 +3,7 @@
     <string name="cancel">Cancel</string>
     <string name="selected_items">%s/%s items selected</string>
     <string name="directory_with_item_count">%s (%s)</string>
+    <string name="lassi_all">All</string>
 
     <!--Cropper-->
     <string name="crop_image_menu_rotate_left">Rotate counter clockwise</string>
