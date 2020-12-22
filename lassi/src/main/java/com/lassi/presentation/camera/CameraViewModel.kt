@@ -25,7 +25,7 @@ class CameraViewModel : LassiBaseViewModel() {
 
     private val maxVideoTime by lazy {
         if (LassiConfig.getConfig().maxTime
-            == KeyUtils.DEFAULT_VIDEO_DURATION
+            == KeyUtils.DEFAULT_DURATION
         ) {
             KeyUtils.TEN_SECOND_INTERVAL // 10 sec
         } else {
@@ -34,7 +34,7 @@ class CameraViewModel : LassiBaseViewModel() {
     }
     private val minVideoTime by lazy {
         if (LassiConfig.getConfig().minTime
-            == KeyUtils.DEFAULT_VIDEO_DURATION
+            == KeyUtils.DEFAULT_DURATION
         ) {
             KeyUtils.FIVE_SECOND_INTERVAL  // 10 sec
         } else {

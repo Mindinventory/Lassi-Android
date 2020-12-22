@@ -38,7 +38,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.1.5'
+            implementation 'com.github.Mindinventory:Lassi:0.1.6'
         }
     ``` 
 
@@ -57,6 +57,8 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setMinTime(15) // for MediaType.VIDEO only
                 .setMaxTime(30) // for MediaType.VIDEO only
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
+                .setMinFileSize(100) // Restrict by minimum file size 
+                .setMaxFileSize(1024) //  Restrict by maximum file size
                 /*
                  * Configuration for  UI
                  */
@@ -90,6 +92,19 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
             }
         }
     ```
+
+
+### Guideline for contributors
+Contribution towards our repository is always welcome, we request contributors to create a pull request to the **develop** branch only.  
+
+### Guideline to report an issue/feature request
+It would be great for us if the reporter can share the below things to understand the root cause of the issue.
+
+* Library version
+* Code snippet
+* Logs if applicable
+* Device specification like (Manufacturer, OS version, etc)
+* Screenshot/video with steps to reproduce the issue
 
 ### Requirements
 

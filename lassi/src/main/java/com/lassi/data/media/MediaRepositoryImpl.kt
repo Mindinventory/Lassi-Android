@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import androidx.core.database.getStringOrNull
+import com.lassi.R
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.mediadirectory.Folder
@@ -22,6 +22,8 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     private val maxTimeInMillis = LassiConfig.getConfig().maxTime * 1000L
     private val fetchedFolders = arrayListOf<Folder>()
     private val folderMap = LinkedHashMap<String, Folder>()
+    private val minFileSize = LassiConfig.getConfig().minFileSize * 1024L
+    private val maxFileSize = LassiConfig.getConfig().maxFileSize * 1024L
 
     override fun fetchFolders(): Single<ArrayList<Folder>> {
         val projection = getProjections()
@@ -36,6 +38,8 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     val name = cursor.getString(cursor.getColumnIndex(projection[1]))
                     val path = cursor.getString(cursor.getColumnIndex(projection[2]))
                     val bucket = cursor.getString(cursor.getColumnIndex(projection[3]))
+                    val size =
+                        cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
                     val albumCoverPath =
                         if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                             val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
@@ -55,56 +59,95 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                         if (LassiConfig.getConfig().mediaType == MediaType.VIDEO ||
                             LassiConfig.getConfig().mediaType == MediaType.AUDIO
                         ) {
-                            if (minTimeInMillis > KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                maxTimeInMillis > KeyUtils.DEFAULT_VIDEO_DURATION
-                            ) {
-                                if (duration in minTimeInMillis..maxTimeInMillis) {
-                                    addFileToFolder(
-                                        bucket,
-                                        MiMedia(id, name, path, duration, albumCoverPath)
-                                    )
-                                }
-                            } else if (minTimeInMillis == KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                maxTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
-                            ) {
-                                if (duration <= maxTimeInMillis) {
-                                    addFileToFolder(
-                                        bucket,
-                                        MiMedia(id, name, path, duration, albumCoverPath)
-                                    )
-                                }
-                            } else if (maxTimeInMillis == KeyUtils.DEFAULT_VIDEO_DURATION &&
-                                minTimeInMillis != KeyUtils.DEFAULT_VIDEO_DURATION
-                            ) {
-                                if (minTimeInMillis <= duration) {
-                                    addFileToFolder(
-                                        bucket,
-                                        MiMedia(id, name, path, duration, albumCoverPath)
-                                    )
-                                }
-                            } else {
+                            checkDurationAndAddFileToFolder(
+                                bucket,
+                                id,
+                                name,
+                                path,
+                                duration,
+                                albumCoverPath,
+                                size
+                            )
+                        } else {
+                            Logger.e("MediaRepositoryImpl", "$name >> $size")
+
+                            if (isValidFileSize(size)) {
                                 addFileToFolder(
                                     bucket,
                                     MiMedia(id, name, path, duration, albumCoverPath)
                                 )
                             }
-                        } else {
-                            addFileToFolder(
-                                bucket,
-                                MiMedia(id, name, path, duration, albumCoverPath)
-                            )
                         }
                     }
                 } while (cursor.moveToPrevious())
             }
         } catch (e: Exception) {
-            Logger.e("MediaDataRepository", "fetchFolders >> $e")
+            Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
             return Single.error(e)
         } finally {
             cursor.close()
         }
         fetchedFolders.addAll(folderMap.values)
         return Single.just(fetchedFolders)
+    }
+
+    private fun checkDurationAndAddFileToFolder(
+        bucket: String?,
+        id: Long,
+        name: String,
+        path: String,
+        duration: Long,
+        albumCoverPath: String,
+        size: Long
+    ) {
+        if (isValidDuration(duration) && isValidFileSize(size)) {
+            addFileToFolder(
+                bucket,
+                MiMedia(id, name, path, duration, albumCoverPath, size)
+            )
+        }
+    }
+
+    /**
+     * check if file size is valid duration
+     */
+    private fun isValidFileSize(fileSize: Long): Boolean {
+        return if (minFileSize > KeyUtils.DEFAULT_FILE_SIZE &&
+            maxFileSize > KeyUtils.DEFAULT_FILE_SIZE
+        ) {
+            fileSize in minFileSize..maxFileSize
+        } else if (minFileSize == KeyUtils.DEFAULT_FILE_SIZE &&
+            maxFileSize != KeyUtils.DEFAULT_FILE_SIZE
+        ) {
+            fileSize <= maxFileSize
+        } else if (maxFileSize == KeyUtils.DEFAULT_FILE_SIZE &&
+            minFileSize != KeyUtils.DEFAULT_FILE_SIZE
+        ) {
+            minFileSize <= fileSize
+        } else {
+            true
+        }
+    }
+
+    /**
+     * check if video/audio has valid duration
+     */
+    private fun isValidDuration(duration: Long): Boolean {
+        return if (minTimeInMillis > KeyUtils.DEFAULT_DURATION &&
+            maxTimeInMillis > KeyUtils.DEFAULT_DURATION
+        ) {
+            duration in minTimeInMillis..maxTimeInMillis
+        } else if (minTimeInMillis == KeyUtils.DEFAULT_DURATION &&
+            maxTimeInMillis != KeyUtils.DEFAULT_DURATION
+        ) {
+            duration <= maxTimeInMillis
+        } else if (maxTimeInMillis == KeyUtils.DEFAULT_DURATION &&
+            minTimeInMillis != KeyUtils.DEFAULT_DURATION
+        ) {
+            minTimeInMillis <= duration
+        } else {
+            true
+        }
     }
 
     /**
@@ -114,7 +157,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         bucket: String?,
         miMedia: MiMedia
     ) {
-        val bucketName = bucket ?: "0"
+        val bucketName = bucket ?: context.getString(R.string.lassi_all)
         if (isFileTypeSupported(miMedia.path)) {
             var folder = folderMap[bucketName]
             if (folder == null) {
@@ -164,14 +207,16 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.TITLE,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.BUCKET_DISPLAY_NAME
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.Media.SIZE
             )
             MediaType.VIDEO -> arrayOf(
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.TITLE,
                 MediaStore.Video.Media.DATA,
                 MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
-                MediaStore.Video.VideoColumns.DURATION
+                MediaStore.Video.VideoColumns.DURATION,
+                MediaStore.Video.VideoColumns.SIZE
             )
             MediaType.AUDIO -> arrayOf(
                 MediaStore.Audio.Media._ID,
@@ -179,13 +224,15 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.AudioColumns.DURATION,
-                MediaStore.Audio.Media.ALBUM_ID
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.SIZE
             )
             else -> arrayOf(
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.TITLE,
                 MediaStore.Files.FileColumns.DATA,
-                MediaStore.Files.FileColumns.PARENT
+                MediaStore.Files.FileColumns.PARENT,
+                MediaStore.Files.FileColumns.SIZE
             )
         }
     }
@@ -252,7 +299,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
 
         if (cursorAlbum != null) {
             if (cursorAlbum.count > 0 && cursorAlbum.moveToFirst()) {
-                albumCoverPath = cursorAlbum.getStringOrNull(
+                albumCoverPath = cursorAlbum.getString(
                     cursorAlbum.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
                 ) ?: ""
             }
@@ -276,7 +323,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 } while (cursor.moveToPrevious())
             }
         } catch (e: Exception) {
-            Logger.e("MediaDataRepository", "fetchFolders >> $e")
+            Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
         } finally {
             cursor.close()
         }

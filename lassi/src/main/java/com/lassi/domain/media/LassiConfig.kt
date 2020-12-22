@@ -23,15 +23,17 @@ data class LassiConfig(
     var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
     var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
     var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
-    var minTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
-    var maxTime: Long = KeyUtils.DEFAULT_VIDEO_DURATION,
+    var minTime: Long = KeyUtils.DEFAULT_DURATION,
+    var maxTime: Long = KeyUtils.DEFAULT_DURATION,
     var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
     var supportedFileType: MutableList<String> = mutableListOf(),
     var cropAspectRatio: AspectRatio? = null,
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false,
     var enableActualCircleCrop: Boolean = false,
-    var compressionRation: Int = 0
+    var compressionRation: Int = 0,
+    var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
+    var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE
 ) : Parcelable {
     companion object {
 
@@ -59,6 +61,8 @@ data class LassiConfig(
                 enableRotateImage = lassiConfig.enableRotateImage
                 enableActualCircleCrop = lassiConfig.enableActualCircleCrop
                 compressionRation = lassiConfig.compressionRation
+                minFileSize = lassiConfig.minFileSize
+                maxFileSize = lassiConfig.maxFileSize
             }
         }
 
