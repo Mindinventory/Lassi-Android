@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.lassi.R
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.DrawableUtils.changeIconColor
@@ -154,18 +153,43 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menuCamera -> initCamera()
             R.id.menuDone -> setSelectedMediaResult()
             android.R.id.home -> onBackPressed()
         }
-        return super.onOptionsItemSelected(item)
+        item.let {
+            return super.onOptionsItemSelected(it)
+        }
     }
 
     private fun setSelectedMediaResult() {
         // Allow crop for single image
-        if (LassiConfig.isSingleMediaSelection()) {
+
+        when(LassiConfig.getConfig().mediaType){
+            MediaType.IMAGE ->{
+                if (LassiConfig.isSingleMediaSelection() && LassiConfig.isCrop()) {
+                    val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
+                    CropUtils.beginCrop(this, uri)
+                } else {
+                    setResultOk(viewModel.selectedMediaLiveData.value)
+                }
+            }
+            MediaType.VIDEO,MediaType.AUDIO,MediaType.DOC ->{
+                if (LassiConfig.isSingleMediaSelection()) {
+                    VideoPreviewActivity.startVideoPreview(
+                        this,
+                        viewModel.selectedMediaLiveData.value!![0].path!!
+                    )
+                } else {
+                    setResultOk(viewModel.selectedMediaLiveData.value)
+                }
+            }
+
+        }
+
+        /*if (LassiConfig.isSingleMediaSelection()) {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
                 val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
                 CropUtils.beginCrop(this, uri)
@@ -177,7 +201,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             }
         } else {
             setResultOk(viewModel.selectedMediaLiveData.value)
-        }
+        }*/
     }
 
     private fun initCamera() {
@@ -215,9 +239,9 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
                     val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
                     if (LassiConfig.isSingleMediaSelection()) {
-                        setResultOk(arrayListOf(selectedMedia))
+                        setResultOk(arrayListOf(selectedMedia!!))
                     } else {
-                        LassiConfig.getConfig().selectedMedias.add(selectedMedia)
+                        LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
                         viewModel.addSelectedMedia(selectedMedia)
                         folderViewModel.fetchFolders()
                         if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {

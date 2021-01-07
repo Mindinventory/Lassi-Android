@@ -1,5 +1,7 @@
 package com.lassi.presentation.media
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
@@ -8,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.utils.CropUtils
+import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.KeyUtils.SELECTED_FOLDER
 import com.lassi.data.media.MiMedia
 import com.lassi.data.mediadirectory.Folder
@@ -66,7 +69,46 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     }
 
     private fun onItemClick(selectedMedias: ArrayList<MiMedia>) {
-        if (LassiConfig.getConfig().maxCount > 1) {
+        when (LassiConfig.getConfig().mediaType) {
+            MediaType.IMAGE -> {
+                /*viewModel.addAllSelectedMedia(selectedMedias)
+                setResultOk(selectedMedias)*/
+                if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.isCrop()) {
+                    val uri = Uri.fromFile(File(selectedMedias[0].path))
+                    CropUtils.beginCrop(requireActivity(), uri)
+                } else if (LassiConfig.getConfig().maxCount > 1) {
+                    viewModel.addAllSelectedMedia(selectedMedias)
+
+                } else {
+                    viewModel.addAllSelectedMedia(selectedMedias)
+                    setResultOk(selectedMedias)
+                }
+
+                /* if (LassiConfig.getConfig().maxCount > 1 && LassiConfig.isCrop()) {
+                     viewModel.addAllSelectedMedia(selectedMedias)
+                     setResultOk(selectedMedias)
+                 } else {
+                     val uri = Uri.fromFile(File(selectedMedias[0].path))
+                     CropUtils.beginCrop(requireActivity(), uri)
+                 }*/
+
+
+            }
+            MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
+                if (LassiConfig.getConfig().maxCount > 1) {
+                    viewModel.addAllSelectedMedia(selectedMedias)
+                } else {
+                    VideoPreviewActivity.startVideoPreview(
+                        activity,
+                        selectedMedias[0].path!!
+                    )
+                }
+
+            }
+        }
+
+
+        /*if (LassiConfig.getConfig().maxCount > 1) {
             viewModel.addAllSelectedMedia(selectedMedias)
         } else {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
@@ -78,7 +120,15 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     selectedMedias[0].path!!
                 )
             }
+        }*/
+    }
+
+    private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
+        val intent = Intent().apply {
+            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
         }
+        activity?.setResult(Activity.RESULT_OK, intent)
+        activity?.finish()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
