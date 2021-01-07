@@ -73,7 +73,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
             MediaType.IMAGE -> {
                 /*viewModel.addAllSelectedMedia(selectedMedias)
                 setResultOk(selectedMedias)*/
-                if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.isCrop()) {
+                if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.getConfig().isCrop) {
                     val uri = Uri.fromFile(File(selectedMedias[0].path))
                     CropUtils.beginCrop(requireActivity(), uri)
                 } else if (LassiConfig.getConfig().maxCount > 1) {

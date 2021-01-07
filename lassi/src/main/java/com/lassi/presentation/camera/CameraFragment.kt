@@ -94,14 +94,13 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         super.initLiveDataObservers()
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver {uri->
-            if (LassiConfig.isCrop()) {
+            if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
                 CropUtils.beginCrop(requireActivity(),uri)
             } else {
                 val list = ArrayList<MiMedia>().also {
                     val media = MiMedia()
                     media.path = uri.path
                     it.add(media)
-
                 }
                 setResultOk(list)
             }

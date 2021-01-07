@@ -185,11 +185,7 @@ class Lassi(private val context: Context) {
      * Set crop (only for MediaType.Image and Single Image Selection)
      */
     fun setCrop(cropType: Boolean): Lassi {
-        if(lassiConfig.maxCount>1){
-            lassiConfig.isCrop = false
-        }else{
-            lassiConfig.isCrop = cropType
-        }
+        lassiConfig.isCrop = cropType
         return this
     }
 

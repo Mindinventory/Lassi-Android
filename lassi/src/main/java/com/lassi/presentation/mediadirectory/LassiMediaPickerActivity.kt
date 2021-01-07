@@ -169,7 +169,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
         when(LassiConfig.getConfig().mediaType){
             MediaType.IMAGE ->{
-                if (LassiConfig.isSingleMediaSelection() && LassiConfig.isCrop()) {
+                if (LassiConfig.isSingleMediaSelection() && LassiConfig.getConfig().isCrop) {
                     val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
                     CropUtils.beginCrop(this, uri)
                 } else {
