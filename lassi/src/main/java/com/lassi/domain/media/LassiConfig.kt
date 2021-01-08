@@ -34,7 +34,7 @@ data class LassiConfig(
     var compressionRation: Int = 0,
     var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
-    var isCrop: Boolean = false
+    var isCrop: Boolean = true
 ) : Parcelable {
     companion object {
 
