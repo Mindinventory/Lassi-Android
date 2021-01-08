@@ -159,9 +159,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             R.id.menuDone -> setSelectedMediaResult()
             android.R.id.home -> onBackPressed()
         }
-        item.let {
-            return super.onOptionsItemSelected(it)
-        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setSelectedMediaResult() {
