@@ -38,7 +38,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.1.6'
+            implementation 'com.github.Mindinventory:Lassi:0.1.7'
         }
     ``` 
 
@@ -59,6 +59,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
                 .setMinFileSize(100) // Restrict by minimum file size 
                 .setMaxFileSize(1024) //  Restrict by maximum file size
+                .disableCrop // to remove crop from the single image selection (crop is enabled by default for single image)
                 /*
                  * Configuration for  UI
                  */
