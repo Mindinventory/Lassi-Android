@@ -166,9 +166,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun setSelectedMediaResult() {
         // Allow crop for single image
-
-        when(LassiConfig.getConfig().mediaType){
-            MediaType.IMAGE ->{
+        when (LassiConfig.getConfig().mediaType) {
+            MediaType.IMAGE -> {
                 if (LassiConfig.isSingleMediaSelection() && LassiConfig.getConfig().isCrop) {
                     val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
                     CropUtils.beginCrop(this, uri)
@@ -176,7 +175,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     setResultOk(viewModel.selectedMediaLiveData.value)
                 }
             }
-            MediaType.VIDEO,MediaType.AUDIO,MediaType.DOC ->{
+            MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
                 if (LassiConfig.isSingleMediaSelection()) {
                     VideoPreviewActivity.startVideoPreview(
                         this,
@@ -186,22 +185,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     setResultOk(viewModel.selectedMediaLiveData.value)
                 }
             }
-
         }
-
-        /*if (LassiConfig.isSingleMediaSelection()) {
-            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
-                CropUtils.beginCrop(this, uri)
-            } else {
-                VideoPreviewActivity.startVideoPreview(
-                    this,
-                    viewModel.selectedMediaLiveData.value!![0].path!!
-                )
-            }
-        } else {
-            setResultOk(viewModel.selectedMediaLiveData.value)
-        }*/
     }
 
     private fun initCamera() {

@@ -71,8 +71,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     private fun onItemClick(selectedMedias: ArrayList<MiMedia>) {
         when (LassiConfig.getConfig().mediaType) {
             MediaType.IMAGE -> {
-                /*viewModel.addAllSelectedMedia(selectedMedias)
-                setResultOk(selectedMedias)*/
                 if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.getConfig().isCrop) {
                     val uri = Uri.fromFile(File(selectedMedias[0].path))
                     CropUtils.beginCrop(requireActivity(), uri)
@@ -83,16 +81,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     viewModel.addAllSelectedMedia(selectedMedias)
                     setResultOk(selectedMedias)
                 }
-
-                /* if (LassiConfig.getConfig().maxCount > 1 && LassiConfig.isCrop()) {
-                     viewModel.addAllSelectedMedia(selectedMedias)
-                     setResultOk(selectedMedias)
-                 } else {
-                     val uri = Uri.fromFile(File(selectedMedias[0].path))
-                     CropUtils.beginCrop(requireActivity(), uri)
-                 }*/
-
-
             }
             MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
                 if (LassiConfig.getConfig().maxCount > 1) {
@@ -103,24 +91,8 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                         selectedMedias[0].path!!
                     )
                 }
-
             }
         }
-
-
-        /*if (LassiConfig.getConfig().maxCount > 1) {
-            viewModel.addAllSelectedMedia(selectedMedias)
-        } else {
-            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                val uri = Uri.fromFile(File(selectedMedias[0].path))
-                CropUtils.beginCrop(requireActivity(), uri)
-            } else {
-                VideoPreviewActivity.startVideoPreview(
-                    activity,
-                    selectedMedias[0].path!!
-                )
-            }
-        }*/
     }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
