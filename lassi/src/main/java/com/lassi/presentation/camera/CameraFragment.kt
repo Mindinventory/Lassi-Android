@@ -1,6 +1,7 @@
 package com.lassi.presentation.camera
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -17,9 +18,11 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.CropUtils
+import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.KeyUtils.SETTINGS_REQUEST_CODE
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.VideoRecord
+import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaType
@@ -90,8 +93,18 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     override fun initLiveDataObservers() {
         super.initLiveDataObservers()
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
-        viewModel.cropImageLiveData.observe(this, SafeObserver {
-            CropUtils.beginCrop(requireActivity(), it)
+        viewModel.cropImageLiveData.observe(this, SafeObserver {uri->
+            if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
+                CropUtils.beginCrop(requireActivity(),uri)
+            } else {
+                ArrayList<MiMedia>().also {
+                    MiMedia().apply {
+                       this.path = uri.path
+                       it.add(this)
+                    }
+                    setResultOk(it)
+                }
+            }
         })
     }
 
@@ -259,6 +272,14 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                 ) != PackageManager.PERMISSION_GRANTED
 
         return !needsCamera && !needsAudio && !needsStorage
+    }
+
+    private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
+        val intent = Intent().apply {
+            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+        }
+        activity?.setResult(Activity.RESULT_OK, intent)
+        activity?.finish()
     }
 
     private fun requestForPermissions() {
