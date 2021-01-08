@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnImagePicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(1)
+                    .setMaxCount(4)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)

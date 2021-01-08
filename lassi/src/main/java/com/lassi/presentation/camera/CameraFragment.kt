@@ -97,14 +97,14 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
                 CropUtils.beginCrop(requireActivity(),uri)
             } else {
-                val list = ArrayList<MiMedia>().also {
-                    val media = MiMedia()
-                    media.path = uri.path
-                    it.add(media)
+                ArrayList<MiMedia>().also {
+                    MiMedia().apply {
+                       this.path = uri.path
+                       it.add(this)
+                    }
+                    setResultOk(it)
                 }
-                setResultOk(list)
             }
-
         })
     }
 
