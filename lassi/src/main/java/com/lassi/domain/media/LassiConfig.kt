@@ -33,7 +33,8 @@ data class LassiConfig(
     var enableActualCircleCrop: Boolean = false,
     var compressionRation: Int = 0,
     var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
-    var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE
+    var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
+    var isCrop: Boolean = true
 ) : Parcelable {
     companion object {
 
@@ -63,6 +64,7 @@ data class LassiConfig(
                 compressionRation = lassiConfig.compressionRation
                 minFileSize = lassiConfig.minFileSize
                 maxFileSize = lassiConfig.maxFileSize
+                isCrop = lassiConfig.isCrop
             }
         }
 
