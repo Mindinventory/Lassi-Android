@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.lassi.R
 import com.lassi.common.extenstions.hide
@@ -44,7 +45,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     private lateinit var cameraMode: Mode
 
     override fun buildViewModel(): CameraViewModel {
-        return ViewModelProviders.of(this)[CameraViewModel::class.java]
+        return ViewModelProvider(this)[CameraViewModel::class.java]
     }
 
     override fun getContentResource() = R.layout.activity_camera

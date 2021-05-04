@@ -3,16 +3,16 @@ package com.lassi.presentation.docs
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
@@ -32,11 +32,27 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
     private val mediaAdapter by lazy { MediaAdapter(this::onItemClick) }
     private var mediaPickerConfig = LassiConfig.getConfig()
     private val selectedMediaViewModel by lazy {
-        ViewModelProviders.of(requireActivity())[SelectedMediaViewModel::class.java]
+        ViewModelProvider(requireActivity())[SelectedMediaViewModel::class.java]
     }
 
+    private val permissionSettingResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            requestPermission()
+        }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
+            if (map.entries.all {
+                    it.value == true
+                }) {
+                fetchDocs()
+            } else {
+                showPermissionDisableAlert()
+            }
+        }
+
     override fun buildViewModel(): DocsViewModel {
-        return ViewModelProviders.of(
+        return ViewModelProvider(
             requireActivity(),
             DocsViewModelFactory(requireContext())
         )[DocsViewModel::class.java]
@@ -47,35 +63,29 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
     override fun initViews() {
         super.initViews()
         setImageAdapter()
-        progressBar.indeterminateDrawable.setColorFilter(
-            mediaPickerConfig.progressBarColor,
-            PorterDuff.Mode.MULTIPLY
-        )
-        checkPermission()
+        progressBar.indeterminateDrawable.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                mediaPickerConfig.progressBarColor,
+                BlendModeCompat.SRC_ATOP
+            )
+        requestPermission()
     }
 
-    private fun checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext()
-                    , Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(
-                    requireContext()
-                    , Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                this.requestPermissions(
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                    , KeyUtils.REQUEST_PERMISSIONS_REQUEST_CODE
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
                 )
-                return
-            }
+            )
+        } else {
+            requestPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
         }
-        fetchDocs()
     }
 
     private fun fetchDocs() {
@@ -133,19 +143,6 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
         activity?.finish()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == KeyUtils.REQUEST_PERMISSIONS_REQUEST_CODE
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            fetchDocs()
-        } else {
-            showPermissionDisableAlert()
-        }
-    }
-
     private fun showPermissionDisableAlert() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setMessage(R.string.storage_permission_rational)
@@ -155,7 +152,7 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                 data = Uri.fromParts("package", activity?.packageName, null)
             }
-            startActivityForResult(intent, KeyUtils.SETTINGS_REQUEST_CODE)
+            permissionSettingResult.launch(intent)
         }
         alertDialog.setNegativeButton(R.string.cancel) { _, _ ->
             activity?.onBackPressed()

@@ -3,21 +3,20 @@ package com.lassi.presentation.mediadirectory
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.KeyUtils
 import com.lassi.data.common.Response
 import com.lassi.data.mediadirectory.Folder
 import com.lassi.domain.common.SafeObserver
@@ -37,12 +36,28 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         }
     }
 
+    private val permissionSettingResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            requestPermission()
+        }
+
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
+            if (map.entries.all {
+                    it.value == true
+                }) {
+                fetchFolders()
+            } else {
+                showPermissionDisableAlert()
+            }
+        }
+
     private val folderAdapter by lazy { FolderAdapter(this::onItemClick) }
 
     override fun getContentResource() = R.layout.fragment_media_picker
 
     override fun buildViewModel(): FolderViewModel {
-        return ViewModelProviders.of(
+        return ViewModelProvider(
             requireActivity(), FolderViewModelFactory(requireActivity())
         )[FolderViewModel::class.java]
     }
@@ -52,11 +67,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         rvMedia.layoutManager = GridLayoutManager(context, LassiConfig.getConfig().gridSize)
         rvMedia.adapter = folderAdapter
         rvMedia.addItemDecoration(GridSpacingItemDecoration(LassiConfig.getConfig().gridSize, 10))
-        progressBar.indeterminateDrawable.setColorFilter(
-            LassiConfig.getConfig().progressBarColor,
-            PorterDuff.Mode.MULTIPLY
-        )
-        checkPermission()
+        progressBar.indeterminateDrawable.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                LassiConfig.getConfig().progressBarColor,
+                BlendModeCompat.SRC_ATOP
+            )
+        requestPermission()
     }
 
     override fun initLiveDataObservers() {
@@ -67,28 +83,21 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         )
     }
 
-    private fun checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext()
-                    , Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(
-                    requireContext()
-                    , Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                this.requestPermissions(
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                    , KeyUtils.REQUEST_PERMISSIONS_REQUEST_CODE
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
                 )
-                return
-            }
+            )
+        } else {
+            requestPermission.launch(
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
         }
-        fetchFolders()
     }
 
     private fun fetchFolders() {
@@ -119,19 +128,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
             ?.commitAllowingStateLoss()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == KeyUtils.REQUEST_PERMISSIONS_REQUEST_CODE
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED
-        ) {
-            fetchFolders()
-        } else {
-            showPermissionDisableAlert()
-        }
-    }
-
     private fun showPermissionDisableAlert() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setMessage(R.string.storage_permission_rational)
@@ -141,7 +137,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                 data = Uri.fromParts("package", activity?.packageName, null)
             }
-            startActivityForResult(intent, KeyUtils.SETTINGS_REQUEST_CODE)
+            permissionSettingResult.launch(intent)
         }
         alertDialog.setNegativeButton(R.string.cancel) { _, _ ->
             activity?.onBackPressed()
@@ -167,14 +163,4 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == KeyUtils.SETTINGS_REQUEST_CODE) {
-            checkPermission()
-        } else {
-            activity?.supportFragmentManager?.popBackStack()
-        }
-    }
-
 }
