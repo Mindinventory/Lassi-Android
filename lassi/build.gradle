@@ -8,7 +8,6 @@ group='com.github.Mindinventory'
 
 android {
     compileSdkVersion 'android-S'
-    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdkVersion 17

@@ -331,6 +331,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         val projection = getProjections()
         val cursor = query(projection)
         cursor ?: return Single.error(Throwable())
+        Logger.e("MediaRepositoryImpl", "Fetch documents size ${cursor.count}")
         val docs = ArrayList<MiMedia>()
         try {
             if (cursor.moveToLast()) {

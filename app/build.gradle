@@ -8,7 +8,7 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 'android-S'
-    buildToolsVersion '30.0.3'
+    buildToolsVersion '31.0.0 rc3'
     defaultConfig {
         applicationId "com.lassi.app"
         minSdkVersion 17

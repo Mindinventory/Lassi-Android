@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
-                    .setSupportedFileTypes("pdf", "odt", "doc", "docs", "txt", "ppt", "pptx")
+                    .setSupportedFileTypes("pdf", "odt", "doc", "docs","docx", "txt", "ppt", "pptx","rtf","xlsx","xls")
                     .setProgressBarColor(R.color.colorAccent)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
