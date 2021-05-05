@@ -1,8 +1,8 @@
 package com.lassi.presentation.videopreview
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -12,6 +12,8 @@ import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.MediaController
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
@@ -66,9 +68,9 @@ class VideoPreviewActivity : LassiBaseActivity() {
             toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@VideoPreviewActivity, R.drawable.ic_back_white)
-            upArrow?.setColorFilter(
+            upArrow?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 toolbarResourceColor,
-                PorterDuff.Mode.SRC_ATOP
+                BlendModeCompat.SRC_ATOP
             )
             supportActionBar?.setHomeAsUpIndicator(upArrow)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -105,6 +107,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("Range")
     private fun onFileScanComplete(uri: Uri) {
         uri.let { returnUri ->
             contentResolver.query(returnUri, null, null, null, null)
