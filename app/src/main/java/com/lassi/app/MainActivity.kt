@@ -19,6 +19,8 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -106,7 +108,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
-                    .setSupportedFileTypes("pdf", "odt", "doc", "docs","docx", "txt", "ppt", "pptx","rtf","xlsx","xls")
+                    .setSupportedFileTypes(
+                        "pdf",
+                        "odt",
+                        "doc",
+                        "docs",
+                        "docx",
+                        "txt",
+                        "ppt",
+                        "pptx",
+                        "rtf",
+                        "xlsx",
+                        "xls"
+                    )
                     .setProgressBarColor(R.color.colorAccent)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
@@ -128,21 +142,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             contentResolver.getType(uri)
         } else {
             val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase())
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
         }
     }
 
     private fun onItemClicked(miMedia: MiMedia) {
         miMedia.path?.let {
-            val file = File(it)
-            val fileUri = FileProvider.getUriForFile(
-                this,
-                applicationContext.packageName + ".fileprovider", file
-            )
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(fileUri, getMimeType(fileUri))
+            val intent = Intent(Intent.ACTION_VIEW)
+            if (miMedia.doesUri) {
+                val uri = Uri.parse(it)
+                intent.setDataAndType(uri, getMimeType(uri))
+            } else {
+                val file = File(it)
+                val fileUri = FileProvider.getUriForFile(
+                    this,
+                    applicationContext.packageName + ".fileprovider", file
+                )
+                intent.setDataAndType(fileUri, getMimeType(fileUri))
             }
+
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(Intent.createChooser(intent, "Open file"))
         }
