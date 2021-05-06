@@ -7,8 +7,8 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
-    compileSdkVersion 'android-S'
-    buildToolsVersion '31.0.0 rc3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.lassi.app"
         minSdkVersion 17
@@ -19,6 +19,11 @@ android {
         multiDexEnabled true
     }
     buildTypes {
+        debug{
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
