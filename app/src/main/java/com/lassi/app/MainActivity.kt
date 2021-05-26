@@ -20,7 +20,6 @@ import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -54,8 +53,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setCompressionRation(10)
-                    .setMinFileSize(1024 * 1)
-                    .setMaxFileSize(1024 * 100)
+                    .setMinFileSize(0)
+                    .setMaxFileSize(1000)
                     .enableActualCircleCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .enableFlip()
@@ -70,8 +69,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGridSize(3)
                     .setMinTime(5)
                     .setMaxTime(30)
-                    .setMinFileSize(1024 * 1)
-                    .setMaxFileSize(1024 * 100)
+                    .setMinFileSize(0)
+                    .setMaxFileSize(2000)
                     .setMediaType(MediaType.VIDEO)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
@@ -142,7 +141,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             contentResolver.getType(uri)
         } else {
             val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
+            MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
         }
     }
 

@@ -108,8 +108,8 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     @SuppressLint("Range")
-    private fun onFileScanComplete(uri: Uri) {
-        uri.let { returnUri ->
+    private fun onFileScanComplete(uri: Uri?, path: String?) {
+        uri?.let { returnUri ->
             contentResolver.query(returnUri, null, null, null, null)
         }?.use { cursor ->
             cursor.moveToFirst()
@@ -133,6 +133,15 @@ class VideoPreviewActivity : LassiBaseActivity() {
                 Logger.e(logTag, "onFileScanComplete $e")
             } finally {
                 cursor.close()
+            }
+        } ?: let {
+            path?.let {
+                val miMedia = MiMedia(path = it)
+                val intent = Intent().apply {
+                    putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
+                }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
         }
     }
