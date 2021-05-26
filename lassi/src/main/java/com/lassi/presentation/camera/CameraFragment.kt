@@ -8,18 +8,18 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.KeyUtils.SETTINGS_REQUEST_CODE
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.VideoRecord
 import com.lassi.data.media.MiMedia
@@ -31,7 +31,6 @@ import com.lassi.presentation.cameraview.audio.Flash
 import com.lassi.presentation.cameraview.audio.Mode
 import com.lassi.presentation.cameraview.controls.CameraListener
 import com.lassi.presentation.cameraview.controls.CameraOptions
-import com.lassi.presentation.cameraview.controls.CameraView.PERMISSION_REQUEST_CODE
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
@@ -43,8 +42,26 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
 
     private lateinit var cameraMode: Mode
 
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            var valid = true
+            for (grantResult in it.entries) {
+                valid = valid && grantResult.value
+            }
+            if (valid && !cameraView.isOpened) {
+                cameraView.open()
+            } else {
+                showPermissionDisableAlert()
+            }
+        }
+
+    private val permissionSettingResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            initCamera()
+        }
+
     override fun buildViewModel(): CameraViewModel {
-        return ViewModelProviders.of(this)[CameraViewModel::class.java]
+        return ViewModelProvider(this)[CameraViewModel::class.java]
     }
 
     override fun getContentResource() = R.layout.activity_camera
@@ -201,24 +218,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         ivFlash.setImageResource(R.drawable.ic_flash_auto_white)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            var valid = true
-            for (grantResult in grantResults) {
-                valid = valid && grantResult == PackageManager.PERMISSION_GRANTED
-            }
-            if (valid && !cameraView.isOpened) {
-                cameraView.open()
-            } else {
-                showPermissionDisableAlert()
-            }
-        }
-    }
-
     private fun showPermissionDisableAlert() {
         val alertMessage = if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
             R.string.camera_audio_storage_permission_rational
@@ -233,7 +232,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     data = Uri.fromParts("package", activity?.packageName, null)
                 }
-                startActivityForResult(intent, SETTINGS_REQUEST_CODE)
+                permissionSettingResult.launch(intent)
             }
             .setNegativeButton(R.string.cancel) { _, _ ->
                 activity?.onBackPressed()
@@ -310,14 +309,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             if (needsAudio) {
                 permissions.add(Manifest.permission.RECORD_AUDIO)
             }
-            requestPermissions(permissions.toTypedArray(), PERMISSION_REQUEST_CODE)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SETTINGS_REQUEST_CODE) {
-            initCamera()
+            requestPermission.launch(permissions.toTypedArray())
         }
     }
 

@@ -366,8 +366,8 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
 //        startActivity(getResultIntent(uri, error, sampleSize))
     }
 
-    private fun onFileScanComplete(uri: Uri) {
-        uri.let { returnUri ->
+    private fun onFileScanComplete(uri: Uri?, imagePath: String?) {
+        uri?.let { returnUri ->
             contentResolver.query(returnUri, null, null, null, null)
         }?.use { cursor ->
             cursor.moveToFirst()
@@ -378,7 +378,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 val path =
                     cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
                 val miMedia = MiMedia(id, name, path, 0)
-
+                Logger.d("CropUtils", "Check URI already exist $path")
                 val intent = Intent().apply {
                     putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
@@ -388,6 +388,16 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 Logger.e(logTag, "onFileScanComplete $e")
             } finally {
                 cursor.close()
+            }
+        } ?: let {
+            imagePath?.let {
+                Logger.d("CropUtils", "Check URI already path is $it")
+                val miMedia = MiMedia(path = it, doesUri = false)
+                val intent = Intent().apply {
+                    putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
+                }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
         }
     }

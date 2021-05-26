@@ -2,7 +2,6 @@ package com.lassi.common.utils
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import androidx.fragment.app.FragmentActivity
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.cropper.CropImage
@@ -36,19 +35,23 @@ object CropUtils {
         )
     }
 
-    private fun getPath(context: Context): String {
-        return Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(
-            context
-        )
+    private fun getDirectory(context: Context): File {
+        val root = context.applicationContext.filesDir
+        val myDir = File("$root" + File.separator + getApplicationName(context))
+        if (!myDir.exists()) {
+            myDir.mkdirs()
+        }
+        return myDir
+//        return context.getExternalFilesDir(null)?.absolutePath + File.separator + getApplicationName(
+//            context
+//        )
+
     }
 
     private fun createDirectory(context: Context): Uri? {
-        getPath(context).let {
-            val storageDir = File(it)
-            if (!storageDir.exists()) {
-                storageDir.mkdirs()
-            }
-
+        getDirectory(context).let {
+            val storageDir = it
+            Logger.d("CropUtils", "Directory path is ${it.absolutePath}")
             if (!storageDir.exists()) {
                 val isDirectoryCreated = File(storageDir.path).mkdirs()
                 Logger.d("CropUtils", "isDirectoryCreated >> $isDirectoryCreated")
@@ -77,15 +80,16 @@ object CropUtils {
         // Create an image file name
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
 //        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val storageDir =
-            Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName(
-                context
-            )
+        val storageDir = getDirectory(context)
+//            context.getExternalFilesDir(null)?.absolutePath + File.separator + getApplicationName(
+//                context
+//            )
+
 
         return File.createTempFile(
             "IMG-${timeStamp}_", /* prefix */
             ".jpeg", /* suffix */
-            File(storageDir) /* directory */
+            storageDir//File(storageDir) /* directory */
         )
     }
 }

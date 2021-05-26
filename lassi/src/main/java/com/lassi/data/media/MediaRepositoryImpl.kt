@@ -1,7 +1,9 @@
 package com.lassi.data.media
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
+import android.os.Build
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import com.lassi.R
@@ -25,6 +27,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     private val minFileSize = LassiConfig.getConfig().minFileSize * 1024L
     private val maxFileSize = LassiConfig.getConfig().maxFileSize * 1024L
 
+    @SuppressLint("Range")
     override fun fetchFolders(): Single<ArrayList<Folder>> {
         val projection = getProjections()
         val cursor = query(projection)
@@ -240,21 +243,35 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     private fun query(projection: Array<String>): Cursor? {
         return when (LassiConfig.getConfig().mediaType) {
             MediaType.IMAGE -> context.contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                },
                 projection,
                 null,
                 null,
                 MediaStore.Images.Media.DATE_ADDED
             )
             MediaType.VIDEO -> context.contentResolver.query(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                },
                 projection,
                 null,
                 null,
                 MediaStore.Video.Media.DATE_ADDED
             )
             MediaType.AUDIO -> context.contentResolver.query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Audio.Media.getContentUri(
+                        MediaStore.VOLUME_EXTERNAL_PRIMARY
+                    )
+                } else {
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                },
                 projection,
                 null,
                 null,
@@ -285,6 +302,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     /**
      * fetch album art for audio files
      */
+    @SuppressLint("Range")
     private fun getAlbumArt(albumId: String): String {
         var albumCoverPath = ""
         val cursorAlbum = context.contentResolver.query(
@@ -308,10 +326,12 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         return albumCoverPath
     }
 
+    @SuppressLint("Range")
     override fun fetchDocs(): Single<ArrayList<MiMedia>> {
         val projection = getProjections()
         val cursor = query(projection)
         cursor ?: return Single.error(Throwable())
+        Logger.e("MediaRepositoryImpl", "Fetch documents size ${cursor.count}")
         val docs = ArrayList<MiMedia>()
         try {
             if (cursor.moveToLast()) {

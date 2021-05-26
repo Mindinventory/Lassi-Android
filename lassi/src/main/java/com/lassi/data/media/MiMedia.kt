@@ -10,5 +10,6 @@ data class MiMedia(
     var path: String? = null,
     var duration: Long = 0L,
     var thumb: String? = null,
-    var fileSize: Long = 0L
+    var fileSize: Long = 0L,
+    var doesUri:Boolean = false
 ) : Parcelable

@@ -19,6 +19,7 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -52,8 +53,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setCompressionRation(10)
-                    .setMinFileSize(100)
-                    .setMaxFileSize(200)
+                    .setMinFileSize(0)
+                    .setMaxFileSize(1000)
                     .enableActualCircleCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .enableFlip()
@@ -64,12 +65,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(4)
+                    .setMaxCount(1)
                     .setGridSize(3)
-                    .setMinTime(15)
+                    .setMinTime(5)
                     .setMaxTime(30)
-                    .setMinFileSize(1024 * 5)
-                    .setMaxFileSize(1024 * 12)
+                    .setMinFileSize(0)
+                    .setMaxFileSize(2000)
                     .setMediaType(MediaType.VIDEO)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setProgressBarColor(R.color.colorAccent)
                     .setPlaceHolder(R.drawable.ic_video_placeholder)
                     .setErrorDrawable(R.drawable.ic_video_placeholder)
-                    //.setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
+                    .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
             }
@@ -106,7 +107,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
-                    .setSupportedFileTypes("pdf", "odt", "doc", "docs", "txt", "ppt", "pptx")
+                    .setSupportedFileTypes(
+                        "pdf",
+                        "odt",
+                        "doc",
+                        "docs",
+                        "docx",
+                        "txt",
+                        "ppt",
+                        "pptx",
+                        "rtf",
+                        "xlsx",
+                        "xls"
+                    )
                     .setProgressBarColor(R.color.colorAccent)
                     .build()
                 startActivityForResult(intent, MEDIA_REQUEST_CODE)
@@ -128,21 +141,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             contentResolver.getType(uri)
         } else {
             val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase())
+            MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
         }
     }
 
     private fun onItemClicked(miMedia: MiMedia) {
         miMedia.path?.let {
-            val file = File(it)
-            val fileUri = FileProvider.getUriForFile(
-                this,
-                applicationContext.packageName + ".fileprovider", file
-            )
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(fileUri, getMimeType(fileUri))
+            val intent = Intent(Intent.ACTION_VIEW)
+            if (miMedia.doesUri) {
+                val uri = Uri.parse(it)
+                intent.setDataAndType(uri, getMimeType(uri))
+            } else {
+                val file = File(it)
+                val fileUri = FileProvider.getUriForFile(
+                    this,
+                    applicationContext.packageName + ".fileprovider", file
+                )
+                intent.setDataAndType(fileUri, getMimeType(fileUri))
             }
+
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(Intent.createChooser(intent, "Open file"))
         }

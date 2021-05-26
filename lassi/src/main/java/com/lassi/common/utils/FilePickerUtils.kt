@@ -4,12 +4,13 @@ import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
+import java.util.*
 
 object FilePickerUtils {
 
     fun contains(types: Array<String>, path: String): Boolean {
         for (string in types) {
-            if (path.toLowerCase().endsWith(string)) return true
+            if (path.lowercase(Locale.getDefault()).endsWith(string)) return true
         }
         return false
     }
@@ -17,8 +18,8 @@ object FilePickerUtils {
     fun notifyGalleryUpdateNewFile(
         context: Context,
         filePath: String,
-        mimeType: String = "image/jpeg",
-        onFileScanComplete: (uri: Uri) -> Unit
+        mimeType: String = "image/*",
+        onFileScanComplete: (uri: Uri?, path:String?) -> Unit
     ) {
         context.let {
             MediaScannerConnection.scanFile(
@@ -27,7 +28,7 @@ object FilePickerUtils {
                 arrayOf(mimeType)
             ) { path, uri ->
                 Log.d("ExternalStorage", "Scanned $path")
-                onFileScanComplete(uri)
+                onFileScanComplete(uri, path)
             }
         }
     }
