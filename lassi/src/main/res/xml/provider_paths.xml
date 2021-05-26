@@ -3,4 +3,16 @@
     <external-path
         name="external_files"
         path="." />
+    <files-path
+        name="int_files"
+        path="." />
+    <external-files-path
+        name="ext_files"
+        path="." />
+    <cache-path
+        name="int_cache"
+        path="." />
+    <external-cache-path
+        name="ext_cache"
+        path="." />
 </paths>

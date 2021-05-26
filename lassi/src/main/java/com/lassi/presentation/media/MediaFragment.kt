@@ -2,11 +2,12 @@ package com.lassi.presentation.media
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
-import androidx.lifecycle.ViewModelProviders
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.utils.CropUtils
@@ -44,10 +45,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     override fun initViews() {
         super.initViews()
         setImageAdapter()
-        progressBar.indeterminateDrawable.setColorFilter(
-            mediaPickerConfig.progressBarColor,
-            PorterDuff.Mode.MULTIPLY
-        )
+        progressBar.indeterminateDrawable.colorFilter =
+            BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                mediaPickerConfig.progressBarColor,
+                BlendModeCompat.SRC_ATOP
+            )
     }
 
     override fun getBundle() {
@@ -58,7 +60,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     }
 
     override fun buildViewModel(): SelectedMediaViewModel {
-        return ViewModelProviders.of(requireActivity())[SelectedMediaViewModel::class.java]
+        return ViewModelProvider(requireActivity())[SelectedMediaViewModel::class.java]
     }
 
     private fun setImageAdapter() {
