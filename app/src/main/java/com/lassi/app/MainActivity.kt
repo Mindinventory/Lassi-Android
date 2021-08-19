@@ -5,10 +5,13 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
@@ -23,7 +26,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val MEDIA_REQUEST_CODE = 100
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
+                    .setSelectionDrawable(R.drawable.ic_checked_media)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
@@ -60,7 +63,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .enableFlip()
                     .enableRotate()
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                receiveData.launch(intent)
+
             }
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
@@ -78,9 +82,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setProgressBarColor(R.color.colorAccent)
                     .setPlaceHolder(R.drawable.ic_video_placeholder)
                     .setErrorDrawable(R.drawable.ic_video_placeholder)
+                    .setSelectionDrawable(R.drawable.ic_checked_media)
                     .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                receiveData.launch(intent)
             }
 
             R.id.btnAudioPicker -> {
@@ -90,12 +95,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_audio_placeholder)
                     .setErrorDrawable(R.drawable.ic_audio_placeholder)
+                    .setSelectionDrawable(R.drawable.ic_checked_media)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                receiveData.launch(intent)
             }
             R.id.btnDocPicker -> {
                 val intent = Lassi(this)
@@ -104,6 +110,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_document_placeholder)
                     .setErrorDrawable(R.drawable.ic_document_placeholder)
+                    .setSelectionDrawable(R.drawable.ic_checked_media)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
@@ -122,19 +129,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     )
                     .setProgressBarColor(R.color.colorAccent)
                     .build()
-                startActivityForResult(intent, MEDIA_REQUEST_CODE)
+                receiveData.launch(intent)
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == MEDIA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val selectedMedia =
-                data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-            selectedMediaAdapter.setList(selectedMedia)
+    private val receiveData =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val selectedMedia =
+                    it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                if (!selectedMedia.isNullOrEmpty()) {
+                    ivEmpty.isVisible = selectedMedia.isEmpty()
+                    selectedMediaAdapter.setList(selectedMedia)
+                }
+            }
         }
-    }
 
     private fun getMimeType(uri: Uri): String? {
         return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {

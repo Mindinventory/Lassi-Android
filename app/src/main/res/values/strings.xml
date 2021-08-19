@@ -3,4 +3,8 @@
     <string name="selected_media">Selected Media</string>
     <string name="open_video_picker">Open Video Picker</string>
     <string name="open_image_picker">Open Image Picker</string>
+    <string name="image">Image</string>
+    <string name="video">Video</string>
+    <string name="document">Document</string>
+    <string name="audio">Audio</string>
 </resources>

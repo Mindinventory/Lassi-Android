@@ -18,6 +18,7 @@ data class LassiConfig(
     var progressBarColor: Int = Color.BLACK,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
+    @DrawableRes var selectionDrawable: Int = R.drawable.ic_checked_media,
     var selectedMedias: ArrayList<MiMedia> = ArrayList(),
     var mediaType: MediaType = MediaType.IMAGE,
     var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
@@ -55,6 +56,7 @@ data class LassiConfig(
                 maxTime = lassiConfig.maxTime
                 placeHolder = lassiConfig.placeHolder
                 errorDrawable = lassiConfig.errorDrawable
+                selectionDrawable = lassiConfig.selectionDrawable
                 cropType = lassiConfig.cropType
                 supportedFileType = lassiConfig.supportedFileType
                 cropAspectRatio = lassiConfig.cropAspectRatio

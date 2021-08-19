@@ -46,7 +46,11 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     val albumCoverPath =
                         if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                             val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
-                            getAlbumArt(albumId)
+                            if (albumId != null) {
+                                getAlbumArt(albumId)
+                            } else {
+                                continue
+                            }
                         } else {
                             ""
                         }

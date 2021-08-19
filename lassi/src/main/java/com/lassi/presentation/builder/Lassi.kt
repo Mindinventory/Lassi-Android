@@ -174,6 +174,14 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set selection drawable to grid items
+     */
+    fun setSelectionDrawable(@DrawableRes selectionDrawable: Int): Lassi {
+        lassiConfig.selectionDrawable = selectionDrawable
+        return this
+    }
+
+    /**
      * Set crop type(only for MediaType.Image and Single Image Selection)
      */
     fun setCropType(cropType: CropImageView.CropShape): Lassi {
