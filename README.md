@@ -8,6 +8,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Key features
 
+* Android 11 support
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
@@ -38,7 +39,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.1.7'
+            implementation 'com.github.Mindinventory:Lassi:0.2.0'
         }
     ``` 
 
