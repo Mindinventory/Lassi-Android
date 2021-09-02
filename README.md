@@ -1,5 +1,7 @@
-# Lassi
-[![](https://jitpack.io/v/Mindinventory/Lassi-Android.svg)](https://jitpack.io/#Mindinventory/Lassi-Android)
+<a href="https://www.mindinventory.com/?utm_source=gthb&utm_medium=repo&utm_campaign=lassi"><img src="https://github.com/Sammindinventory/MindInventory/blob/main/Banner.png"></a>
+
+# Lassi [![](https://jitpack.io/v/Mindinventory/Lassi.svg)](https://jitpack.io/#Mindinventory/Lassi)
+
 
 
 Lassi is simplest way to pick media (either image, video, audio or doc) 
@@ -132,3 +134,7 @@ Lassi is [MIT-licensed](/LICENSE).
 
 # Let us know!
 We’d be really happy if you send us links to your projects where you use our component. Just send an email to sales@mindinventory.com And do let us know if you have any questions or suggestion regarding our work.
+
+<a href="https://www.mindinventory.com/contact-us.php?utm_source=gthb&utm_medium=repo&utm_campaign=lassi">
+<img src="https://github.com/Sammindinventory/MindInventory/blob/main/hirebutton.png" width="203" height="43"  alt="app development">
+</a>
