@@ -65,6 +65,7 @@ class MediaAdapter(
                 var isSelect = isSelected(this)
                 tvFolderName.text = miMedia.name
                 viewAlpha.alpha = if (isSelect) 0.5f else 0.0f
+                ivSelect.setImageResource(LassiConfig.getConfig().selectionDrawable)
                 ivSelect.isVisible = isSelect
                 ivFolderThumbnail.loadImage(ImageUtils.getThumb(this))
                 if (duration != 0L) {
@@ -76,9 +77,9 @@ class MediaAdapter(
                     if (LassiConfig.getConfig().maxCount > 1) {
                         isSelect = !isSelect
                         if (!isSelect) {
-                            removeSelected(miMedia, adapterPosition)
+                            removeSelected(miMedia, absoluteAdapterPosition)
                         } else {
-                            addSelected(miMedia, adapterPosition)
+                            addSelected(miMedia, absoluteAdapterPosition)
                         }
                     } else {
                         with(LassiConfig.getConfig()) {

@@ -39,7 +39,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.2.0'
+            implementation 'com.github.Mindinventory:Lassi:0.2.1'
         }
     ``` 
 
@@ -69,30 +69,31 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setProgressBarColor(R.color.colorAccent)
                 .setPlaceHolder(R.drawable.ic_image_placeholder)
                 .setErrorDrawable(R.drawable.ic_image_placeholder)
+                .setSelectionDrawable(R.drawable.ic_checked_media)
                 .setCropType(CropImageView.CropShape.RECTANGLE) // choose shape for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .setCropAspectRatio(1, 1) // define crop aspect ratio for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .enableFlip() // Enable flip image option while image cropping (for MediaType.IMAGE only)
                 .enableRotate() // Enable rotate image option while image cropping (for MediaType.IMAGE only)
                 .enableActualCircleCrop() // Enable actual circular crop (only for MediaType.Image and CropImageView.CropShape.OVAL)
                 .build()
-            startActivityForResult(intent, MEDIA_REQUEST_CODE)
+             receiveData.launch(intent)
     ```
 
 
-* Step 2. override onActivityResult function to get Lassi result.
+* Step 2. Get Lassi result in ActivityResultCallback lambda function.
 
     ```kotlin
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            super.onActivityResult(requestCode, resultCode, data)
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                when (requestCode) {
-                    MEDIA_REQUEST_CODE -> {
-                        val selectedMedia = data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                        // Do needful with your selectedMedia
+        private val receiveData =
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                    if (it.resultCode == Activity.RESULT_OK) {
+                        val selectedMedia =
+                            it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                        if (!selectedMedia.isNullOrEmpty()) {
+                            ivEmpty.isVisible = selectedMedia.isEmpty()
+                            selectedMediaAdapter.setList(selectedMedia)
+                        }
                     }
                 }
-            }
-        }
     ```
 
 
