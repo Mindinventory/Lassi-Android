@@ -22,9 +22,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Dependencies
 
-* Step 1. Add the JitPack repository to your build file
-    
-    Add it in your root build.gradle at the end of repositories:
+* Step 1. Add the JitPack repository in your project build.gradle:
 
     ```groovy
 	    allprojects {
@@ -35,9 +33,20 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 	    }
     ``` 
 
-* Step 2. Add the dependency
+    **or**
     
-    Add it in your app module build.gradle:
+    If Android studio version is Arctic Fox then add it in your settings.gradle:
+
+    ```groovy
+	   dependencyResolutionManagement {
+    		repositories {
+        		...
+        		maven { url 'https://jitpack.io' }
+    		}
+	   }
+    ``` 
+    
+* Step 2. Add the dependency in your app module build.gradle:
     
     ```groovy
         dependencies {
