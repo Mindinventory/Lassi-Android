@@ -1,5 +1,6 @@
 # Lassi
-[![](https://jitpack.io/v/Mindinventory/Lassi.svg)](https://jitpack.io/#Mindinventory/Lassi)
+[![](https://jitpack.io/v/Mindinventory/Lassi-Android.svg)](https://jitpack.io/#Mindinventory/Lassi-Android)
+
 
 Lassi is simplest way to pick media (either image, video, audio or doc) 
 
