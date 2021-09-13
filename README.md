@@ -51,7 +51,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.2.1'
+            implementation 'com.github.Mindinventory:Lassi:0.2.2'
         }
     ``` 
 
@@ -108,6 +108,8 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 }
     ```
 
+### Document access permission note
+If Android device SDK is >= 30 and wants to access document (only for choose the non media file) then add ```android.permission.MANAGE_EXTERNAL_STORAGE``` permission in your app otherwise library won't allow to access documents. Kindly check sample app for more detail.
 
 ### Guideline for contributors
 Contribution towards our repository is always welcome, we request contributors to create a pull request to the **develop** branch only.  
