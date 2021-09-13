@@ -88,19 +88,6 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 if (Environment.isExternalStorageManager()) {
                     fetchDocs()
-                } else {
-                    try {
-                        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                        intent.addCategory("android.intent.category.DEFAULT")
-                        intent.data = Uri.parse(
-                            String.format("package:%s", context?.applicationContext?.packageName)
-                        )
-                        mPermissionSettingResult.launch(intent)
-                    } catch (e: Exception) {
-                        val intent = Intent()
-                        intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                        mPermissionSettingResult.launch(intent)
-                    }
                 }
             }
             Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> {

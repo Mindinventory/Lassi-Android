@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -104,34 +106,38 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 receiveData.launch(intent)
             }
             R.id.btnDocPicker -> {
-                val intent = Lassi(this)
-                    .setMediaType(MediaType.DOC)
-                    .setMaxCount(4)
-                    .setGridSize(2)
-                    .setPlaceHolder(R.drawable.ic_document_placeholder)
-                    .setErrorDrawable(R.drawable.ic_document_placeholder)
-                    .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
-                    .setToolbarColor(R.color.colorPrimary)
-                    .setToolbarResourceColor(android.R.color.white)
-                    .setSupportedFileTypes(
-                        "pdf",
-                        "odt",
-                        "doc",
-                        "docs",
-                        "docx",
-                        "txt",
-                        "ppt",
-                        "pptx",
-                        "rtf",
-                        "xlsx",
-                        "xls"
-                    )
-                    .setProgressBarColor(R.color.colorAccent)
-                    .build()
-                receiveData.launch(intent)
+                requestPermissionForDocument()
             }
         }
+    }
+
+    private fun launchDocPicker() {
+        val intent = Lassi(this)
+            .setMediaType(MediaType.DOC)
+            .setMaxCount(4)
+            .setGridSize(2)
+            .setPlaceHolder(R.drawable.ic_document_placeholder)
+            .setErrorDrawable(R.drawable.ic_document_placeholder)
+            .setSelectionDrawable(R.drawable.ic_checked_media)
+            .setStatusBarColor(R.color.colorPrimaryDark)
+            .setToolbarColor(R.color.colorPrimary)
+            .setToolbarResourceColor(android.R.color.white)
+            .setSupportedFileTypes(
+                "pdf",
+                "odt",
+                "doc",
+                "docs",
+                "docx",
+                "txt",
+                "ppt",
+                "pptx",
+                "rtf",
+                "xlsx",
+                "xls"
+            )
+            .setProgressBarColor(R.color.colorAccent)
+            .build()
+        receiveData.launch(intent)
     }
 
     private val receiveData =
@@ -175,4 +181,40 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(Intent.createChooser(intent, "Open file"))
         }
     }
+
+    /**
+     *   If Android device SDK is >= 30 and wants to access document (only for choose the non media file)
+     *   then ask for "android.permission.MANAGE_EXTERNAL_STORAGE" permission
+     */
+    private fun requestPermissionForDocument() {
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                if (Environment.isExternalStorageManager()) {
+                    launchDocPicker()
+                } else {
+                    try {
+                        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                        intent.addCategory("android.intent.category.DEFAULT")
+                        intent.data = Uri.parse(
+                            String.format("package:%s", applicationContext?.packageName)
+                        )
+                        mPermissionSettingResult.launch(intent)
+                    } catch (e: Exception) {
+                        val intent = Intent()
+                        intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                        mPermissionSettingResult.launch(intent)
+                    }
+                }
+            }
+
+            else -> {
+                launchDocPicker()
+            }
+        }
+    }
+
+    private val mPermissionSettingResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            requestPermissionForDocument()
+        }
 }
