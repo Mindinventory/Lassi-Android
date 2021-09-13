@@ -1,5 +1,8 @@
-# Lassi
-[![](https://jitpack.io/v/Mindinventory/Lassi.svg)](https://jitpack.io/#Mindinventory/Lassi)
+<a href="https://www.mindinventory.com/?utm_source=gthb&utm_medium=repo&utm_campaign=lassi"><img src="https://github.com/Sammindinventory/MindInventory/blob/main/Banner.png"></a>
+
+# Lassi [![](https://jitpack.io/v/Mindinventory/Lassi.svg)](https://jitpack.io/#Mindinventory/Lassi)
+
+
 
 Lassi is simplest way to pick media (either image, video, audio or doc) 
 
@@ -19,9 +22,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Dependencies
 
-* Step 1. Add the JitPack repository to your build file
-    
-    Add it in your root build.gradle at the end of repositories:
+* Step 1. Add the JitPack repository in your project build.gradle:
 
     ```groovy
 	    allprojects {
@@ -32,14 +33,25 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 	    }
     ``` 
 
-* Step 2. Add the dependency
+    **or**
     
-    Add it in your app module build.gradle:
+    If Android studio version is Arctic Fox then add it in your settings.gradle:
+
+    ```groovy
+	   dependencyResolutionManagement {
+    		repositories {
+        		...
+        		maven { url 'https://jitpack.io' }
+    		}
+	   }
+    ``` 
+    
+* Step 2. Add the dependency in your app module build.gradle:
     
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.2.1'
+            implementation 'com.github.Mindinventory:Lassi:0.2.2'
         }
     ``` 
 
@@ -96,6 +108,8 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 }
     ```
 
+### Document access permission note
+If Android device SDK is >= 30 and wants to access document (only for choose the non media file) then add ```android.permission.MANAGE_EXTERNAL_STORAGE``` permission in your app otherwise library won't allow to access documents. Kindly check sample app for more detail.
 
 ### Guideline for contributors
 Contribution towards our repository is always welcome, we request contributors to create a pull request to the **develop** branch only.  
@@ -131,3 +145,7 @@ Lassi is [MIT-licensed](/LICENSE).
 
 # Let us know!
 We’d be really happy if you send us links to your projects where you use our component. Just send an email to sales@mindinventory.com And do let us know if you have any questions or suggestion regarding our work.
+
+<a href="https://www.mindinventory.com/contact-us.php?utm_source=gthb&utm_medium=repo&utm_campaign=lassi">
+<img src="https://github.com/Sammindinventory/MindInventory/blob/main/hirebutton.png" width="203" height="43"  alt="app development">
+</a>
