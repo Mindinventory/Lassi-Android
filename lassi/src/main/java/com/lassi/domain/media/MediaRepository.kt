@@ -1,10 +1,11 @@
 package com.lassi.domain.media
 
+import com.lassi.data.common.Result
 import com.lassi.data.media.MiMedia
 import com.lassi.data.mediadirectory.Folder
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 interface MediaRepository {
-    fun fetchFolders(): Single<ArrayList<Folder>>
-    fun fetchDocs(): Single<ArrayList<MiMedia>>
+    suspend fun fetchFolders(): Flow<Result<ArrayList<Folder>>>
+    suspend fun fetchDocs(): Flow<Result<ArrayList<MiMedia>>>
 }

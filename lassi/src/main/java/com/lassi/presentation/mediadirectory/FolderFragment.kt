@@ -129,7 +129,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun showPermissionDisableAlert() {
-        val alertDialog = AlertDialog.Builder(requireContext())
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
         alertDialog.setMessage(R.string.storage_permission_rational)
         alertDialog.setCancelable(false)
         alertDialog.setPositiveButton(R.string.ok) { _, _ ->

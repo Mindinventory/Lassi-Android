@@ -7,13 +7,18 @@ import android.os.Build
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import com.lassi.R
+import com.lassi.common.extenstions.catch
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
+import com.lassi.data.common.Result
 import com.lassi.data.mediadirectory.Folder
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaRepository
 import com.lassi.domain.media.MediaType
-import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -27,75 +32,78 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     private val minFileSize = LassiConfig.getConfig().minFileSize * 1024L
     private val maxFileSize = LassiConfig.getConfig().maxFileSize * 1024L
 
-    @SuppressLint("Range")
-    override fun fetchFolders(): Single<ArrayList<Folder>> {
-        val projection = getProjections()
-        val cursor = query(projection)
-        cursor ?: return Single.error(Throwable())
-        folderMap.clear()
-        fetchedFolders.clear()
-        try {
-            if (cursor.moveToLast()) {
-                do {
-                    val id = cursor.getLong(cursor.getColumnIndex(projection[0]))
-                    val name = cursor.getString(cursor.getColumnIndex(projection[1]))
-                    val path = cursor.getString(cursor.getColumnIndex(projection[2]))
-                    val bucket = cursor.getString(cursor.getColumnIndex(projection[3]))
-                    val size =
-                        cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
-                    val albumCoverPath =
-                        if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
-                            val albumId = cursor.getString(cursor.getColumnIndex(projection[5]))
-                            if (albumId != null) {
-                                getAlbumArt(albumId)
-                            } else {
-                                continue
-                            }
-                        } else {
-                            ""
-                        }
-                    val duration =
-                        if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                            cursor.getLong(cursor.getColumnIndex(projection[4]))
-                        } else {
-                            0
-                        }
+    override suspend fun fetchFolders(): Flow<Result<ArrayList<Folder>>> {
+        return flow {
+            val projection = getProjections()
+            val cursor = query(projection)
+            cursor?.let {
+                folderMap.clear()
+                fetchedFolders.clear()
+                try {
+                    if (cursor.moveToLast()) {
+                        do {
+                            val id = cursor.getLong(cursor.getColumnIndex(projection[0]))
+                            val name = cursor.getString(cursor.getColumnIndex(projection[1]))
+                            val path = cursor.getString(cursor.getColumnIndex(projection[2]))
+                            val bucket = cursor.getString(cursor.getColumnIndex(projection[3]))
+                            val size =
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
+                            val albumCoverPath =
+                                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                                    val albumId =
+                                        cursor.getString(cursor.getColumnIndex(projection[5]))
+                                    if (albumId != null) {
+                                        getAlbumArt(albumId)
+                                    } else {
+                                        continue
+                                    }
+                                } else {
+                                    ""
+                                }
+                            val duration =
+                                if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                                    cursor.getLong(cursor.getColumnIndex(projection[4]))
+                                } else {
+                                    0
+                                }
 
-                    val file = makeSafeFile(path)
-                    if (file != null && file.exists()) {
-                        if (LassiConfig.getConfig().mediaType == MediaType.VIDEO ||
-                            LassiConfig.getConfig().mediaType == MediaType.AUDIO
-                        ) {
-                            checkDurationAndAddFileToFolder(
-                                bucket,
-                                id,
-                                name,
-                                path,
-                                duration,
-                                albumCoverPath,
-                                size
-                            )
-                        } else {
-                            Logger.e("MediaRepositoryImpl", "$name >> $size")
+                            val file = makeSafeFile(path)
+                            if (file != null && file.exists()) {
+                                if (LassiConfig.getConfig().mediaType == MediaType.VIDEO ||
+                                    LassiConfig.getConfig().mediaType == MediaType.AUDIO
+                                ) {
+                                    checkDurationAndAddFileToFolder(
+                                        bucket,
+                                        id,
+                                        name,
+                                        path,
+                                        duration,
+                                        albumCoverPath,
+                                        size
+                                    )
+                                } else {
+                                    Logger.e("MediaRepositoryImpl", "$name >> $size")
 
-                            if (isValidFileSize(size)) {
-                                addFileToFolder(
-                                    bucket,
-                                    MiMedia(id, name, path, duration, albumCoverPath)
-                                )
+                                    if (isValidFileSize(size)) {
+                                        addFileToFolder(
+                                            bucket,
+                                            MiMedia(id, name, path, duration, albumCoverPath)
+                                        )
+                                    }
+                                }
                             }
-                        }
+                        } while (cursor.moveToPrevious())
                     }
-                } while (cursor.moveToPrevious())
-            }
-        } catch (e: Exception) {
-            Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
-            return Single.error(e)
-        } finally {
-            cursor.close()
-        }
-        fetchedFolders.addAll(folderMap.values)
-        return Single.just(fetchedFolders)
+                } catch (e: Exception) {
+                    Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
+                    emit(Result.Error(Throwable()))
+                } finally {
+                    cursor.close()
+                }
+                fetchedFolders.addAll(folderMap.values)
+                emit(Result.Success(fetchedFolders))
+            } ?: emit(Result.Error(Throwable()))
+        }.catch().flowOn(Dispatchers.IO)
     }
 
     private fun checkDurationAndAddFileToFolder(
@@ -331,26 +339,29 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     }
 
     @SuppressLint("Range")
-    override fun fetchDocs(): Single<ArrayList<MiMedia>> {
-        val projection = getProjections()
-        val cursor = query(projection)
-        cursor ?: return Single.error(Throwable())
-        Logger.e("MediaRepositoryImpl", "Fetch documents size ${cursor.count}")
-        val docs = ArrayList<MiMedia>()
-        try {
-            if (cursor.moveToLast()) {
-                do {
-                    val id = cursor.getLong(cursor.getColumnIndex(projection[0]))
-                    val name = cursor.getString(cursor.getColumnIndex(projection[1]))
-                    val path = cursor.getString(cursor.getColumnIndex(projection[2]))
-                    docs.add(MiMedia(id, name, path, 0))
-                } while (cursor.moveToPrevious())
-            }
-        } catch (e: Exception) {
-            Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
-        } finally {
-            cursor.close()
-        }
-        return Single.just(docs)
+    override suspend fun fetchDocs(): Flow<Result<ArrayList<MiMedia>>> {
+        return flow {
+            val projection = getProjections()
+            val cursor = query(projection)
+            cursor?.let {
+                Logger.e("MediaRepositoryImpl", "Fetch documents size ${cursor.count}")
+                val docs = ArrayList<MiMedia>()
+                try {
+                    if (cursor.moveToLast()) {
+                        do {
+                            val id = cursor.getLong(cursor.getColumnIndex(projection[0]))
+                            val name = cursor.getString(cursor.getColumnIndex(projection[1]))
+                            val path = cursor.getString(cursor.getColumnIndex(projection[2]))
+                            docs.add(MiMedia(id, name, path, 0))
+                        } while (cursor.moveToPrevious())
+                    }
+                } catch (e: Exception) {
+                    Logger.e("MediaRepositoryImpl", "fetchFolders >> $e")
+                } finally {
+                    cursor.close()
+                }
+                emit(Result.Success(docs))
+            } ?: emit(Result.Error(Throwable()))
+        }.catch().flowOn(Dispatchers.IO)
     }
 }

@@ -224,7 +224,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         } else {
             R.string.camera_storage_permission_rational
         }
-        val alertDialog = AlertDialog.Builder(requireContext())
+        val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
             .setMessage(alertMessage)
             .setCancelable(false)
             .setPositiveButton(R.string.ok) { _, _ ->
