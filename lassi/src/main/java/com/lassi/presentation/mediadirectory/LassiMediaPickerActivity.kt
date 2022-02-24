@@ -129,10 +129,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.media_picker_menu, menu)
-        menuDone = menu?.findItem(R.id.menuDone)
-        menuCamera = menu?.findItem(R.id.menuCamera)
+        menuDone = menu.findItem(R.id.menuDone)
+        menuCamera = menu.findItem(R.id.menuCamera)
         menuDone?.isVisible = false
 
         menuDone?.icon = changeIconColor(

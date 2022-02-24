@@ -12,11 +12,13 @@
         android:supportsRtl="true">
         <activity
             android:name=".presentation.mediadirectory.LassiMediaPickerActivity"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".presentation.cropper.CropImageActivity"
+            android:exported="true"
             android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
@@ -24,6 +26,7 @@
             tools:targetApi="n" />
         <activity
             android:name=".presentation.videopreview.VideoPreviewActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
     </application>
