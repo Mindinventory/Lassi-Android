@@ -17,6 +17,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * Filter by particular media type
 * Filter videos by min and max time
 * Enable/disable camera from LassiOption
+* You can open System Default view for file selection by using MediaType.FILE_TYPE_WITH_SYSTEM_VIEW
 
 # Usage
 
@@ -51,18 +52,19 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     ```groovy
         dependencies {
             ...
-            implementation 'com.github.Mindinventory:Lassi:0.3.0'
+            implementation 'com.github.Mindinventory:Lassi:X.X.X'
         }
     ``` 
 
 ### Implementation
 
 
-* Step 1. Add Lassi in to your activity class:
+* Step 1. 
+  To open a app color theme view then add Lassi in to your activity class:
     
     ```kotlin
             val intent = Lassi(this)
-                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY or CAMERA_AND_GALLERY
+                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA or CAMERA_AND_GALLERY
                 .setMaxCount(5)
                 .setGridSize(3)
                 .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC
@@ -90,7 +92,18 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .build()
              receiveData.launch(intent)
     ```
+`OR` To open a system default view then add Lassi in to your activity class:
 
+```kotlin
+            val intent = Lassi(this)
+                .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW)
+                .setSupportedFileTypes(
+                "jpg", "jpeg", "png", "webp", "gif", "mp4", "mkv", "webm", "avi", "flv", "3gp",
+                "pdf", "odt", "doc", "docs", "docx", "txt", "ppt", "pptx", "rtf", "xlsx", "xls"
+                )  // Filter by required media format (Mandatory)
+                .build()
+            receiveData.launch(intent)
+```
 
 * Step 2. Get Lassi result in ActivityResultCallback lambda function.
 
@@ -110,6 +123,10 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Document access permission note
 If Android device SDK is >= 30 and wants to access document (only for choose the non media file) then add ```android.permission.MANAGE_EXTERNAL_STORAGE``` permission in your app otherwise library won't allow to access documents. Kindly check sample app for more detail.
+If you don't want to give Manage External Storage permission and wants to get files with system default view then You can use `OR` option from Step 1 and give required file type of document.
+
+### MediaType.FILE_TYPE_WITH_SYSTEM_VIEW (for System Default View)
+Using this MediaType you can choose multiple files from system default view. You can't set max count limit for file choose. Give file type into setSupportedFileTypes and you can choose only those types of file from system view.
 
 ### Guideline for contributors
 Contribution towards our repository is always welcome, we request contributors to create a pull request to the **develop** branch only.  
@@ -125,7 +142,7 @@ It would be great for us if the reporter can share the below things to understan
 
 ### Requirements
 
-* minSdkVersion >= 17
+* minSdkVersion >= 19
 * Androidx
 
 ### Library used

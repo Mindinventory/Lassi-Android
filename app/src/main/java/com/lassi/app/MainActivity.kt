@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnVideoPicker.setOnClickListener(this)
         btnAudioPicker.setOnClickListener(this)
         btnDocPicker.setOnClickListener(this)
+        btnDocumentSystemIntent.setOnClickListener(this)
         rvSelectedMedia.adapter = selectedMediaAdapter
         rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
     }
@@ -107,6 +108,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.btnDocPicker -> {
                 requestPermissionForDocument()
+            }
+            R.id.btnDocumentSystemIntent -> {
+                val intent = Lassi(this)
+                    .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW)
+                    .setSupportedFileTypes(
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "webp",
+                        "gif",
+                        "mp4",
+                        "mkv",
+                        "webm",
+                        "avi",
+                        "flv",
+                        "3gp",
+                        "pdf",
+                        "odt",
+                        "doc",
+                        "docs",
+                        "docx",
+                        "txt",
+                        "ppt",
+                        "pptx",
+                        "rtf",
+                        "xlsx",
+                        "xls"
+                    )
+                    .build()
+                receiveData.launch(intent)
             }
         }
     }
@@ -206,7 +237,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
-
             else -> {
                 launchDocPicker()
             }

@@ -308,6 +308,9 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     MediaStore.Video.Media.DATE_ADDED
                 )
             }
+            else ->{
+                null
+            }
         }
     }
 

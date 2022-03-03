@@ -43,9 +43,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
 
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
-            if (map.entries.all {
-                    it.value == true
-                }) {
+            if (map.entries.all { it.value }) {
                 fetchFolders()
             } else {
                 showPermissionDisableAlert()
