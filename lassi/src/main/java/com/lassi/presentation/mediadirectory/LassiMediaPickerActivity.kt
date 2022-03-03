@@ -9,10 +9,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.webkit.MimeTypeMap
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import com.lassi.R
+import com.lassi.common.extenstions.getFileName
+import com.lassi.common.extenstions.getFileSize
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.DrawableUtils.changeIconColor
+import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.media.MiMedia
@@ -36,6 +41,21 @@ import java.io.File
 class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
     private var menuDone: MenuItem? = null
     private var menuCamera: MenuItem? = null
+    private val getContent =
+        registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uri ->
+            uri?.let { uris ->
+                val list = ArrayList<MiMedia>()
+                uris.map { uri ->
+                    val miMedia = MiMedia()
+                    miMedia.name = getFileName(uri)
+                    miMedia.doesUri = false
+                    miMedia.fileSize = getFileSize(uri)
+                    miMedia.path = getFilePathFromUri(this, uri, true)
+                    list.add(miMedia)
+                }
+                setResultOk(list)
+            }
+        }
 
     override fun getContentResource() = R.layout.activity_media_picker
 
@@ -92,22 +112,44 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 )
                 .commitAllowingStateLoss()
         } else {
-            if (LassiConfig.getConfig().mediaType == MediaType.DOC) {
-                supportFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.ftContainer,
-                        DocsFragment()
-                    )
-                    .commitAllowingStateLoss()
-            } else {
-                supportFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.ftContainer,
-                        FolderFragment.newInstance()
-                    )
-                    .commitAllowingStateLoss()
+            LassiConfig.getConfig().mediaType.let { mediaType ->
+                when (mediaType) {
+                    MediaType.DOC -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(
+                                R.id.ftContainer,
+                                DocsFragment()
+                            )
+                            .commitAllowingStateLoss()
+                    }
+                    MediaType.FILE_TYPE_WITH_SYSTEM_VIEW -> {
+                        browseFile()
+                    }
+                    else -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(
+                                R.id.ftContainer,
+                                FolderFragment.newInstance()
+                            )
+                            .commitAllowingStateLoss()
+                    }
+                }
             }
         }
+    }
+
+    private fun browseFile() {
+        val mimeTypesList = ArrayList<String>()
+        LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
+            MimeTypeMap
+                .getSingleton()
+                .getMimeTypeFromExtension(mimeType)?.let {
+                    mimeTypesList.add(it)
+                }
+        }
+        var mMimeTypeArray = arrayOf<String>()
+        mMimeTypeArray = mimeTypesList.toArray(mMimeTypeArray)
+        getContent.launch(mMimeTypeArray)
     }
 
     private fun setThemeAttributes() {
