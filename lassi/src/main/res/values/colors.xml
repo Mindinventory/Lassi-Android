@@ -6,4 +6,5 @@
 
     <color name="blackTrans80">#80000000</color>
     <color name="blackTrans50">#50000000</color>
+    <color name="darkYellow">#FFA000</color>
 </resources>

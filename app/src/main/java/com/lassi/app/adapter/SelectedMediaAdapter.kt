@@ -9,7 +9,6 @@ import com.lassi.common.extenstions.loadImage
 import com.lassi.common.utils.ImageUtils
 import com.lassi.data.media.MiMedia
 import kotlinx.android.synthetic.main.row_selected_media.view.*
-import java.util.*
 
 class SelectedMediaAdapter(private val onItemClicked: (miMedia: MiMedia) -> Unit) :
     RecyclerView.Adapter<SelectedMediaAdapter.MediaViewHolder>() {
