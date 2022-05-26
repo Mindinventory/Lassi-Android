@@ -14,7 +14,6 @@ import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_media.*
-import java.util.*
 
 class MediaAdapter(
     private val onItemClick: (selectedMedias: ArrayList<MiMedia>) -> Unit

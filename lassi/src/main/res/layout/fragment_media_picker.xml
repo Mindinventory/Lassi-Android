@@ -18,6 +18,20 @@
         tools:listitem="@layout/item_media"
         tools:spanCount="2" />
 
+    <TextView
+        android:id="@+id/tvNoDataFound"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/no_data_found"
+        android:textColor="@color/darkYellow"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/no_data_found" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
