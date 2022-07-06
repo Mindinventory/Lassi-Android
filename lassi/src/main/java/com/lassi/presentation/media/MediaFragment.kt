@@ -13,29 +13,33 @@ import com.lassi.R
 import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.KeyUtils.SELECTED_FOLDER
+import com.lassi.common.utils.Logger
+import com.lassi.data.common.Response
+import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
-import com.lassi.data.mediadirectory.Folder
+import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.media.adapter.MediaAdapter
+import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.fragment_media_picker.*
 import java.io.File
 
 class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     private val mediaAdapter by lazy { MediaAdapter(this::onItemClick) }
-    private var folder: Folder? = null
+    private var bucket: MiItemMedia? = null
     private var mediaPickerConfig = LassiConfig.getConfig()
 
     override fun getContentResource() = R.layout.fragment_media_picker
 
     companion object {
-        fun getInstance(folder: Folder): MediaFragment {
+        fun getInstance(bucket: MiItemMedia): MediaFragment {
             val miMediaPickerFragment = MediaFragment()
             val args = Bundle().apply {
-                putParcelable(SELECTED_FOLDER, folder)
+                putParcelable(SELECTED_FOLDER, bucket)
             }
             miMediaPickerFragment.arguments = args
             return miMediaPickerFragment
@@ -44,7 +48,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
 
     override fun initViews() {
         super.initViews()
-        setImageAdapter()
+        bucket?.let {
+            it.bucketName?.let { bucketName ->
+                viewModel.getSelectedMediaData(bucket = bucketName)
+            }
+        }
         progressBar.indeterminateDrawable.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 mediaPickerConfig.progressBarColor,
@@ -55,19 +63,41 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     override fun getBundle() {
         super.getBundle()
         arguments?.let {
-            folder = it.getParcelable(SELECTED_FOLDER)
+            bucket = it.getParcelable(SELECTED_FOLDER)
         }
     }
 
     override fun buildViewModel(): SelectedMediaViewModel {
-        return ViewModelProvider(requireActivity())[SelectedMediaViewModel::class.java]
+        return ViewModelProvider(
+            requireActivity(),
+            SelectedMediaViewModelFactory(requireActivity())
+        )[SelectedMediaViewModel::class.java]
     }
 
-    private fun setImageAdapter() {
+    override fun initLiveDataObservers() {
+        super.initLiveDataObservers()
+
+        viewModel.fetchedMediaLiveData.observe(
+            viewLifecycleOwner,
+            SafeObserver(::handleFetchedData)
+        )
+    }
+
+    private fun handleFetchedData(response: Response<java.util.ArrayList<MiMedia>>?) {
         rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
         rvMedia.adapter = mediaAdapter
         rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
-        mediaAdapter.setList(folder?.medias)
+
+        when (response) {
+            is Response.Success -> {
+                Logger.d("mediaFragment", "handleFetchedData SUCCESS size -> ${response.item.size}")
+                mediaAdapter.setList(response.item)
+            }
+            is Response.Error -> {
+                Logger.d("mediaFragment", "handleFetchedData ERROR")
+            }
+            else -> {}
+        }
     }
 
     private fun onItemClick(selectedMedias: ArrayList<MiMedia>) {
@@ -94,6 +124,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     )
                 }
             }
+            else -> {}
         }
     }
 

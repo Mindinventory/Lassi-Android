@@ -72,6 +72,17 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
 
     implementation "androidx.multidex:multidex:2.0.1"
+
+    // Room DB
+    implementation 'androidx.room:room-runtime:2.4.2'
+    kapt 'androidx.room:room-compiler:2.4.2'
+    implementation 'androidx.room:room-ktx:2.4.2'
+
+    //Coroutine
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.8.8'
 }
 repositories {
     mavenCentral()
