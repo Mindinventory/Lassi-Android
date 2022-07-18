@@ -1,41 +1,101 @@
 package com.lassi.presentation.mediadirectory
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lassi.common.extenstions.setError
+import com.lassi.common.extenstions.setLoading
+import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.common.Result
-import com.lassi.data.mediadirectory.Folder
+import com.lassi.data.media.MiItemMedia
+import com.lassi.domain.common.SingleLiveEvent
 import com.lassi.domain.media.MediaRepository
 import com.lassi.presentation.common.LassiBaseViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FolderViewModel(
     private val mediaRepository: MediaRepository
 ) : LassiBaseViewModel() {
-    var fetchMediaFolderLiveData = MutableLiveData<Response<ArrayList<Folder>>>()
+    private var _fetchMediaFolderLiveData = SingleLiveEvent<Response<ArrayList<MiItemMedia>>>()
+    var fetchMediaFolderLiveData: LiveData<Response<ArrayList<MiItemMedia>>> =
+        _fetchMediaFolderLiveData
+    val list: MutableLiveData<ArrayList<MiItemMedia>> = MutableLiveData()
+    var emptyList: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun fetchFolders() {
+    fun checkInsert() {
         viewModelScope.launch {
-            mediaRepository.fetchFolders()
-                .onStart {
-                    fetchMediaFolderLiveData.postValue(Response.Loading())
-                }.collect { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            fetchMediaFolderLiveData.postValue(Response.Success(result.data))
-                        }
-                        is Result.Error -> {
-                            fetchMediaFolderLiveData.postValue(Response.Error(result.throwable))
-                        }
-                        else -> {
-                            /**
-                             * no need to implement
-                             */
-                        }
+            withContext(Dispatchers.IO) {
+                this@FolderViewModel._fetchMediaFolderLiveData.setLoading()
+                if (mediaRepository.isDbEmpty()) {
+                    insertDataInDatabase()
+                } else {
+                    checkAndInsertNewDataIntoDatabase()
+                }
+            }
+        }
+    }
+
+    fun getMediaItemList(): LiveData<ArrayList<MiItemMedia>> {
+        return list
+    }
+
+    private suspend fun checkAndInsertNewDataIntoDatabase() {
+        when (val result = mediaRepository.insertMediaData()) {
+            is Result.Loading -> {
+                this._fetchMediaFolderLiveData.setLoading()
+            }
+            is Result.Success -> {
+                getDataFromDatabase()
+            }
+            is Result.Error -> {
+                this._fetchMediaFolderLiveData.setError(result.throwable)
+            }
+        }
+    }
+
+    private suspend fun insertDataInDatabase() {
+        when (val result = mediaRepository.insertAllMediaData()) {
+            is Result.Loading -> {
+                this._fetchMediaFolderLiveData.setLoading()
+            }
+            is Result.Success -> {
+                Logger.d("FolderViewModel", "Insert completed")
+                getDataFromDatabase()
+            }
+            is Result.Error -> {
+                this._fetchMediaFolderLiveData.setError(result.throwable)
+            }
+        }
+    }
+
+    private suspend fun getDataFromDatabase() {
+        mediaRepository.getDataFromDb()
+            .onStart {
+                _fetchMediaFolderLiveData.setLoading()
+            }
+            .map { result ->
+                when (result) {
+                    is Result.Success -> result.data.filter {
+                        !it.bucketName.isNullOrEmpty()
+                    }
+                    is Result.Error -> TODO()
+                    Result.Loading -> TODO()
+                }
+            }
+            .collectLatest { mediaItemList ->
+                withContext(Dispatchers.Main) {
+                    list.value = mediaItemList as ArrayList<MiItemMedia>
+
+                    if (mediaItemList.isNullOrEmpty()) {
+                        emptyList.value = true
                     }
                 }
-        }
+            }
     }
 }

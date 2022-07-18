@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropAspectRatio(1, 1)
                     .setCompressionRation(10)
                     .setMinFileSize(0)
-                    .setMaxFileSize(1000)
+                    .setMaxFileSize(10000)
                     .enableActualCircleCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
                     .enableFlip()

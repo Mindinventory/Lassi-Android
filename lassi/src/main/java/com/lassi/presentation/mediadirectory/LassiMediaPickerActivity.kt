@@ -60,7 +60,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     override fun getContentResource() = R.layout.activity_media_picker
 
     override fun buildViewModel(): SelectedMediaViewModel {
-        return ViewModelProvider(this)[SelectedMediaViewModel::class.java]
+        return ViewModelProvider(
+            this,
+            SelectedMediaViewModelFactory(this)
+        )[SelectedMediaViewModel::class.java]
     }
 
     private val folderViewModel by lazy {
@@ -256,7 +259,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                         data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
                     LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
                     viewModel.addAllSelectedMedia(selectedMedia)
-                    folderViewModel.fetchFolders()
+                    folderViewModel.checkInsert()
                     if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
                         supportFragmentManager.popBackStack()
                     }
@@ -267,7 +270,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     } else {
                         LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
                         viewModel.addSelectedMedia(selectedMedia)
-                        folderViewModel.fetchFolders()
+                        folderViewModel.checkInsert()
                         if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
                             supportFragmentManager.popBackStack()
                         }

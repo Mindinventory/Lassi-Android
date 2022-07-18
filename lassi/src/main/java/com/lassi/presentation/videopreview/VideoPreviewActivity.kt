@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
@@ -130,7 +129,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
                 finish()
 
             } catch (e: Exception) {
-                Logger.e(logTag, "onFileScanComplete $e")
+                e.printStackTrace()
             } finally {
                 cursor.close()
             }

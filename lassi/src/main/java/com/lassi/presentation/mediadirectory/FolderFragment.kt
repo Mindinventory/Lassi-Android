@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -16,10 +17,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
+import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
+import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
-import com.lassi.data.mediadirectory.Folder
-import com.lassi.domain.common.SafeObserver
+import com.lassi.data.media.MiItemMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
@@ -30,6 +32,7 @@ import com.lassi.presentation.mediadirectory.adapter.FolderAdapter
 import kotlinx.android.synthetic.main.fragment_media_picker.*
 
 class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
+
     companion object {
         fun newInstance(): FolderFragment {
             return FolderFragment()
@@ -44,7 +47,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
             if (map.entries.all { it.value }) {
-                fetchFolders()
+                viewModel.checkInsert()
             } else {
                 showPermissionDisableAlert()
             }
@@ -75,18 +78,40 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
 
     override fun initLiveDataObservers() {
         super.initLiveDataObservers()
-        viewModel.fetchMediaFolderLiveData.observe(
-            viewLifecycleOwner,
-            SafeObserver(this::handleFetchedFolders)
-        )
+        viewModel.fetchMediaFolderLiveData.safeObserve(viewLifecycleOwner) { response ->
+            when (response) {
+                is Response.Loading -> {
+                    tvNoDataFound.visibility = View.GONE
+                    progressBar.show()
+                }
+                is Response.Success -> {}
+                is Response.Error -> {
+                    progressBar.hide()
+                    response.throwable.printStackTrace()
+                }
+            }
+        }
+
+        viewModel.getMediaItemList().observe(viewLifecycleOwner) {
+            progressBar.hide()
+            if (!it.isNullOrEmpty()) {
+                folderAdapter.setList(it)
+            }
+        }
+
+        viewModel.emptyList.observe(viewLifecycleOwner) {
+            if (it) {
+                tvNoDataFound.visibility = View.VISIBLE
+            } else {
+                tvNoDataFound.visibility = View.GONE
+            }
+        }
     }
 
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             requestPermission.launch(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
             )
         } else {
             requestPermission.launch(
@@ -98,22 +123,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         }
     }
 
-    private fun fetchFolders() {
-        viewModel.fetchFolders()
-    }
-
-    private fun handleFetchedFolders(response: Response<ArrayList<Folder>>) {
-        when (response) {
-            is Response.Success -> {
-                progressBar.hide()
-                folderAdapter.setList(response.item)
-            }
-            is Response.Loading -> progressBar.show()
-            is Response.Error -> progressBar.hide()
-        }
-    }
-
-    private fun onItemClick(folder: Folder) {
+    private fun onItemClick(bucket: MiItemMedia) {
         activity?.supportFragmentManager?.beginTransaction()
             ?.setCustomAnimations(
                 R.anim.right_in,
@@ -121,7 +131,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                 R.anim.right_in,
                 R.anim.right_out
             )
-            ?.add(R.id.ftContainer, MediaFragment.getInstance(folder))
+            ?.add(R.id.ftContainer, MediaFragment.getInstance(bucket))
             ?.addToBackStack(MediaFragment::class.java.simpleName)
             ?.commitAllowingStateLoss()
     }
