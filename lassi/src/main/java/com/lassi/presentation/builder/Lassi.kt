@@ -150,6 +150,14 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set gallery background color resource
+     */
+    fun setGalleryBackgroundColor(@ColorRes color: Int): Lassi {
+        lassiConfig.galleryBackgroundColor = ContextCompat.getColor(context, color)
+        return this
+    }
+
+    /**
      * Set progressbar color hex
      */
     fun setProgressBarColor(progressBarColor: String): Lassi {
