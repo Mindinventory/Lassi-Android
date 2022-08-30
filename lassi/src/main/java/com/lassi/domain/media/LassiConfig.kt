@@ -16,6 +16,7 @@ data class LassiConfig(
     var statusBarColor: Int = Color.BLACK,
     var toolbarResourceColor: Int = Color.WHITE,
     var progressBarColor: Int = Color.BLACK,
+    var galleryBackgroundColor: Int = Color.WHITE,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var selectionDrawable: Int = R.drawable.ic_checked_media,
@@ -47,6 +48,7 @@ data class LassiConfig(
                 statusBarColor = lassiConfig.statusBarColor
                 toolbarResourceColor = lassiConfig.toolbarResourceColor
                 progressBarColor = lassiConfig.progressBarColor
+                galleryBackgroundColor = lassiConfig.galleryBackgroundColor
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount

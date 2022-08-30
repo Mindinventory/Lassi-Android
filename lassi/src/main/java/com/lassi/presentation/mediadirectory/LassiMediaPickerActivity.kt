@@ -193,7 +193,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
@@ -244,7 +244,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun handleSelectedMedia(selectedMedias: ArrayList<MiMedia>) {
         setToolbarTitle(selectedMedias)
-        menuDone?.isVisible = !selectedMedias.isNullOrEmpty()
+        menuDone?.isVisible = selectedMedias.isNotEmpty()
     }
 
 
