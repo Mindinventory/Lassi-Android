@@ -19,6 +19,7 @@ import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
+import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
 import com.lassi.domain.media.LassiConfig
