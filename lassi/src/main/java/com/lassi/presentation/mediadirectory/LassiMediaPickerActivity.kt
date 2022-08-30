@@ -231,6 +231,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     setResultOk(viewModel.selectedMediaLiveData.value)
                 }
             }
+            else -> {
+            }
         }
     }
 
