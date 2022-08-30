@@ -48,6 +48,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
 
     override fun initViews() {
         super.initViews()
+        rvMedia.setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
         bucket?.let {
             it.bucketName?.let { bucketName ->
                 viewModel.getSelectedMediaData(bucket = bucketName)
@@ -104,7 +105,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
         when (LassiConfig.getConfig().mediaType) {
             MediaType.IMAGE -> {
                 if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.getConfig().isCrop) {
-                    val uri = Uri.fromFile(File(selectedMedias[0].path))
+                    val uri = Uri.fromFile(selectedMedias[0].path?.let { File(it) })
                     CropUtils.beginCrop(requireActivity(), uri)
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)

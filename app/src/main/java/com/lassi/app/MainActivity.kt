@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
                     .setCompressionRation(10)
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
                     .setPlaceHolder(R.drawable.ic_video_placeholder)
                     .setErrorDrawable(R.drawable.ic_video_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -103,6 +105,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
                     .build()
                 receiveData.launch(intent)
             }
@@ -153,6 +156,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .setStatusBarColor(R.color.colorPrimaryDark)
             .setToolbarColor(R.color.colorPrimary)
             .setToolbarResourceColor(android.R.color.white)
+            .setGalleryBackgroundColor(R.color.colorGrey)
             .setSupportedFileTypes(
                 "pdf",
                 "odt",
@@ -176,7 +180,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                if (!selectedMedia.isNullOrEmpty()) {
+                if (selectedMedia.isNotEmpty()) {
                     ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)
                 }

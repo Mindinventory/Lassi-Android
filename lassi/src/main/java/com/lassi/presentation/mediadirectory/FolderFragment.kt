@@ -65,6 +65,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
 
     override fun initViews() {
         super.initViews()
+        rvMedia.setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
         rvMedia.layoutManager = GridLayoutManager(context, LassiConfig.getConfig().gridSize)
         rvMedia.adapter = folderAdapter
         rvMedia.addItemDecoration(GridSpacingItemDecoration(LassiConfig.getConfig().gridSize, 10))
