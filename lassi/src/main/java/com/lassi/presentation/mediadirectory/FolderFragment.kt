@@ -19,7 +19,6 @@ import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
 import com.lassi.domain.media.LassiConfig
@@ -161,7 +160,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
                 || LassiConfig.getConfig().mediaType == MediaType.VIDEO
             ) {
-                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
             } else {
                 false
             }

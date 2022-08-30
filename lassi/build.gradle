@@ -74,9 +74,9 @@ dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
 
     // Room DB
-    implementation 'androidx.room:room-runtime:2.4.2'
-    kapt 'androidx.room:room-compiler:2.4.2'
-    implementation 'androidx.room:room-ktx:2.4.2'
+    implementation 'androidx.room:room-runtime:2.4.3'
+    kapt 'androidx.room:room-compiler:2.4.3'
+    implementation 'androidx.room:room-ktx:2.4.3'
 
     //Coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
