@@ -64,7 +64,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     
     ```kotlin
             val intent = Lassi(this)
-                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA or CAMERA_AND_GALLERY
+                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY or CAMERA_AND_GALLERY
                 .setMaxCount(5)
                 .setGridSize(3)
                 .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC
