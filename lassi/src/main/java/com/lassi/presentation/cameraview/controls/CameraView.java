@@ -90,7 +90,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     ScrollGestureLayout mScrollGestureLayout;
     // Self managed parameters
     private boolean mPlaySounds;
-    private HashMap<Gesture, GestureAction> mGestureMap = new HashMap<>(4);
+    private final HashMap<Gesture, GestureAction> mGestureMap = new HashMap<>(4);
     private Preview mPreview;
     private CameraPreview mCameraPreview;
     private OrientationHelper mOrientationHelper;
@@ -142,7 +142,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         int videoMaxDuration = a.getInteger(R.styleable.CameraView_cameraVideoMaxDuration, 0);
         int videoBitRate = a.getInteger(R.styleable.CameraView_cameraVideoBitRate, 0);
         int audioBitRate = a.getInteger(R.styleable.CameraView_cameraAudioBitRate, 0);
-        long autoFocusResetDelay = (long) a.getInteger(R.styleable.CameraView_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
+        long autoFocusResetDelay = a.getInteger(R.styleable.CameraView_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
 
         // Picture size selector
         List<SizeSelector> pictureConstraints = new ArrayList<>(3);
@@ -1515,20 +1515,17 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
 //        if (requestStoragePermission) {
 //            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Log.d(TAG, "!@# requestPermissions ALL 1519 IF");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
-                permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-                permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
-                permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-            } else {
-                Log.d(TAG, "!@# requestPermissions 1525 ELSE");
+            permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+            permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
+            permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+        } else {
 
-                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            }
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
 //        }
         if (activity != null) {
-            Log.d(TAG, "!@# requestPermissions ALL 1531");
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);
         }
@@ -1684,7 +1681,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
     private class Callbacks implements CameraCallbacks {
 
-        private CameraLogger mLogger = CameraLogger.create(CameraCallbacks.class.getSimpleName());
+        private final CameraLogger mLogger = CameraLogger.create(CameraCallbacks.class.getSimpleName());
 
         Callbacks() {
         }

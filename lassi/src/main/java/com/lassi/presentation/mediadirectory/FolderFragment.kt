@@ -41,7 +41,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         }
     }
 
-    private val TAG = FolderFragment::class.java.simpleName
     var needsStorage = true
 
     val photoVidPermissions = mutableListOf(
@@ -126,14 +125,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                Log.d(TAG, "!@# requestPermission: IMAGE Permission")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_IMAGES
                 ) != PackageManager.PERMISSION_GRANTED
                 requestPermission.launch(photoVidPermissions.toTypedArray())
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                Log.d(TAG, "!@# requestPermission: VIDEO Permission")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_VIDEO
@@ -141,7 +138,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                 requestPermission.launch(photoVidPermissions.toTypedArray())
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
-                    Log.d(TAG, "!@# requestPermission: AUDIO Permission")
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(),
                         Manifest.permission.READ_MEDIA_AUDIO
