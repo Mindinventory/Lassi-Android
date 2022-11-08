@@ -3,14 +3,17 @@ package com.lassi.presentation.mediadirectory
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +40,18 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
             return FolderFragment()
         }
     }
+
+    private val TAG = FolderFragment::class.java.simpleName
+    var needsStorage = true
+
+    val photoVidPermissions = mutableListOf(
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_VIDEO,
+    )
+
+    val audioPermission = mutableListOf(
+        Manifest.permission.READ_MEDIA_AUDIO
+    )
 
     private val permissionSettingResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -109,7 +124,32 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                Log.d(TAG, "!@# requestPermission: IMAGE Permission")
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+                requestPermission.launch(photoVidPermissions.toTypedArray())
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                Log.d(TAG, "!@# requestPermission: VIDEO Permission")
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_VIDEO
+                ) != PackageManager.PERMISSION_GRANTED
+                requestPermission.launch(photoVidPermissions.toTypedArray())
+            } else {
+                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                    Log.d(TAG, "!@# requestPermission: AUDIO Permission")
+                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_MEDIA_AUDIO
+                    ) != PackageManager.PERMISSION_GRANTED
+                    requestPermission.launch(audioPermission.toTypedArray())
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             requestPermission.launch(
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
             )
@@ -137,8 +177,41 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun showPermissionDisableAlert() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            showPermissionAlert(msg = getString(R.string.storage_permission_rational))
+        } else {
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
+            } else {
+                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                    showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))
+                }
+            }
+            /*if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))
+            } else {
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    ) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_MEDIA_VIDEO
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
+                }
+            }*/
+        }
+    }
+
+    private fun showPermissionAlert(msg: String) {
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
-        alertDialog.setMessage(R.string.storage_permission_rational)
+        alertDialog.setMessage(msg)
         alertDialog.setCancelable(false)
         alertDialog.setPositiveButton(R.string.ok) { _, _ ->
             val intent = Intent().apply {

@@ -1498,6 +1498,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     }
 
     // If we end up here, we're in M.
+    @SuppressLint("SuspiciousIndentation")
     @TargetApi(Build.VERSION_CODES.M)
     private void requestPermissions(boolean requestCamera, boolean requestAudio, boolean requestStoragePermission) {
         Activity activity = null;
@@ -1512,15 +1513,22 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         List<String> permissions = new ArrayList<>();
         if (requestCamera) permissions.add(Manifest.permission.CAMERA);
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
-        if (requestStoragePermission) {
-            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        if (requestStoragePermission) {
+//            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Log.d(TAG, "!@# requestPermissions ALL 1519 IF");
+
                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
                 permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+            } else {
+                Log.d(TAG, "!@# requestPermissions 1525 ELSE");
+
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             }
-        }
+//        }
         if (activity != null) {
+            Log.d(TAG, "!@# requestPermissions ALL 1531");
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);
         }

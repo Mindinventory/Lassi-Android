@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -41,6 +42,8 @@ import java.io.File
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
+    private val TAG = CameraFragment::class.java.simpleName
+    val showRationale = shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)
 
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -258,30 +261,58 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             ) != PackageManager.PERMISSION_GRANTED
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            Log.d(TAG, "!@# checkPermissions < TIRAMISU 263")
+            println("!@# checkPermissions < TIRAMISU 263")
+
             needsStorage =
                 needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+            Log.d(TAG, "!@# checkPermissions READ_MEDIA_IMAGES 273")
+            println("!@# checkPermissions READ_MEDIA_IMAGES 273")
+            /*needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_MEDIA_IMAGES
             ) != PackageManager.PERMISSION_GRANTED
 
+            Log.d(TAG, "!@# checkPermissions READ_MEDIA_AUDIO 279")
+            println("!@# checkPermissions READ_MEDIA_AUDIO 279")
             needsStorage =
                 needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_AUDIO
                 ) != PackageManager.PERMISSION_GRANTED
 
+            Log.d(TAG, "!@# checkPermissions READ_MEDIA_VIDEO 286")
             needsStorage =
                 needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_VIDEO
+                ) != PackageManager.PERMISSION_GRANTED*/
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
                 ) != PackageManager.PERMISSION_GRANTED
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_VIDEO
+                ) != PackageManager.PERMISSION_GRANTED
+            } else {
+                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_MEDIA_AUDIO
+                    ) != PackageManager.PERMISSION_GRANTED
+                }
+            }
         }
 
+        Log.d(TAG, "!@# checkPermissions RECORD_AUDIO 294")
+        println("!@# checkPermissions RECORD_AUDIO 294")
         if (needsAudio)
             needsAudio =
                 needsAudio && ActivityCompat.checkSelfPermission(
@@ -301,6 +332,8 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     }
 
     private fun requestForPermissions() {
+        Log.d(TAG, "!@# requestForPermissions 314")
+        println("!@# requestForPermissions 314")
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
@@ -326,8 +359,12 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             )
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                Log.d(TAG, "!@# requestForPermissions WRITE_EXTERNAL_STORAGE 331 IF")
+                println("!@# requestForPermissions WRITE_EXTERNAL_STORAGE 331 IF")
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Log.d(TAG, "!@# requestForPermissions READ_MEDIA_IMAGES, VID, AUD 334 ELSE IF")
+                println("!@# requestForPermissions READ_MEDIA_IMAGES, VID, AUD 334 ELSE IF")
                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
                 permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
@@ -343,8 +380,12 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
 
             // Request audio permission only for video recording
             if (needsAudio) {
+                Log.d(TAG, "!@# requestForPermissions READ_AUD 350 IF")
+                println("!@# requestForPermissions READ_AUD 350 IF")
                 permissions.add(Manifest.permission.RECORD_AUDIO)
             }
+            Log.d(TAG, "!@# requestForPermissions permissions.toTypedArray() 362 => ${permissions.toTypedArray()}")
+            println("!@# requestForPermissions permissions.toTypedArray() 362 => ${permissions.toTypedArray()}")
 
             requestPermission.launch(permissions.toTypedArray())
         }
