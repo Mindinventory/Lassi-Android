@@ -180,8 +180,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             showPermissionAlert(msg = getString(R.string.storage_permission_rational))
         } else {
-            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                showPermissionAlert(msg = getString(R.string.read_media_images_permission_rational))
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                showPermissionAlert(msg = getString(R.string.read_media_video_permission_rational))
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                     showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))

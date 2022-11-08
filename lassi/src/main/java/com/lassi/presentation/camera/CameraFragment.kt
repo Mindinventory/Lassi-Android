@@ -291,7 +291,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                     requireContext(),
                     Manifest.permission.READ_MEDIA_VIDEO
                 ) != PackageManager.PERMISSION_GRANTED*/
-            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+            /*if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_MEDIA_IMAGES
@@ -308,7 +308,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                         Manifest.permission.READ_MEDIA_AUDIO
                     ) != PackageManager.PERMISSION_GRANTED
                 }
-            }
+            }*/
         }
 
         Log.d(TAG, "!@# checkPermissions RECORD_AUDIO 294")
@@ -365,9 +365,9 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Log.d(TAG, "!@# requestForPermissions READ_MEDIA_IMAGES, VID, AUD 334 ELSE IF")
                 println("!@# requestForPermissions READ_MEDIA_IMAGES, VID, AUD 334 ELSE IF")
-                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
-                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+//                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+//                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
+//                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
             }
 
             val needsAudio =
