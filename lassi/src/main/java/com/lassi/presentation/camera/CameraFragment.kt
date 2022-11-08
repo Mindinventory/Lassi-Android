@@ -42,7 +42,6 @@ import java.io.File
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
-    val showRationale = shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)
 
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -267,43 +266,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            /*needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_MEDIA_IMAGES
-            ) != PackageManager.PERMISSION_GRANTED
-
-
-
-            needsStorage =
-                needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-
-
-            needsStorage =
-                needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_VIDEO
-                ) != PackageManager.PERMISSION_GRANTED*/
-            /*if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES
-                ) != PackageManager.PERMISSION_GRANTED
-            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_VIDEO
-                ) != PackageManager.PERMISSION_GRANTED
-            } else {
-                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
-                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_MEDIA_AUDIO
-                    ) != PackageManager.PERMISSION_GRANTED
-                }
-            }*/
         }
 
         if (needsAudio)
@@ -351,10 +313,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-//                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
-//                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
             }
 
             val needsAudio =

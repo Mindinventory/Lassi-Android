@@ -185,25 +185,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                     showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))
                 }
             }
-            /*if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))
-            } else {
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_MEDIA_IMAGES
-                    ) != PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_MEDIA_VIDEO
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
-                }
-            }*/
         }
     }
 

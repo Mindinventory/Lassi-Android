@@ -1513,8 +1513,6 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         List<String> permissions = new ArrayList<>();
         if (requestCamera) permissions.add(Manifest.permission.CAMERA);
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
-//        if (requestStoragePermission) {
-//            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
             permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
@@ -1524,7 +1522,6 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
             permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
-//        }
         if (activity != null) {
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);
