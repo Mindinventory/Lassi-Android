@@ -679,8 +679,8 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
-        if (needsCamera || needsAudio || needsStorage) {
-            requestPermissions(needsCamera, needsAudio, needsStorage);
+        if (needsCamera || needsAudio) {
+            requestPermissions(needsCamera, needsAudio);
             return false;
         }
         return true;
@@ -1500,7 +1500,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     // If we end up here, we're in M.
     @SuppressLint("SuspiciousIndentation")
     @TargetApi(Build.VERSION_CODES.M)
-    private void requestPermissions(boolean requestCamera, boolean requestAudio, boolean requestStoragePermission) {
+    private void requestPermissions(boolean requestCamera, boolean requestAudio) {
         Activity activity = null;
         Context context = getContext();
         while (context instanceof ContextWrapper) {
@@ -1513,18 +1513,6 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         List<String> permissions = new ArrayList<>();
         if (requestCamera) permissions.add(Manifest.permission.CAMERA);
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
-//        if (requestStoragePermission) {
-//            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-            permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
-            permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-        } else {
-
-            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-//        }
         if (activity != null) {
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);
