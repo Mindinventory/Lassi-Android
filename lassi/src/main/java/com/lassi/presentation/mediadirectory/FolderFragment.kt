@@ -3,6 +3,7 @@ package com.lassi.presentation.mediadirectory
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.view.Menu
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
@@ -37,6 +39,20 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
             return FolderFragment()
         }
     }
+
+    var needsStorage = true
+
+    private val photoPermission = mutableListOf(
+        Manifest.permission.READ_MEDIA_IMAGES
+    )
+
+    private val vidPermission = mutableListOf(
+        Manifest.permission.READ_MEDIA_VIDEO
+    )
+
+    private val audioPermission = mutableListOf(
+        Manifest.permission.READ_MEDIA_AUDIO
+    )
 
     private val permissionSettingResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -109,7 +125,29 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+                requestPermission.launch(photoPermission.toTypedArray())
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_VIDEO
+                ) != PackageManager.PERMISSION_GRANTED
+                requestPermission.launch(vidPermission.toTypedArray())
+            } else {
+                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_MEDIA_AUDIO
+                    ) != PackageManager.PERMISSION_GRANTED
+                    requestPermission.launch(audioPermission.toTypedArray())
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             requestPermission.launch(
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
             )
@@ -137,8 +175,24 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun showPermissionDisableAlert() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            showPermissionAlert(msg = getString(R.string.storage_permission_rational))
+        } else {
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
+                showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                showPermissionAlert(msg = getString(R.string.read_media_images_video_permission_rational))
+            } else {
+                if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
+                    showPermissionAlert(msg = getString(R.string.read_media_audio_permission_rational))
+                }
+            }
+        }
+    }
+
+    private fun showPermissionAlert(msg: String) {
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
-        alertDialog.setMessage(R.string.storage_permission_rational)
+        alertDialog.setMessage(msg)
         alertDialog.setCancelable(false)
         alertDialog.setPositiveButton(R.string.ok) { _, _ ->
             val intent = Intent().apply {

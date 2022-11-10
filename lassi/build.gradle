@@ -7,13 +7,13 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.Mindinventory'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 32
-        versionCode 23
-        versionName "1.0.1"
+        targetSdkVersion 33
+        versionCode 24
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
