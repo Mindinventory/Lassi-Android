@@ -6,6 +6,8 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
+import com.lassi.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -13,6 +15,7 @@ import java.io.OutputStream
 import java.util.*
 
 object FilePickerUtils {
+//    private const val AUTHORITY = "${BuildConfig.LIBRARY_PACKAGE_NAME}.provider"
 
     fun contains(types: Array<String>, path: String): Boolean {
         for (string in types) {
@@ -34,7 +37,9 @@ object FilePickerUtils {
                 arrayOf(mimeType)
             ) { path, uri ->
                 Log.d("ExternalStorage", "Scanned $path")
-                onFileScanComplete(uri, path)
+
+//                val uriTemp: Uri = FileProvider.getUriForFile(context, AUTHORITY, File(filePath))
+                onFileScanComplete(Uri.fromFile(File(path)), path)
             }
         }
     }

@@ -1,3 +1,4 @@
+/*
 // "Therefore those skilled at the unorthodox
 // are infinite as heaven and earth,
 // inexhaustible as the great rivers.
@@ -10,7 +11,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.lassi.presentation.cropper;
+package com.lassi.presentation.cropper_old;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,36 +21,48 @@ import android.util.DisplayMetrics;
 
 import java.lang.ref.WeakReference;
 
+*/
 /**
  * Task to load bitmap asynchronously from the UI thread.
- */
+ *//*
+
 final class BitmapLoadingWorkerTask extends AsyncTask<Void, Void, BitmapLoadingWorkerTask.Result> {
 
     // region: Fields and Consts
 
-    /**
+    */
+/**
      * Use a WeakReference to ensure the ImageView can be garbage collected
-     */
+     *//*
+
     private final WeakReference<CropImageView> mCropImageViewReference;
 
-    /**
+    */
+/**
      * The Android URI of the image to load
-     */
+     *//*
+
     private final Uri mUri;
 
-    /**
+    */
+/**
      * The context of the crop image view widget used for loading of bitmap by Android URI
-     */
+     *//*
+
     private final Context mContext;
 
-    /**
+    */
+/**
      * required width of the cropping image after density adjustment
-     */
+     *//*
+
     private final int mWidth;
 
-    /**
+    */
+/**
      * required height of the cropping image after density adjustment
-     */
+     *//*
+
     private final int mHeight;
     // endregion
 
@@ -65,19 +78,23 @@ final class BitmapLoadingWorkerTask extends AsyncTask<Void, Void, BitmapLoadingW
         mHeight = (int) (metrics.heightPixels * densityAdj);
     }
 
-    /**
+    */
+/**
      * The Android URI that this task is currently loading.
-     */
+     *//*
+
     public Uri getUri() {
         return mUri;
     }
 
-    /**
+    */
+/**
      * Decode image in background.
      *
      * @param params ignored
      * @return the decoded bitmap data
-     */
+     *//*
+
     @Override
     protected Result doInBackground(Void... params) {
         try {
@@ -101,11 +118,13 @@ final class BitmapLoadingWorkerTask extends AsyncTask<Void, Void, BitmapLoadingW
         }
     }
 
-    /**
+    */
+/**
      * Once complete, see if ImageView is still around and set bitmap.
      *
      * @param result the result of bitmap loading
-     */
+     *//*
+
     @Override
     protected void onPostExecute(Result result) {
         if (result != null) {
@@ -126,34 +145,46 @@ final class BitmapLoadingWorkerTask extends AsyncTask<Void, Void, BitmapLoadingW
 
     // region: Inner class: Result
 
-    /**
+    */
+/**
      * The result of BitmapLoadingWorkerTask async loading.
-     */
+     *//*
+
     public static final class Result {
 
-        /**
+        */
+/**
          * The Android URI of the image to load
-         */
+         *//*
+
         public final Uri uri;
 
-        /**
+        */
+/**
          * The loaded bitmap
-         */
+         *//*
+
         public final Bitmap bitmap;
 
-        /**
+        */
+/**
          * The sample size used to load the given bitmap
-         */
+         *//*
+
         public final int loadSampleSize;
 
-        /**
+        */
+/**
          * The degrees the image was rotated
-         */
+         *//*
+
         public final int degreesRotated;
 
-        /**
+        */
+/**
          * The error that occurred during async bitmap loading.
-         */
+         *//*
+
         public final Exception error;
 
         Result(Uri uri, Bitmap bitmap, int loadSampleSize, int degreesRotated) {
@@ -174,3 +205,4 @@ final class BitmapLoadingWorkerTask extends AsyncTask<Void, Void, BitmapLoadingW
     }
     // endregion
 }
+*/

@@ -1,3 +1,4 @@
+/*
 // "Therefore those skilled at the unorthodox
 // are infinite as heaven and earth;
 // inexhaustible as the great rivers.
@@ -10,7 +11,7 @@
 // - Sun Tsu;
 // "The Art of War"
 
-package com.lassi.presentation.cropper;
+package com.lassi.presentation.cropper_old;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -23,10 +24,12 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+*/
 /**
  * All the possible options that can be set to customize crop image.<br>
  * Initialized with default values.
- */
+ *//*
+
 public class CropImageOptions implements Parcelable {
 
     public static final Creator<CropImageOptions> CREATOR =
@@ -42,263 +45,361 @@ public class CropImageOptions implements Parcelable {
                 }
             };
 
-    /**
+    */
+/**
      * The shape of the cropping window.
-     */
+     *//*
+
     public CropImageView.CropShape cropShape;
 
-    /**
+    */
+/**
      * An edge of the crop window will snap to the corresponding edge of a specified bounding box when
      * the crop window edge is less than or equal to this distance (in pixels) away from the bounding
      * box edge. (in pixels)
-     */
+     *//*
+
     public float snapRadius;
 
-    /**
+    */
+/**
      * The radius of the touchable area around the handle. (in pixels)<br>
      * We are basing this value off of the recommended 48dp Rhythm.<br>
      * See: http://developer.android.com/design/style/metrics-grids.html#48dp-rhythm
-     */
+     *//*
+
     public float touchRadius;
 
-    /**
+    */
+/**
      * whether the guidelines should be on, off, or only showing when resizing.
-     */
+     *//*
+
     public CropImageView.Guidelines guidelines;
 
-    /**
+    */
+/**
      * The initial scale type of the image in the crop image view
-     */
+     *//*
+
     public CropImageView.ScaleType scaleType;
 
-    /**
+    */
+/**
      * if to show crop overlay UI what contains the crop window UI surrounded by background over the
      * cropping image.<br>
      * default: true, may lassiOption for animation or frame transition.
-     */
+     *//*
+
     public boolean showCropOverlay;
 
-    /**
+    */
+/**
      * if to show progress bar when image async loading/cropping is in progress.<br>
      * default: true, lassiOption to provide custom progress bar UI.
-     */
+     *//*
+
     public boolean showProgressBar;
 
-    /**
+    */
+/**
      * if auto-zoom functionality is enabled.<br>
      * default: true.
-     */
+     *//*
+
     public boolean autoZoomEnabled;
 
-    /**
+    */
+/**
      * if multi-touch should be enabled on the crop box default: false
-     */
+     *//*
+
     public boolean multiTouchEnabled;
 
-    /**
+    */
+/**
      * The max zoom allowed during cropping.
-     */
+     *//*
+
     public int maxZoom;
 
-    /**
+    */
+/**
      * The initial crop window padding from image borders in percentage of the cropping image
      * dimensions.
-     */
+     *//*
+
     public float initialCropWindowPaddingRatio;
 
-    /**
+    */
+/**
      * whether the width to height aspect ratio should be maintained or free to change.
-     */
+     *//*
+
     public boolean fixAspectRatio;
 
-    /**
+    */
+/**
      * the X value of the aspect ratio.
-     */
+     *//*
+
     public int aspectRatioX;
 
-    /**
+    */
+/**
      * the Y value of the aspect ratio.
-     */
+     *//*
+
     public int aspectRatioY;
 
-    /**
+    */
+/**
      * the thickness of the guidelines lines in pixels. (in pixels)
-     */
+     *//*
+
     public float borderLineThickness;
 
-    /**
+    */
+/**
      * the color of the guidelines lines
-     */
+     *//*
+
     public int borderLineColor;
 
-    /**
+    */
+/**
      * thickness of the corner line. (in pixels)
-     */
+     *//*
+
     public float borderCornerThickness;
 
-    /**
+    */
+/**
      * the offset of corner line from crop window border. (in pixels)
-     */
+     *//*
+
     public float borderCornerOffset;
 
-    /**
+    */
+/**
      * the length of the corner line away from the corner. (in pixels)
-     */
+     *//*
+
     public float borderCornerLength;
 
-    /**
+    */
+/**
      * the color of the corner line
-     */
+     *//*
+
     public int borderCornerColor;
 
-    /**
+    */
+/**
      * the thickness of the guidelines lines. (in pixels)
-     */
+     *//*
+
     public float guidelinesThickness;
 
-    /**
+    */
+/**
      * the color of the guidelines lines
-     */
+     *//*
+
     public int guidelinesColor;
 
-    /**
+    */
+/**
      * the color of the overlay background around the crop window cover the image parts not in the
      * crop window.
-     */
+     *//*
+
     public int backgroundColor;
 
-    /**
+    */
+/**
      * the min width the crop window is allowed to be. (in pixels)
-     */
+     *//*
+
     public int minCropWindowWidth;
 
-    /**
+    */
+/**
      * the min height the crop window is allowed to be. (in pixels)
-     */
+     *//*
+
     public int minCropWindowHeight;
 
-    /**
+    */
+/**
      * the min width the resulting cropping image is allowed to be, affects the cropping window
      * limits. (in pixels)
-     */
+     *//*
+
     public int minCropResultWidth;
 
-    /**
+    */
+/**
      * the min height the resulting cropping image is allowed to be, affects the cropping window
      * limits. (in pixels)
-     */
+     *//*
+
     public int minCropResultHeight;
 
-    /**
+    */
+/**
      * the max width the resulting cropping image is allowed to be, affects the cropping window
      * limits. (in pixels)
-     */
+     *//*
+
     public int maxCropResultWidth;
 
-    /**
+    */
+/**
      * the max height the resulting cropping image is allowed to be, affects the cropping window
      * limits. (in pixels)
-     */
+     *//*
+
     public int maxCropResultHeight;
 
-    /**
+    */
+/**
      * the title of the {@link CropImageActivity}
-     */
+     *//*
+
     public CharSequence activityTitle;
 
-    /**
+    */
+/**
      * the color to use for action bar items icons
-     */
+     *//*
+
     public int activityMenuIconColor;
 
-    /**
+    */
+/**
      * the Android Uri to save the cropped image to
-     */
+     *//*
+
     public Uri outputUri;
 
-    /**
+    */
+/**
      * the compression format to use when writing the image
-     */
+     *//*
+
     public Bitmap.CompressFormat outputCompressFormat;
 
-    /**
+    */
+/**
      * the quality (if applicable) to use when writing the image (0 - 100)
-     */
+     *//*
+
     public int outputCompressQuality;
 
-    /**
+    */
+/**
      * the width to resize the cropped image to (see options)
-     */
+     *//*
+
     public int outputRequestWidth;
 
-    /**
+    */
+/**
      * the height to resize the cropped image to (see options)
-     */
+     *//*
+
     public int outputRequestHeight;
 
-    /**
+    */
+/**
      * the resize method to use on the cropped bitmap (see options documentation)
-     */
+     *//*
+
     public CropImageView.RequestSizeOptions outputRequestSizeOptions;
 
-    /**
+    */
+/**
      * if the result of crop image activity should not save the cropped image bitmap
-     */
+     *//*
+
     public boolean noOutputImage;
 
-    /**
+    */
+/**
      * the initial rectangle to set on the cropping image after loading
-     */
+     *//*
+
     public Rect initialCropWindowRectangle;
 
-    /**
+    */
+/**
      * the initial rotation to set on the cropping image after loading (0-360 degrees clockwise)
-     */
+     *//*
+
     public int initialRotation;
 
-    /**
+    */
+/**
      * if to allow (all) rotation during cropping (activity)
-     */
+     *//*
+
     public boolean allowRotation;
 
-    /**
+    */
+/**
      * if to allow (all) flipping during cropping (activity)
-     */
+     *//*
+
     public boolean allowFlipping;
 
-    /**
+    */
+/**
      * if to allow counter-clockwise rotation during cropping (activity)
-     */
+     *//*
+
     public boolean allowCounterRotation;
 
-    /**
+    */
+/**
      * the amount of degrees to rotate clockwise or counter-clockwise
-     */
+     *//*
+
     public int rotationDegrees;
 
-    /**
+    */
+/**
      * whether the image should be flipped horizontally
-     */
+     *//*
+
     public boolean flipHorizontally;
 
-    /**
+    */
+/**
      * whether the image should be flipped vertically
-     */
+     *//*
+
     public boolean flipVertically;
 
-    /**
+    */
+/**
      * optional, the text of the crop menu crop button
-     */
+     *//*
+
     public CharSequence cropMenuCropButtonTitle;
 
-    /**
+    */
+/**
      * optional image resource to be used for crop menu crop icon instead of text
-     */
+     *//*
+
     public int cropMenuCropButtonIcon;
 
-    /**
+    */
+/**
      * Init options with defaults.
-     */
+     *//*
+
     public CropImageOptions() {
 
         DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
@@ -361,9 +462,11 @@ public class CropImageOptions implements Parcelable {
         cropMenuCropButtonIcon = 0;
     }
 
-    /**
+    */
+/**
      * Create object from parcel.
-     */
+     *//*
+
     protected CropImageOptions(Parcel in) {
         cropShape = CropImageView.CropShape.values()[in.readInt()];
         snapRadius = in.readFloat();
@@ -472,11 +575,13 @@ public class CropImageOptions implements Parcelable {
         return 0;
     }
 
-    /**
+    */
+/**
      * Validate all the options are withing valid range.
      *
      * @throws IllegalArgumentException if any of the options is not valid
-     */
+     *//*
+
     public void validate() {
         if (maxZoom < 0) {
             throw new IllegalArgumentException("Cannot set max zoom to a number < 1");
@@ -539,3 +644,4 @@ public class CropImageOptions implements Parcelable {
         }
     }
 }
+*/

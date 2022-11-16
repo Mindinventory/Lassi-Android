@@ -45,6 +45,17 @@
         <attr name="cropMaxCropResultHeightPX" format="float" />
         <attr name="cropFlipHorizontally" format="boolean" />
         <attr name="cropFlipVertically" format="boolean" />
+        <attr name="cropCenterMoveEnabled" format="boolean"/>
+        <attr name="cropCornerRadius" format="dimension"/>
+        <attr name="cropCornerCircleFillColor" format="color"/>
+        <attr name="cropperLabelTextSize" format="float"/>
+        <attr name="cropperLabelTextColor" format="color"/>
+        <attr name="cropperLabelText" format="string"/>
+        <attr name="cropShowLabel" format="boolean"/>
+        <attr name="cornerShape">
+            <enum name="rectangle" value="0"/>
+            <enum name="oval" value="1"/>
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="CameraView">

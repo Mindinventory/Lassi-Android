@@ -1,3 +1,4 @@
+/*
 // "Therefore those skilled at the unorthodox
 // are infinite as heaven and earth,
 // inexhaustible as the great rivers.
@@ -10,7 +11,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.lassi.presentation.cropper;
+package com.lassi.presentation.cropper_old;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -29,133 +30,193 @@ import android.view.View;
 
 import java.util.Arrays;
 
+*/
 /**
  * A custom View representing the crop window and the shaded background outside the crop window.
- */
+ *//*
+
 public class CropOverlayView extends View {
 
     // region: Fields and Consts
 
-    /**
+    */
+/**
      * Handler from crop window stuff, moving and knowing possition.
-     */
+     *//*
+
     private final CropWindowHandler mCropWindowHandler = new CropWindowHandler();
-    /**
+    */
+/**
      * Rectangle used for drawing
-     */
+     *//*
+
     private final RectF mDrawRect = new RectF();
-    /**
+    */
+/**
      * The bounding box around the Bitmap that we are cropping.
-     */
+     *//*
+
     private final float[] mBoundsPoints = new float[8];
-    /**
+    */
+/**
      * The bounding box around the Bitmap that we are cropping.
-     */
+     *//*
+
     private final RectF mCalcBounds = new RectF();
-    /**
+    */
+/**
      * the initial crop window rectangle to set
-     */
+     *//*
+
     private final Rect mInitialCropWindowRect = new Rect();
-    /**
+    */
+/**
      * Gesture detector used for multi touch box scaling
-     */
+     *//*
+
     private ScaleGestureDetector mScaleDetector;
-    /**
+    */
+/**
      * Boolean to see if multi touch is enabled for the crop rectangle
-     */
+     *//*
+
     private boolean mMultiTouchEnabled;
-    /**
+    */
+/**
      * Listener to publicj crop window changes
-     */
+     *//*
+
     private CropWindowChangeListener mCropWindowChangeListener;
-    /**
+    */
+/**
      * The Paint used to draw the white rectangle around the crop area.
-     */
+     *//*
+
     private Paint mBorderPaint;
-    /**
+    */
+/**
      * The Paint used to draw the corners of the Border
-     */
+     *//*
+
     private Paint mBorderCornerPaint;
-    /**
+    */
+/**
      * The Paint used to draw the guidelines within the crop area when pressed.
-     */
+     *//*
+
     private Paint mGuidelinePaint;
-    /**
+    */
+/**
      * The Paint used to darken the surrounding areas outside the crop area.
-     */
+     *//*
+
     private Paint mBackgroundPaint;
-    /**
+    */
+/**
      * Used for oval crop window shape or non-straight rotation drawing.
-     */
+     *//*
+
     private Path mPath = new Path();
-    /**
+    */
+/**
      * The bounding image view width used to know the crop overlay is at view edges.
-     */
+     *//*
+
     private int mViewWidth;
-    /**
+    */
+/**
      * The bounding image view height used to know the crop overlay is at view edges.
-     */
+     *//*
+
     private int mViewHeight;
-    /**
+    */
+/**
      * The offset to draw the border corener from the border
-     */
+     *//*
+
     private float mBorderCornerOffset;
-    /**
+    */
+/**
      * the length of the border corner to draw
-     */
+     *//*
+
     private float mBorderCornerLength;
-    /**
+    */
+/**
      * The initial crop window padding from image borders
-     */
+     *//*
+
     private float mInitialCropWindowPaddingRatio;
-    /**
+    */
+/**
      * The radius of the touch zone (in pixels) around a given Handle.
-     */
+     *//*
+
     private float mTouchRadius;
-    /**
+    */
+/**
      * An edge of the crop window will snap to the corresponding edge of a specified bounding box when
      * the crop window edge is less than or equal to this distance (in pixels) away from the bounding
      * box edge.
-     */
+     *//*
+
     private float mSnapRadius;
-    /**
+    */
+/**
      * The Handle that is currently pressed; null if no Handle is pressed.
-     */
+     *//*
+
     private CropWindowMoveHandler mMoveHandler;
-    /**
+    */
+/**
      * Flag indicating if the crop area should always be a certain aspect ratio (indicated by
      * mTargetAspectRatio).
-     */
+     *//*
+
     private boolean mFixAspectRatio;
-    /**
+    */
+/**
      * save the current aspect ratio of the image
-     */
+     *//*
+
     private int mAspectRatioX;
-    /**
+    */
+/**
      * save the current aspect ratio of the image
-     */
+     *//*
+
     private int mAspectRatioY;
-    /**
+    */
+/**
      * The aspect ratio that the crop area should maintain; this variable is only used when
      * mMaintainAspectRatio is true.
-     */
+     *//*
+
     private float mTargetAspectRatio = ((float) mAspectRatioX) / mAspectRatioY;
-    /**
+    */
+/**
      * Instance variables for customizable attributes
-     */
+     *//*
+
     private CropImageView.Guidelines mGuidelines;
-    /**
+    */
+/**
      * The shape of the cropping area - rectangle/circular.
-     */
+     *//*
+
     private CropImageView.CropShape mCropShape;
-    /**
+    */
+/**
      * Whether the Crop View has been initialized for the first time
-     */
+     *//*
+
     private boolean initializedCropWindow;
 
-    /**
+    */
+/**
      * Used to set back LayerType after changing to software.
-     */
+     *//*
+
     private Integer mOriginalLayerType;
     // endregion
 
@@ -167,18 +228,22 @@ public class CropOverlayView extends View {
         super(context, attrs);
     }
 
-    /**
+    */
+/**
      * Creates the Paint object for drawing.
-     */
+     *//*
+
     private static Paint getNewPaint(int color) {
         Paint paint = new Paint();
         paint.setColor(color);
         return paint;
     }
 
-    /**
+    */
+/**
      * Creates the Paint object for given thickness and color, if thickness < 0 return null.
-     */
+     *//*
+
     private static Paint getNewPaintOrNull(float thickness, int color) {
         if (thickness > 0) {
             Paint borderPaint = new Paint();
@@ -192,44 +257,54 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Set the crop window change listener.
-     */
+     *//*
+
     public void setCropWindowChangeListener(CropWindowChangeListener listener) {
         mCropWindowChangeListener = listener;
     }
 
-    /**
+    */
+/**
      * Get the left/top/right/bottom coordinates of the crop window.
-     */
+     *//*
+
     public RectF getCropWindowRect() {
         return mCropWindowHandler.getRect();
     }
 
-    /**
+    */
+/**
      * Set the left/top/right/bottom coordinates of the crop window.
-     */
+     *//*
+
     public void setCropWindowRect(RectF rect) {
         mCropWindowHandler.setRect(rect);
     }
 
-    /**
+    */
+/**
      * Fix the current crop window rectangle if it is outside of cropping image or view bounds.
-     */
+     *//*
+
     public void fixCurrentCropWindowRect() {
         RectF rect = getCropWindowRect();
         fixCropWindowRectByRules(rect);
         mCropWindowHandler.setRect(rect);
     }
 
-    /**
+    */
+/**
      * Informs the CropOverlayView of the image's position relative to the ImageView. This is
      * necessary to call in order to draw the crop window.
      *
      * @param boundsPoints the image's bounding points
      * @param viewWidth    The bounding image view width.
      * @param viewHeight   The bounding image view height.
-     */
+     *//*
+
     public void setBounds(float[] boundsPoints, int viewWidth, int viewHeight) {
         if (boundsPoints == null || !Arrays.equals(mBoundsPoints, boundsPoints)) {
             if (boundsPoints == null) {
@@ -246,9 +321,11 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Resets the crop overlay view.
-     */
+     *//*
+
     public void resetCropOverlayView() {
         if (initializedCropWindow) {
             setCropWindowRect(BitmapUtils.EMPTY_RECT_F);
@@ -257,16 +334,20 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * The shape of the cropping area - rectangle/circular.
-     */
+     *//*
+
     public CropImageView.CropShape getCropShape() {
         return mCropShape;
     }
 
-    /**
+    */
+/**
      * The shape of the cropping area - rectangle/circular.
-     */
+     *//*
+
     public void setCropShape(CropImageView.CropShape cropShape) {
         if (mCropShape != cropShape) {
             mCropShape = cropShape;
@@ -289,17 +370,21 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Get the current guidelines option set.
-     */
+     *//*
+
     public CropImageView.Guidelines getGuidelines() {
         return mGuidelines;
     }
 
-    /**
+    */
+/**
      * Sets the guidelines for the CropOverlayView to be either on, off, or to show when resizing the
      * application.
-     */
+     *//*
+
     public void setGuidelines(CropImageView.Guidelines guidelines) {
         if (mGuidelines != guidelines) {
             mGuidelines = guidelines;
@@ -309,18 +394,22 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * whether the aspect ratio is fixed or not; true fixes the aspect ratio, while false allows it to
      * be changed.
-     */
+     *//*
+
     public boolean isFixAspectRatio() {
         return mFixAspectRatio;
     }
 
-    /**
+    */
+/**
      * Sets whether the aspect ratio is fixed or not; true fixes the aspect ratio, while false allows
      * it to be changed.
-     */
+     *//*
+
     public void setFixedAspectRatio(boolean fixAspectRatio) {
         if (mFixAspectRatio != fixAspectRatio) {
             mFixAspectRatio = fixAspectRatio;
@@ -331,16 +420,20 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * the X value of the aspect ratio;
-     */
+     *//*
+
     public int getAspectRatioX() {
         return mAspectRatioX;
     }
 
-    /**
+    */
+/**
      * Sets the X value of the aspect ratio; is defaulted to 1.
-     */
+     *//*
+
     public void setAspectRatioX(int aspectRatioX) {
         if (aspectRatioX <= 0) {
             throw new IllegalArgumentException(
@@ -356,18 +449,22 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * the Y value of the aspect ratio;
-     */
+     *//*
+
     public int getAspectRatioY() {
         return mAspectRatioY;
     }
 
-    /**
+    */
+/**
      * Sets the Y value of the aspect ratio; is defaulted to 1.
      *
      * @param aspectRatioY int that specifies the new Y value of the aspect ratio
-     */
+     *//*
+
     public void setAspectRatioY(int aspectRatioY) {
         if (aspectRatioY <= 0) {
             throw new IllegalArgumentException(
@@ -383,18 +480,22 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * An edge of the crop window will snap to the corresponding edge of a specified bounding box when
      * the crop window edge is less than or equal to this distance (in pixels) away from the bounding
      * box edge. (default: 3)
-     */
+     *//*
+
     public void setSnapRadius(float snapRadius) {
         mSnapRadius = snapRadius;
     }
 
-    /**
+    */
+/**
      * Set multi touch functionality to enabled/disabled.
-     */
+     *//*
+
     public boolean setMultiTouchEnabled(boolean multiTouchEnabled) {
         if (mMultiTouchEnabled != multiTouchEnabled) {
             mMultiTouchEnabled = multiTouchEnabled;
@@ -406,42 +507,52 @@ public class CropOverlayView extends View {
         return false;
     }
 
-    /**
+    */
+/**
      * the min size the resulting cropping image is allowed to be, affects the cropping window limits
      * (in pixels).<br>
-     */
+     *//*
+
     public void setMinCropResultSize(int minCropResultWidth, int minCropResultHeight) {
         mCropWindowHandler.setMinCropResultSize(minCropResultWidth, minCropResultHeight);
     }
 
-    /**
+    */
+/**
      * the max size the resulting cropping image is allowed to be, affects the cropping window limits
      * (in pixels).<br>
-     */
+     *//*
+
     public void setMaxCropResultSize(int maxCropResultWidth, int maxCropResultHeight) {
         mCropWindowHandler.setMaxCropResultSize(maxCropResultWidth, maxCropResultHeight);
     }
 
-    /**
+    */
+/**
      * set the max width/height and scale factor of the shown image to original image to scale the
      * limits appropriately.
-     */
+     *//*
+
     public void setCropWindowLimits(
             float maxWidth, float maxHeight, float scaleFactorWidth, float scaleFactorHeight) {
         mCropWindowHandler.setCropWindowLimits(
                 maxWidth, maxHeight, scaleFactorWidth, scaleFactorHeight);
     }
 
-    /**
+    */
+/**
      * Get crop window initial rectangle.
-     */
+     *//*
+
     public Rect getInitialCropWindowRect() {
         return mInitialCropWindowRect;
     }
 
-    /**
+    */
+/**
      * Set crop window initial rectangle to be used instead of default.
-     */
+     *//*
+
     public void setInitialCropWindowRect(Rect rect) {
         mInitialCropWindowRect.set(rect != null ? rect : BitmapUtils.EMPTY_RECT);
         if (initializedCropWindow) {
@@ -453,9 +564,11 @@ public class CropOverlayView extends View {
 
     // region: Private methods
 
-    /**
+    */
+/**
      * Reset crop window to initial rectangle.
-     */
+     *//*
+
     public void resetCropWindowRect() {
         if (initializedCropWindow) {
             initCropWindow();
@@ -464,10 +577,12 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Sets all initial values, but does not call initCropWindow to reset the views.<br>
      * Used once at the very start to initialize the attributes.
-     */
+     *//*
+
     public void setInitialAttributeValues(CropImageOptions options) {
 
         mCropWindowHandler.setInitialAttributeValues(options);
@@ -502,10 +617,12 @@ public class CropOverlayView extends View {
         mBackgroundPaint = getNewPaint(options.backgroundColor);
     }
 
-    /**
+    */
+/**
      * Set the initial crop window size and position. This is dependent on the size and position of
      * the image being cropped.
-     */
+     *//*
+
     private void initCropWindow() {
 
         float leftLimit = Math.max(BitmapUtils.getRectLeft(mBoundsPoints), 0);
@@ -593,9 +710,11 @@ public class CropOverlayView extends View {
         mCropWindowHandler.setRect(rect);
     }
 
-    /**
+    */
+/**
      * Fix the given rect to fit into bitmap rect and follow min, max and aspect ratio rules.
-     */
+     *//*
+
     private void fixCropWindowRectByRules(RectF rect) {
         if (rect.width() < mCropWindowHandler.getMinCropWidth()) {
             float adj = (mCropWindowHandler.getMinCropWidth() - rect.width()) / 2;
@@ -650,10 +769,12 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Draw crop overview by drawing background over image not in the cripping area, then borders and
      * guidelines.
-     */
+     *//*
+
     @Override
     protected void onDraw(Canvas canvas) {
 
@@ -677,9 +798,11 @@ public class CropOverlayView extends View {
         drawCorners(canvas);
     }
 
-    /**
+    */
+/**
      * Draw shadow background over the image not including the crop area.
-     */
+     *//*
+
     private void drawBackground(Canvas canvas) {
 
         RectF rect = mCropWindowHandler.getRect();
@@ -732,10 +855,12 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Draw 2 veritcal and 2 horizontal guidelines inside the cropping area to split it into 9 equal
      * parts.
-     */
+     *//*
+
     private void drawGuidelines(Canvas canvas) {
         if (mGuidelinePaint != null) {
             float sw = mBorderPaint != null ? mBorderPaint.getStrokeWidth() : 0;
@@ -780,9 +905,11 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Draw borders of the crop area.
-     */
+     *//*
+
     private void drawBorders(Canvas canvas) {
         if (mBorderPaint != null) {
             float w = mBorderPaint.getStrokeWidth();
@@ -799,9 +926,11 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Draw the corner of crop overlay.
-     */
+     *//*
+
     private void drawCorners(Canvas canvas) {
         if (mBorderCornerPaint != null) {
 
@@ -906,10 +1035,12 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * On press down start crop window movment depending on the location of the press.<br>
      * if press is far from crop window then no move handler is returned (null).
-     */
+     *//*
+
     private void onActionDown(float x, float y) {
         mMoveHandler = mCropWindowHandler.getMoveHandler(x, y, mTouchRadius, mCropShape);
         if (mMoveHandler != null) {
@@ -917,9 +1048,11 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Clear move handler starting in {@link #onActionDown(float, float)} if exists.
-     */
+     *//*
+
     private void onActionUp() {
         if (mMoveHandler != null) {
             mMoveHandler = null;
@@ -928,11 +1061,13 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Handle move of crop window using the move handler created in {@link #onActionDown(float,
      * float)}.<br>
      * The move handler will do the proper move/resize of the crop window.
-     */
+     *//*
+
     private void onActionMove(float x, float y) {
         if (mMoveHandler != null) {
             float snapRadius = mSnapRadius;
@@ -958,7 +1093,8 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Calculate the bounding rectangle for current crop window, handle non-straight rotation angles.
      * <br>
      * If the rotation angle is straight then the bounds rectangle is the bitmap rectangle, otherwsie
@@ -967,7 +1103,8 @@ public class CropOverlayView extends View {
      *
      * @param rect the crop window rectangle to start finsing bounded rectangle from
      * @return true - non straight rotation in place, false - otherwise.
-     */
+     *//*
+
     private boolean calculateBounds(RectF rect) {
 
         float left = BitmapUtils.getRectLeft(mBoundsPoints);
@@ -1041,16 +1178,20 @@ public class CropOverlayView extends View {
         }
     }
 
-    /**
+    */
+/**
      * Is the cropping image has been rotated by NOT 0,90,180 or 270 degrees.
-     */
+     *//*
+
     private boolean isNonStraightAngleRotated() {
         return mBoundsPoints[0] != mBoundsPoints[6] && mBoundsPoints[1] != mBoundsPoints[7];
     }
 
-    /**
+    */
+/**
      * Invoke on crop change listener safe, don't let the app crash on exception.
-     */
+     *//*
+
     private void callOnCropWindowChanged(boolean inProgress) {
         try {
             if (mCropWindowChangeListener != null) {
@@ -1064,25 +1205,31 @@ public class CropOverlayView extends View {
 
     // region: Inner class: CropWindowChangeListener
 
-    /**
+    */
+/**
      * Interface definition for a callback to be invoked when crop window rectangle is changing.
-     */
+     *//*
+
     public interface CropWindowChangeListener {
 
-        /**
+        */
+/**
          * Called after a change in crop window rectangle.
          *
          * @param inProgress is the crop window change operation is still in progress by user touch
-         */
+         *//*
+
         void onCropWindowChanged(boolean inProgress);
     }
     // endregion
 
     // region: Inner class: ScaleListener
 
-    /**
+    */
+/**
      * Handle scaling the rectangle based on two finger input
-     */
+     *//*
+
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
         @Override
@@ -1117,3 +1264,4 @@ public class CropOverlayView extends View {
     }
     // endregion
 }
+*/

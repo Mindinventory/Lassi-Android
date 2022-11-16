@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.MediaController
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -22,7 +23,9 @@ import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
 import com.lassi.presentation.cropper.CropImage
+import com.lassi.presentation.cropper.CropImageContract
 import kotlinx.android.synthetic.main.activity_video_preview.*
+import timber.log.Timber
 import java.io.File
 
 class VideoPreviewActivity : LassiBaseActivity() {
@@ -36,7 +39,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
             val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
                 putExtra(KeyUtils.VIDEO_PATH, videoPath)
             }
-            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+//            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
         }
     }
 
@@ -77,6 +80,29 @@ class VideoPreviewActivity : LassiBaseActivity() {
                 window.statusBarColor = statusBarColor
             }
         }
+    }
+
+    private val cropImageListener = registerForActivityResult(CropImageContract()) { result ->
+        when {
+            result.isSuccessful -> {
+                Timber.tag("AIC-Sample").i("Original bitmap: ${result.originalBitmap}")
+                Timber.tag("AIC-Sample").i("Original uri: ${result.originalUri}")
+                Timber.tag("AIC-Sample").i("Output bitmap: ${result.bitmap}")
+                Timber.tag("AIC-Sample").i("Output uri: ${result.getUriFilePath(this)}")
+                handleCropImageResult(result.uriContent.toString())
+            }
+            result is CropImage.CancelledResult -> showErrorMessage("cropping image was cancelled by the user")
+            else -> showErrorMessage("cropping image failed")
+        }
+    }
+
+    private fun showErrorMessage(message: String) {
+        Timber.tag("AIC-Sample").e("Camera error: $message")
+        Toast.makeText(this, "!@# Crop failed: $message", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleCropImageResult(uri: String) {
+        Toast.makeText(this, "!@# handleCropImageResult: URI => : $uri", Toast.LENGTH_SHORT).show()
     }
 
     private fun playVideo() {

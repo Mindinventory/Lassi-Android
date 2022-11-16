@@ -16,6 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
@@ -240,6 +241,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                Logger.d("LASSI", "!@# selectedMedia size => ${selectedMedia.size}")
                 if (selectedMedia.isNotEmpty()) {
                     ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)

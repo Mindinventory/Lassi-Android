@@ -19,7 +19,6 @@ import com.lassi.R
 import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
-import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.VideoRecord
@@ -35,6 +34,10 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
@@ -42,6 +45,17 @@ import java.io.File
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            // Use the returned uri.
+            val uriContent = result.uriContent
+            val uriFilePath = result.getUriFilePath(requireContext()) // optional usage
+        } else {
+            // An error occurred.
+            val exception = result.error
+        }
+    }
 
     private val requestPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -113,7 +127,14 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
             if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
-                CropUtils.beginCrop(requireActivity(), uri)
+//                CropUtils.beginCrop(requireActivity(), uri)
+                /*cropImage.launch(
+                    CropImageContractOptions(
+                        uri = uri,
+                        cropImageOptions = CropImageOptions(),
+                    ),
+                )*/
+                croppingOptions(uri = uri)
             } else {
                 ArrayList<MiMedia>().also {
                     MiMedia().apply {
@@ -125,6 +146,48 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             }
         })
     }
+
+    private fun croppingOptions(uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false) {
+        // Start picker to get image for cropping and then use the image in cropping activity.
+        cropImage.launch(
+            includeCamera?.let { includeCamera ->
+                includeGallery?.let { includeGallery ->
+                    CropImageOptions(
+                        imageSourceIncludeCamera = includeCamera,
+                        imageSourceIncludeGallery = includeGallery,
+                        cropShape = CropImageView.CropShape.RECTANGLE,
+                        showCropOverlay = true,
+                        guidelines = CropImageView.Guidelines.ON,
+                        multiTouchEnabled = false,
+
+                        )
+                }
+            }?.let {
+                CropImageContractOptions(
+                    uri = uri,
+                    cropImageOptions = it,
+                )
+            }
+        )
+
+        /*// Start picker to get image for cropping from only gallery and then use the image in cropping activity.
+        cropImage.launch(
+            CropImageContractOptions {
+                setImagePickerContractOptions(
+                    PickImageContractOptions(includeGallery = true, includeCamera = false)
+                )
+            }
+        )
+
+        // Start cropping activity for pre-acquired image saved on the device and customize settings.
+        cropImage.launch(
+            CropImageContractOptions(uri = imageUri) {
+                setGuidelines(CropImageView.Guidelines.ON)
+                setOutputCompressFormat(CompressFormat.PNG)
+            }
+        )*/
+    }
+
 
     private fun toggleCamera() {
         if (cameraView.isTakingPicture || cameraView.isTakingVideo) return

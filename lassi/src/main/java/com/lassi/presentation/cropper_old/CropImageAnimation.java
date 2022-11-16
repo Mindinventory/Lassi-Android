@@ -1,3 +1,4 @@
+/*
 // "Therefore those skilled at the unorthodox
 // are infinite as heaven and earth,
 // inexhaustible as the great rivers.
@@ -10,7 +11,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-package com.lassi.presentation.cropper;
+package com.lassi.presentation.cropper_old;
 
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -19,10 +20,12 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.ImageView;
 
+*/
 /**
  * Animation to handle smooth cropping image matrix transformation change, specifically for
  * zoom-in/out.
- */
+ *//*
+
 final class CropImageAnimation extends Animation implements Animation.AnimationListener {
 
     // region: Fields and Consts
@@ -121,3 +124,4 @@ final class CropImageAnimation extends Animation implements Animation.AnimationL
     public void onAnimationRepeat(Animation animation) {
     }
 }
+*/
