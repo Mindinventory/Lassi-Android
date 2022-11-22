@@ -179,7 +179,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         menuDone = menu.findItem(R.id.menuDone)
         menuCamera = menu.findItem(R.id.menuCamera)
         menuDone?.isVisible = false
-        menuCamera?.isVisible = false
 
         menuDone?.icon = changeIconColor(
             this@LassiMediaPickerActivity,
@@ -194,9 +193,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menuCamera?.isVisible =
-            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
@@ -231,8 +228,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     setResultOk(viewModel.selectedMediaLiveData.value)
                 }
             }
-            else -> {
-            }
+            else -> {}
         }
     }
 
@@ -249,7 +245,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun handleSelectedMedia(selectedMedias: ArrayList<MiMedia>) {
         setToolbarTitle(selectedMedias)
-        menuDone?.isVisible = selectedMedias.isNotEmpty()
+        menuDone?.isVisible = !selectedMedias.isNullOrEmpty()
     }
 
 
@@ -265,7 +261,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
                     viewModel.addAllSelectedMedia(selectedMedia)
                     folderViewModel.checkInsert()
-                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
                         supportFragmentManager.popBackStack()
                     }
                 } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
@@ -276,7 +272,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                         LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
                         viewModel.addSelectedMedia(selectedMedia)
                         folderViewModel.checkInsert()
-                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY) {
                             supportFragmentManager.popBackStack()
                         }
                     }

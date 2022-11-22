@@ -260,112 +260,112 @@ public class CropImageView extends FrameLayout {
                 TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CropImageView, 0, 0);
                 try {
                     options.fixAspectRatio =
-                            ta.getBoolean(R.styleable.CropImageView_cropFixAspectRatio, options.fixAspectRatio);
+                            ta.getBoolean(R.styleable.CropImageView_ls_cropFixAspectRatio, options.fixAspectRatio);
                     options.aspectRatioX =
-                            ta.getInteger(R.styleable.CropImageView_cropAspectRatioX, options.aspectRatioX);
+                            ta.getInteger(R.styleable.CropImageView_ls_cropAspectRatioX, options.aspectRatioX);
                     options.aspectRatioY =
-                            ta.getInteger(R.styleable.CropImageView_cropAspectRatioY, options.aspectRatioY);
+                            ta.getInteger(R.styleable.CropImageView_ls_cropAspectRatioY, options.aspectRatioY);
                     options.scaleType =
                             ScaleType.values()[
-                                    ta.getInt(R.styleable.CropImageView_cropScaleType, options.scaleType.ordinal())];
+                                    ta.getInt(R.styleable.CropImageView_ls_cropScaleType, options.scaleType.ordinal())];
                     options.autoZoomEnabled =
-                            ta.getBoolean(R.styleable.CropImageView_cropAutoZoomEnabled, options.autoZoomEnabled);
+                            ta.getBoolean(R.styleable.CropImageView_ls_cropAutoZoomEnabled, options.autoZoomEnabled);
                     options.multiTouchEnabled =
                             ta.getBoolean(
-                                    R.styleable.CropImageView_cropMultiTouchEnabled, options.multiTouchEnabled);
-                    options.maxZoom = ta.getInteger(R.styleable.CropImageView_cropMaxZoom, options.maxZoom);
+                                    R.styleable.CropImageView_ls_cropMultiTouchEnabled, options.multiTouchEnabled);
+                    options.maxZoom = ta.getInteger(R.styleable.CropImageView_ls_cropMaxZoom, options.maxZoom);
                     options.cropShape =
                             CropShape.values()[
-                                    ta.getInt(R.styleable.CropImageView_cropShape, options.cropShape.ordinal())];
+                                    ta.getInt(R.styleable.CropImageView_ls_cropShape, options.cropShape.ordinal())];
                     options.guidelines =
                             Guidelines.values()[
                                     ta.getInt(
-                                            R.styleable.CropImageView_cropGuidelines, options.guidelines.ordinal())];
+                                            R.styleable.CropImageView_ls_cropGuidelines, options.guidelines.ordinal())];
                     options.snapRadius =
-                            ta.getDimension(R.styleable.CropImageView_cropSnapRadius, options.snapRadius);
+                            ta.getDimension(R.styleable.CropImageView_ls_cropSnapRadius, options.snapRadius);
                     options.touchRadius =
-                            ta.getDimension(R.styleable.CropImageView_cropTouchRadius, options.touchRadius);
+                            ta.getDimension(R.styleable.CropImageView_ls_cropTouchRadius, options.touchRadius);
                     options.initialCropWindowPaddingRatio =
                             ta.getFloat(
-                                    R.styleable.CropImageView_cropInitialCropWindowPaddingRatio,
+                                    R.styleable.CropImageView_ls_cropInitialCropWindowPaddingRatio,
                                     options.initialCropWindowPaddingRatio);
                     options.borderLineThickness =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropBorderLineThickness, options.borderLineThickness);
+                                    R.styleable.CropImageView_ls_cropBorderLineThickness, options.borderLineThickness);
                     options.borderLineColor =
-                            ta.getInteger(R.styleable.CropImageView_cropBorderLineColor, options.borderLineColor);
+                            ta.getInteger(R.styleable.CropImageView_ls_cropBorderLineColor, options.borderLineColor);
                     options.borderCornerThickness =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropBorderCornerThickness,
+                                    R.styleable.CropImageView_ls_cropBorderCornerThickness,
                                     options.borderCornerThickness);
                     options.borderCornerOffset =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropBorderCornerOffset, options.borderCornerOffset);
+                                    R.styleable.CropImageView_ls_cropBorderCornerOffset, options.borderCornerOffset);
                     options.borderCornerLength =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropBorderCornerLength, options.borderCornerLength);
+                                    R.styleable.CropImageView_ls_cropBorderCornerLength, options.borderCornerLength);
                     options.borderCornerColor =
                             ta.getInteger(
-                                    R.styleable.CropImageView_cropBorderCornerColor, options.borderCornerColor);
+                                    R.styleable.CropImageView_ls_cropBorderCornerColor, options.borderCornerColor);
                     options.guidelinesThickness =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropGuidelinesThickness, options.guidelinesThickness);
+                                    R.styleable.CropImageView_ls_cropGuidelinesThickness, options.guidelinesThickness);
                     options.guidelinesColor =
-                            ta.getInteger(R.styleable.CropImageView_cropGuidelinesColor, options.guidelinesColor);
+                            ta.getInteger(R.styleable.CropImageView_ls_cropGuidelinesColor, options.guidelinesColor);
                     options.backgroundColor =
-                            ta.getInteger(R.styleable.CropImageView_cropBackgroundColor, options.backgroundColor);
+                            ta.getInteger(R.styleable.CropImageView_ls_cropBackgroundColor, options.backgroundColor);
                     options.showCropOverlay =
-                            ta.getBoolean(R.styleable.CropImageView_cropShowCropOverlay, mShowCropOverlay);
+                            ta.getBoolean(R.styleable.CropImageView_ls_cropShowCropOverlay, mShowCropOverlay);
                     options.showProgressBar =
-                            ta.getBoolean(R.styleable.CropImageView_cropShowProgressBar, mShowProgressBar);
+                            ta.getBoolean(R.styleable.CropImageView_ls_cropShowProgressBar, mShowProgressBar);
                     options.borderCornerThickness =
                             ta.getDimension(
-                                    R.styleable.CropImageView_cropBorderCornerThickness,
+                                    R.styleable.CropImageView_ls_cropBorderCornerThickness,
                                     options.borderCornerThickness);
                     options.minCropWindowWidth =
                             (int)
                                     ta.getDimension(
-                                            R.styleable.CropImageView_cropMinCropWindowWidth, options.minCropWindowWidth);
+                                            R.styleable.CropImageView_ls_cropMinCropWindowWidth, options.minCropWindowWidth);
                     options.minCropWindowHeight =
                             (int)
                                     ta.getDimension(
-                                            R.styleable.CropImageView_cropMinCropWindowHeight,
+                                            R.styleable.CropImageView_ls_cropMinCropWindowHeight,
                                             options.minCropWindowHeight);
                     options.minCropResultWidth =
                             (int)
                                     ta.getFloat(
-                                            R.styleable.CropImageView_cropMinCropResultWidthPX,
+                                            R.styleable.CropImageView_ls_cropMinCropResultWidthPX,
                                             options.minCropResultWidth);
                     options.minCropResultHeight =
                             (int)
                                     ta.getFloat(
-                                            R.styleable.CropImageView_cropMinCropResultHeightPX,
+                                            R.styleable.CropImageView_ls_cropMinCropResultHeightPX,
                                             options.minCropResultHeight);
                     options.maxCropResultWidth =
                             (int)
                                     ta.getFloat(
-                                            R.styleable.CropImageView_cropMaxCropResultWidthPX,
+                                            R.styleable.CropImageView_ls_cropMaxCropResultWidthPX,
                                             options.maxCropResultWidth);
                     options.maxCropResultHeight =
                             (int)
                                     ta.getFloat(
-                                            R.styleable.CropImageView_cropMaxCropResultHeightPX,
+                                            R.styleable.CropImageView_ls_cropMaxCropResultHeightPX,
                                             options.maxCropResultHeight);
                     options.flipHorizontally =
                             ta.getBoolean(
-                                    R.styleable.CropImageView_cropFlipHorizontally, options.flipHorizontally);
+                                    R.styleable.CropImageView_ls_cropFlipHorizontally, options.flipHorizontally);
                     options.flipVertically =
-                            ta.getBoolean(R.styleable.CropImageView_cropFlipHorizontally, options.flipVertically);
+                            ta.getBoolean(R.styleable.CropImageView_ls_cropFlipHorizontally, options.flipVertically);
 
                     mSaveBitmapToInstanceState =
                             ta.getBoolean(
-                                    R.styleable.CropImageView_cropSaveBitmapToInstanceState,
+                                    R.styleable.CropImageView_ls_cropSaveBitmapToInstanceState,
                                     mSaveBitmapToInstanceState);
 
                     // if aspect ratio is set then set fixed to true
-                    if (ta.hasValue(R.styleable.CropImageView_cropAspectRatioX)
-                            && ta.hasValue(R.styleable.CropImageView_cropAspectRatioX)
-                            && !ta.hasValue(R.styleable.CropImageView_cropFixAspectRatio)) {
+                    if (ta.hasValue(R.styleable.CropImageView_ls_cropAspectRatioX)
+                            && ta.hasValue(R.styleable.CropImageView_ls_cropAspectRatioX)
+                            && !ta.hasValue(R.styleable.CropImageView_ls_cropFixAspectRatio)) {
                         options.fixAspectRatio = true;
                     }
                 } finally {
