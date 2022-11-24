@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,7 +101,9 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                     tvNoDataFound.visibility = View.GONE
                     progressBar.show()
                 }
-                is Response.Success -> {}
+                is Response.Success -> {
+                    Log.d("FolderFragment", "!@# initLiveDataObservers: ${response.item.size}")
+                }
                 is Response.Error -> {
                     progressBar.hide()
                     response.throwable.printStackTrace()
@@ -159,6 +162,11 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                 )
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.checkRemoval()
     }
 
     private fun onItemClick(bucket: MiItemMedia) {

@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.MimeTypeMap
 import com.lassi.R
 import com.lassi.common.extenstions.catch
@@ -31,6 +32,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class MediaRepositoryImpl(private val context: Context) : MediaRepository {
+    private var mediaPathToRemove: ArrayList<MediaFileEntity>? = null
     val TAG = MediaRepositoryImpl::class.java.simpleName
     private val minTimeInMillis = LassiConfig.getConfig().minTime * 1000L
     private val maxTimeInMillis = LassiConfig.getConfig().maxTime * 1000L
@@ -80,6 +82,37 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
             }
         }
         return resultDeferred.await()
+    }
+
+    override suspend fun removeMediaData(allDataList: List<MediaFileEntity>?) {
+        CoroutineScope(IO).launch {
+            if (allDataList != null) {
+                for (mediaFile in allDataList) {
+                    val mediaPath: String = mediaFile.mediaPath
+                    if (File(mediaPath).exists()) {
+                        Log.d(TAG, "!@# removeMediaData: Nothing to remove")
+                    } else {
+                        //remove particular file, as it doesn't exist
+                        Log.d(TAG, "!@# removeMediaData: This file will be deleted ==> $mediaPath")
+                        initMediaDb(context)
+                        mediaDatabase.mediaFileDao().deleteByMediaPath(mediaPath)
+                    }
+                }
+            }
+        }
+    }
+
+    override suspend fun getAllImgVidMediaFile(): Flow<Result<ArrayList<MediaFileEntity>>> {
+        return flow {
+            try {
+                initMediaDb(context)
+                val allData = mediaDatabase.mediaFileDao().getAllImgVidMediaFile() as ArrayList<MediaFileEntity>
+                emit(Result.Success(allData))
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                emit(Result.Error(Throwable()))
+            }
+        }.catch().flowOn(IO)
     }
 
     override suspend fun insertAllMediaData(): Result<Boolean> {
