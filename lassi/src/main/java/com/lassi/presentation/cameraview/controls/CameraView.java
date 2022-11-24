@@ -71,12 +71,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-
-
 public class CameraView extends FrameLayout implements LifecycleObserver {
 
     public final static int PERMISSION_REQUEST_CODE = 16;
@@ -95,7 +89,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     ScrollGestureLayout mScrollGestureLayout;
     // Self managed parameters
     private boolean mPlaySounds;
-    private HashMap<Gesture, GestureAction> mGestureMap = new HashMap<>(4);
+    private final HashMap<Gesture, GestureAction> mGestureMap = new HashMap<>(4);
     private Preview mPreview;
     private CameraPreview mCameraPreview;
     private OrientationHelper mOrientationHelper;
@@ -681,8 +675,8 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
-        if (needsCamera || needsAudio || needsStorage) {
-            requestPermissions(needsCamera, needsAudio, needsStorage);
+        if (needsCamera || needsAudio) {
+            requestPermissions(needsCamera, needsAudio);
             return false;
         }
         return true;
@@ -1501,7 +1495,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
     // If we end up here, we're in M.
     @TargetApi(Build.VERSION_CODES.M)
-    private void requestPermissions(boolean requestCamera, boolean requestAudio, boolean requestStoragePermission) {
+    private void requestPermissions(boolean requestCamera, boolean requestAudio) {
         Activity activity = null;
         Context context = getContext();
         while (context instanceof ContextWrapper) {
@@ -1514,7 +1508,6 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         List<String> permissions = new ArrayList<>();
         if (requestCamera) permissions.add(Manifest.permission.CAMERA);
         if (requestAudio) permissions.add(Manifest.permission.RECORD_AUDIO);
-        if (requestStoragePermission) permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (activity != null) {
             activity.requestPermissions(permissions.toArray(new String[permissions.size()]),
                     PERMISSION_REQUEST_CODE);
@@ -1671,7 +1664,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
     private class Callbacks implements CameraCallbacks {
 
-        private CameraLogger mLogger = CameraLogger.create(CameraCallbacks.class.getSimpleName());
+        private final CameraLogger mLogger = CameraLogger.create(CameraCallbacks.class.getSimpleName());
 
         Callbacks() {
         }
