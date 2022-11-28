@@ -59,6 +59,10 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                 mediaPickerConfig.progressBarColor,
                 BlendModeCompat.SRC_ATOP
             )
+
+        rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
+        rvMedia.adapter = mediaAdapter
+        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
     }
 
     override fun getBundle() {
@@ -85,17 +89,13 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     }
 
     private fun handleFetchedData(response: Response<java.util.ArrayList<MiMedia>>?) {
-        rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
-        rvMedia.adapter = mediaAdapter
-        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
-
         when (response) {
             is Response.Success -> {
                 Logger.d("mediaFragment", "handleFetchedData SUCCESS size -> ${response.item.size}")
                 mediaAdapter.setList(response.item)
             }
             is Response.Error -> {
-                Logger.d("mediaFragment", "handleFetchedData ERROR")
+                Logger.d("mediaFragment", "!@# handleFetchedData ERROR")
             }
             else -> {}
         }

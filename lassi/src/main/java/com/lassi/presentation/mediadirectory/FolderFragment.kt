@@ -125,6 +125,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
                 tvNoDataFound.visibility = View.GONE
             }
         }
+
+        viewModel.fileRemovalCheck.observe(viewLifecycleOwner) { isTrue ->
+            if (isTrue) {
+                folderAdapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun requestPermission() {

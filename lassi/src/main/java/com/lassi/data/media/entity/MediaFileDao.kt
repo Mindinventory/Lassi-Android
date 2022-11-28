@@ -62,10 +62,10 @@ interface MediaFileDao {
                 " ON $MEDIA_FILE_ENTITY.$MEDIA_ID = $ALBUM_COVER_ENTITY.$ALBUM_COVER_MEDIA_ID" +
                 " WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType"
     )
-    fun getSelectedMediaFile(bucket: String, mediaType: Int): List<SelectedMediaModel>
+    fun getSelectedMediaFile(bucket: String, mediaType: Int): Flow<List<SelectedMediaModel>>
 
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType")
-    fun getSelectedImageMediaFile(bucket: String, mediaType: Int): List<MediaFileEntity>
+    fun getSelectedImageMediaFile(bucket: String, mediaType: Int): Flow<List<MediaFileEntity>>
 
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_TYPE = 1 OR $MEDIA_TYPE = 2")
     fun getAllImgVidMediaFile(): List<MediaFileEntity>

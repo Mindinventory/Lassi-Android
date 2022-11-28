@@ -10,7 +10,6 @@ import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
 import com.lassi.data.common.Result
 import com.lassi.data.media.MiItemMedia
-import com.lassi.data.media.entity.MediaFileEntity
 import com.lassi.domain.common.SingleLiveEvent
 import com.lassi.domain.media.MediaRepository
 import com.lassi.presentation.common.LassiBaseViewModel
@@ -29,6 +28,8 @@ class FolderViewModel(
         _fetchMediaFolderLiveData
     val list: MutableLiveData<ArrayList<MiItemMedia>> = MutableLiveData()
     var emptyList: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var _fileRemovalCheck = MutableLiveData(false)
+    var fileRemovalCheck: LiveData<Boolean> = _fileRemovalCheck
 
     fun checkInsert() {
         viewModelScope.launch {
@@ -57,7 +58,6 @@ class FolderViewModel(
     }
 
     private suspend fun checkAndRemoveUnavailableFileFromDatabase() {
-        Log.d("TAG", "!@# checkAndRemoveUnavailableFileFromDatabase() called ")
         getAllPhotoVidDataFromDatabase()//to get all images and videos and store it into "allData"
     }
 
@@ -117,14 +117,11 @@ class FolderViewModel(
     }
 
     private suspend fun getAllPhotoVidDataFromDatabase() {
-        mediaRepository.getAllImgVidMediaFile()
-            .onStart {
-                _fetchMediaFolderLiveData.setLoading()
-            }
-            .map { result ->
+        mediaRepository.getAllImgVidMediaFile().map { result ->
                 when (result) {
                     is Result.Success ->
                         result.data.filter {
+                            _fileRemovalCheck.postValue(true)
                             !it.mediaBucket.isNullOrEmpty()
                         }
                     is Result.Error -> TODO()
