@@ -273,6 +273,27 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set maximum file size in KB
+     */
+    fun setAlertDialogNegativeButtonColor(@ColorRes negativeBtnColor: Int): Lassi {
+        lassiConfig.alertDialogNegativeButtonColor =
+            ContextCompat.getColor(context, negativeBtnColor)
+        return this
+    }
+
+    /**
+     * Set maximum file size in KB
+     */
+    fun setAlertDialogPositiveButtonColor(@ColorRes positiveBtnColor: Int): Lassi {
+        println("!@# Positive button color setAlertDialogPositiveButtonColor $positiveBtnColor")
+        lassiConfig.alertDialogPositiveButtonColor =
+            ContextCompat.getColor(context, positiveBtnColor)
+
+        println("!@# Positive button color lassiConfig.alertDialogPositiveButtonColor ${lassiConfig.alertDialogPositiveButtonColor}")
+        return this
+    }
+
+    /**
      * Create intent for LassiMediaPickerActivity with config
      */
     fun build(): Intent {

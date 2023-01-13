@@ -2,6 +2,7 @@ package com.lassi.presentation.mediadirectory
 
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -207,6 +208,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         val permissionDialog = alertDialog.create()
         permissionDialog.setCancelable(false)
         permissionDialog.show()
+        with(LassiConfig.getConfig()) {
+            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(alertDialogNegativeButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(alertDialogPositiveButtonColor)
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
