@@ -53,7 +53,17 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     miMedia.path = getFilePathFromUri(this, uri, true)
                     list.add(miMedia)
                 }
-                setResultOk(list)
+                if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW) {
+                    if (list.size > LassiConfig.getConfig().maxCount) {
+                        ToastUtils.showToast(
+                            this,
+                            LassiConfig.getConfig().customLimitExceedingErrorMessage
+                        )
+                        finish()
+                    }
+                } else {
+                    setResultOk(list)
+                }
             }
         }
 

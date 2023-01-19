@@ -38,7 +38,8 @@ data class LassiConfig(
     var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
-    var alertDialogPositiveButtonColor: Int = Color.BLACK
+    var alertDialogPositiveButtonColor: Int = Color.BLACK,
+    var customLimitExceedingErrorMessage: String = "Exceeding defined maxCount!"
 ) : Parcelable {
     companion object {
 
@@ -73,6 +74,7 @@ data class LassiConfig(
                 isCrop = lassiConfig.isCrop
                 alertDialogNegativeButtonColor = lassiConfig.alertDialogNegativeButtonColor
                 alertDialogPositiveButtonColor = lassiConfig.alertDialogPositiveButtonColor
+                customLimitExceedingErrorMessage = lassiConfig.customLimitExceedingErrorMessage
             }
         }
 

@@ -273,7 +273,7 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Set maximum file size in KB
+     * Set color for the Negative button of the Alert dialog
      */
     fun setAlertDialogNegativeButtonColor(@ColorRes negativeBtnColor: Int): Lassi {
         lassiConfig.alertDialogNegativeButtonColor =
@@ -282,7 +282,7 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Set maximum file size in KB
+     * Set color for the Positive button of the Alert dialog
      */
     fun setAlertDialogPositiveButtonColor(@ColorRes positiveBtnColor: Int): Lassi {
         println("!@# Positive button color setAlertDialogPositiveButtonColor $positiveBtnColor")
@@ -290,6 +290,14 @@ class Lassi(private val context: Context) {
             ContextCompat.getColor(context, positiveBtnColor)
 
         println("!@# Positive button color lassiConfig.alertDialogPositiveButtonColor ${lassiConfig.alertDialogPositiveButtonColor}")
+        return this
+    }
+
+    /**
+     * To set custom error message when picked items exceeds the defined maxCount
+     */
+    fun setCustomLimitExceedingErrorMessage(@ColorRes errorMessage: String): Lassi {
+        lassiConfig.customLimitExceedingErrorMessage = errorMessage
         return this
     }
 

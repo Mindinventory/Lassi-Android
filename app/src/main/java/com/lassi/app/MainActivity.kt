@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +18,7 @@ import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
+import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.builder.Lassi
@@ -145,6 +147,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     )
+                    .setMaxCount(3)
+                    .setCustomLimitExceedingErrorMessage("You are exceeding the defined Max limit...")
                     .build()
                 receiveData.launch(intent)
             }
@@ -250,6 +254,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                Log.d("TAG", "!@# receiveData: Item selected")
+
                 if (selectedMedia.isNotEmpty()) {
                     ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)
