@@ -29,4 +29,13 @@
 
     <!--No Data Found-->
     <string name="no_data_found">No Data Found!</string>
+
+    <!--Sorting-->
+    <string name="sort_by_date">Sort by Date</string>
+    <string name="sort_ascending">Ascending</string>
+    <string name="sort_descending">Descending</string>
+    <string-array name="sorting_options">
+        <item>@string/sort_ascending</item>
+        <item>@string/sort_descending</item>
+    </string-array>
 </resources>

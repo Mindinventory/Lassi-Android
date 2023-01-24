@@ -5,6 +5,7 @@ import com.lassi.common.extenstions.catch
 import com.lassi.common.utils.Logger
 import com.lassi.data.common.Result
 import com.lassi.data.database.MediaFileDatabase
+import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
 import com.lassi.data.media.entity.MediaFileEntity
 import com.lassi.data.media.entity.SelectedMediaModel
@@ -78,5 +79,73 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
             mediaDatabase = MediaFileDatabase.invoke(context = context)
             Logger.d(TAG, "MEDIA FILE DATABASE Initialized ")
         }
+    }
+
+    override suspend fun getSortedDataFromDb(
+        bucket: String,
+        isAsc: Int,
+        mediaType: MediaType
+    ): Flow<Result<ArrayList<MiMedia>>> {
+        return flow {
+            initMediaDb(context)
+            try {
+                val mediaType = when (LassiConfig.getConfig().mediaType) {
+                    MediaType.IMAGE -> MediaType.IMAGE.value
+                    MediaType.VIDEO -> MediaType.VIDEO.value
+                    MediaType.AUDIO -> MediaType.AUDIO.value
+                    else -> MediaType.IMAGE.value
+                }
+                /*val miItemMediaList = ArrayList<MiMedia>()
+                mediaDatabase.mediaFileDao().getSelectedSortedMediaFile(bucket, isAsc, mediaType)
+                    .collect {
+                        *//*miItemMediaList.add(
+                            MiMedia(
+                                bucket,
+                                latestItemPathForBucket,
+                                totalItemSizeForBucket
+                            )
+                        )*//*
+                    }*/
+
+                //...
+                miMediaFileEntityList.clear()
+
+                val sortedImageMediaItemList: List<MediaFileEntity>
+                val sortedMediaItemList: List<SelectedMediaModel>
+                if (mediaType == MediaType.IMAGE.value) {
+                    sortedImageMediaItemList =
+                        mediaDatabase.mediaFileDao().getSelectedSortedMediaFile(bucket, isAsc, mediaType)
+                    sortedImageMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                            )
+                        )
+                    }
+                } else {
+                    sortedMediaItemList =
+                        mediaDatabase.mediaFileDao().getSelectedMediaFile(bucket, mediaType)
+                    sortedMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                                duration = selectedMediaModel.mediaDuration,
+                                thumb = selectedMediaModel.mediaAlbumCoverPath,
+                            )
+                        )
+                    }
+                }
+                emit(Result.Success(miMediaFileEntityList))
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                emit(Result.Error(Throwable()))
+            }
+        }.catch().flowOn(Dispatchers.IO)
     }
 }

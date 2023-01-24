@@ -41,6 +41,7 @@ import java.io.File
 class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
     private var menuDone: MenuItem? = null
     private var menuCamera: MenuItem? = null
+    private var menuSort: MenuItem? = null
     private val getContent =
         registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uri ->
             uri?.let { uris ->
@@ -188,8 +189,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         menuInflater.inflate(R.menu.media_picker_menu, menu)
         menuDone = menu.findItem(R.id.menuDone)
         menuCamera = menu.findItem(R.id.menuCamera)
+        menuSort = menu.findItem(R.id.menuSort)
         menuDone?.isVisible = false
         menuCamera?.isVisible = false
+        menuSort?.isVisible = true
 
         menuDone?.icon = changeIconColor(
             this@LassiMediaPickerActivity,
@@ -199,6 +202,11 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         menuCamera?.icon = changeIconColor(
             this@LassiMediaPickerActivity,
             R.drawable.ic_camera_white,
+            LassiConfig.getConfig().toolbarResourceColor
+        )
+        menuSort?.icon = changeIconColor(
+            this@LassiMediaPickerActivity,
+            R.drawable.ic_sorting_foreground,
             LassiConfig.getConfig().toolbarResourceColor
         )
         return super.onCreateOptionsMenu(menu)

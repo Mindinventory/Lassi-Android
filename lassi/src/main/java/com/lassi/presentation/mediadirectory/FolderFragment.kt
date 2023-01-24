@@ -223,6 +223,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
             } else {
                 false
             }
+        menu.findItem(R.id.menuSort)?.isVisible = false
         return super.onPrepareOptionsMenu(menu)
     }
 
