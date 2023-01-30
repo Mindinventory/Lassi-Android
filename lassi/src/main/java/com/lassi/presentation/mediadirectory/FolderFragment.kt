@@ -209,8 +209,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         permissionDialog.setCancelable(false)
         permissionDialog.show()
         with(LassiConfig.getConfig()) {
-            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(alertDialogNegativeButtonColor)
-            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(alertDialogPositiveButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                .setTextColor(alertDialogNegativeButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                .setTextColor(alertDialogPositiveButtonColor)
         }
     }
 

@@ -93,7 +93,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     private fun handleFetchedData(response: Response<java.util.ArrayList<MiMedia>>?) {
         rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
         rvMedia.adapter = mediaAdapter
-//        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
 
         when (response) {
             is Response.Success -> {
@@ -115,7 +114,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     CropUtils.beginCrop(requireActivity(), uri)
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
-
                 } else {
                     viewModel.addAllSelectedMedia(selectedMedias)
                     setResultOk(selectedMedias)
@@ -139,7 +137,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
         val intent = Intent().apply {
             putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
         }
-        Log.d("TAG", "!@# setResultOk: Item selected")
         activity?.setResult(Activity.RESULT_OK, intent)
         activity?.finish()
     }
@@ -154,7 +151,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menuSort -> handleSorting()
         }
         return super.onOptionsItemSelected(item)
@@ -172,7 +169,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     bucket?.let {
                         it.bucketName?.let { bucketName ->
                             val mediaType = LassiConfig.getConfig().mediaType
-                            viewModel.getSortedDataFromDb(bucket = bucketName, isAsc = 0, mediaType = mediaType)
+                            viewModel.getSortedDataFromDb(
+                                bucket = bucketName,
+                                isAsc = 0,
+                                mediaType = mediaType
+                            )
                         }
                     }
                 }
@@ -180,7 +181,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
                     bucket?.let {
                         it.bucketName?.let { bucketName ->
                             val mediaType = LassiConfig.getConfig().mediaType
-                            viewModel.getSortedDataFromDb(bucket = bucketName, isAsc = 1, mediaType = mediaType)
+                            viewModel.getSortedDataFromDb(
+                                bucket = bucketName,
+                                isAsc = 1,
+                                mediaType = mediaType
+                            )
                         }
                     }
                 }
@@ -188,8 +193,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
         }
 
         // create and show the alert dialog
-        val dialog = builder.create()
-        dialog.show()
+        builder.create().show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

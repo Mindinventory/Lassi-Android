@@ -285,18 +285,15 @@ class Lassi(private val context: Context) {
      * Set color for the Positive button of the Alert dialog
      */
     fun setAlertDialogPositiveButtonColor(@ColorRes positiveBtnColor: Int): Lassi {
-        println("!@# Positive button color setAlertDialogPositiveButtonColor $positiveBtnColor")
         lassiConfig.alertDialogPositiveButtonColor =
             ContextCompat.getColor(context, positiveBtnColor)
-
-        println("!@# Positive button color lassiConfig.alertDialogPositiveButtonColor ${lassiConfig.alertDialogPositiveButtonColor}")
         return this
     }
 
     /**
      * To set custom error message when picked items exceeds the defined maxCount
      */
-    fun setCustomLimitExceedingErrorMessage(@ColorRes errorMessage: String): Lassi {
+    fun setCustomLimitExceedingErrorMessage(errorMessage: Int): Lassi {
         lassiConfig.customLimitExceedingErrorMessage = errorMessage
         return this
     }

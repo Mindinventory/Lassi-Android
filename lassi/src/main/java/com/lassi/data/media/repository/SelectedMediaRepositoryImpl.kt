@@ -5,7 +5,6 @@ import com.lassi.common.extenstions.catch
 import com.lassi.common.utils.Logger
 import com.lassi.data.common.Result
 import com.lassi.data.database.MediaFileDatabase
-import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
 import com.lassi.data.media.entity.MediaFileEntity
 import com.lassi.data.media.entity.SelectedMediaModel
@@ -95,26 +94,15 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
                     MediaType.AUDIO -> MediaType.AUDIO.value
                     else -> MediaType.IMAGE.value
                 }
-                /*val miItemMediaList = ArrayList<MiMedia>()
-                mediaDatabase.mediaFileDao().getSelectedSortedMediaFile(bucket, isAsc, mediaType)
-                    .collect {
-                        *//*miItemMediaList.add(
-                            MiMedia(
-                                bucket,
-                                latestItemPathForBucket,
-                                totalItemSizeForBucket
-                            )
-                        )*//*
-                    }*/
 
-                //...
                 miMediaFileEntityList.clear()
 
                 val sortedImageMediaItemList: List<MediaFileEntity>
                 val sortedMediaItemList: List<SelectedMediaModel>
                 if (mediaType == MediaType.IMAGE.value) {
                     sortedImageMediaItemList =
-                        mediaDatabase.mediaFileDao().getSelectedSortedMediaFile(bucket, isAsc, mediaType)
+                        mediaDatabase.mediaFileDao()
+                            .getSelectedSortedMediaFile(bucket, isAsc, mediaType)
                     sortedImageMediaItemList.forEach { selectedMediaModel ->
                         miMediaFileEntityList.add(
                             MiMedia(

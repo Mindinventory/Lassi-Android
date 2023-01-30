@@ -58,7 +58,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     if (list.size > LassiConfig.getConfig().maxCount) {
                         ToastUtils.showToast(
                             this,
-                            LassiConfig.getConfig().customLimitExceedingErrorMessage
+                            this.resources.getString(LassiConfig.getConfig().customLimitExceedingErrorMessage)
                         )
                         finish()
                     }

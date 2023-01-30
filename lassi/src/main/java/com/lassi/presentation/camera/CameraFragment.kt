@@ -220,15 +220,16 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     }
 
     private fun showPermissionDisableAlert() {
-        val alertMessage = if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_audio_storage_permission_rational
-        } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_audio_permission_rational
-        } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_permission_rational
-        } else {
-            R.string.camera_storage_permission_rational
-        }
+        val alertMessage =
+            if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_audio_storage_permission_rational
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_audio_permission_rational
+            } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_permission_rational
+            } else {
+                R.string.camera_storage_permission_rational
+            }
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
             .setMessage(alertMessage)
             .setCancelable(false)
@@ -247,8 +248,10 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         permissionDialog.show()
 
         with(LassiConfig.getConfig()) {
-            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(alertDialogNegativeButtonColor)
-            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(alertDialogPositiveButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                .setTextColor(alertDialogNegativeButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                .setTextColor(alertDialogPositiveButtonColor)
         }
     }
 
