@@ -221,11 +221,17 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
 
     private fun showPermissionDisableAlert() {
         val alertMessage =
-            if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
+                && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+            ) {
                 R.string.camera_audio_storage_permission_rational
-            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ) {
                 R.string.camera_audio_permission_rational
-            } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            ) {
                 R.string.camera_permission_rational
             } else {
                 R.string.camera_storage_permission_rational

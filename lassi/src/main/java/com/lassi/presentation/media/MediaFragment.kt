@@ -1,13 +1,12 @@
 package com.lassi.presentation.media
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
@@ -159,41 +158,36 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>() {
 
     private fun handleSorting() {
         // setup the alert builder
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle(R.string.sort_by_date)
-
-        // add a list
-        builder.setItems(R.array.sorting_options) { dialog, isAsc ->
-            when (isAsc) {
-                0 -> { /* Ascending */
-                    bucket?.let {
-                        it.bucketName?.let { bucketName ->
-                            val mediaType = LassiConfig.getConfig().mediaType
-                            viewModel.getSortedDataFromDb(
-                                bucket = bucketName,
-                                isAsc = 0,
-                                mediaType = mediaType
-                            )
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(R.string.sort_by_date)
+            setItems(R.array.sorting_options) { _, isAsc ->
+                when (isAsc) {
+                    0 -> { /* Ascending */
+                        bucket?.let {
+                            it.bucketName?.let { bucketName ->
+                                viewModel.getSortedDataFromDb(
+                                    bucket = bucketName,
+                                    isAsc = 0,
+                                    mediaType = LassiConfig.getConfig().mediaType
+                                )
+                            }
                         }
                     }
-                }
-                1 -> { /* Descending */
-                    bucket?.let {
-                        it.bucketName?.let { bucketName ->
-                            val mediaType = LassiConfig.getConfig().mediaType
-                            viewModel.getSortedDataFromDb(
-                                bucket = bucketName,
-                                isAsc = 1,
-                                mediaType = mediaType
-                            )
+                    1 -> { /* Descending */
+                        bucket?.let {
+                            it.bucketName?.let { bucketName ->
+                                viewModel.getSortedDataFromDb(
+                                    bucket = bucketName,
+                                    isAsc = 1,
+                                    mediaType = LassiConfig.getConfig().mediaType
+                                )
+                            }
                         }
                     }
                 }
             }
+            create().show()
         }
-
-        // create and show the alert dialog
-        builder.create().show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -42,8 +42,7 @@ class SelectedMediaViewModel(
                     is Result.Success -> result.data.let {
                         fetchedMediaLiveData.postValue(Response.Success(it))
                     }
-                    is Result.Error -> fetchedMediaLiveData.value =
-                        (Response.Error(result.throwable))
+                    is Result.Error -> fetchedMediaLiveData.value = Response.Error(result.throwable)
                     else -> {}
                 }
             }
@@ -60,7 +59,7 @@ class SelectedMediaViewModel(
                         fetchedMediaLiveData.postValue(Response.Success(it))
                     }
                     is Result.Error -> {
-                        fetchedMediaLiveData.value = (Response.Error(result.throwable))
+                        fetchedMediaLiveData.value = Response.Error(result.throwable)
                     }
                     else -> {}
                 }
