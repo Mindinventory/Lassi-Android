@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -127,13 +126,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
             if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
-//                CropUtils.beginCrop(requireActivity(), uri)
-                /*cropImage.launch(
-                    CropImageContractOptions(
-                        uri = uri,
-                        cropImageOptions = CropImageOptions(),
-                    ),
-                )*/
                 croppingOptions(uri = uri)
             } else {
                 ArrayList<MiMedia>().also {
@@ -147,8 +139,14 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         })
     }
 
-    private fun croppingOptions(uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false) {
-        // Start picker to get image for cropping and then use the image in cropping activity.
+    private fun croppingOptions(
+        uri: Uri? = null,
+        includeCamera: Boolean? = false,
+        includeGallery: Boolean? = false
+    ) {
+        /**
+         * Start picker to get image for cropping and then use the image in cropping activity.
+         */
         cropImage.launch(
             includeCamera?.let { includeCamera ->
                 includeGallery?.let { includeGallery ->
@@ -169,23 +167,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                 )
             }
         )
-
-        /*// Start picker to get image for cropping from only gallery and then use the image in cropping activity.
-        cropImage.launch(
-            CropImageContractOptions {
-                setImagePickerContractOptions(
-                    PickImageContractOptions(includeGallery = true, includeCamera = false)
-                )
-            }
-        )
-
-        // Start cropping activity for pre-acquired image saved on the device and customize settings.
-        cropImage.launch(
-            CropImageContractOptions(uri = imageUri) {
-                setGuidelines(CropImageView.Guidelines.ON)
-                setOutputCompressFormat(CompressFormat.PNG)
-            }
-        )*/
     }
 
 
@@ -283,15 +264,16 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
     }
 
     private fun showPermissionDisableAlert() {
-        val alertMessage = if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_audio_storage_permission_rational
-        } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_audio_permission_rational
-        } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            R.string.camera_permission_rational
-        } else {
-            R.string.camera_storage_permission_rational
-        }
+        val alertMessage =
+            if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_audio_storage_permission_rational
+            } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_audio_permission_rational
+            } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                R.string.camera_permission_rational
+            } else {
+                R.string.camera_storage_permission_rational
+            }
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
             .setMessage(alertMessage)
             .setCancelable(false)

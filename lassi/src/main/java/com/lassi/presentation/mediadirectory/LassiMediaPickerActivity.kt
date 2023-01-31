@@ -31,7 +31,6 @@ import com.lassi.domain.media.MediaType
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
 import com.lassi.presentation.cropper.*
-import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.docs.DocsFragment
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.videopreview.VideoPreviewActivity
@@ -40,11 +39,9 @@ import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
 import io.reactivex.annotations.Nullable
 import kotlinx.android.synthetic.main.activity_media_picker.*
-import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
     private var menuDone: MenuItem? = null
@@ -92,10 +89,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
         when {
             result.isSuccessful -> {
-                Timber.tag("AIC-Sample").i("Original bitmap: ${result.originalBitmap}")
-                Timber.tag("AIC-Sample").i("Original uri: ${result.originalUri}")
-                Timber.tag("AIC-Sample").i("Output bitmap: ${result.bitmap}")
-                Timber.tag("AIC-Sample").i("Output uri: ${result.getUriFilePath(this)}")
+                Logger.d("AIC-Sample", "Original bitmap: ${result.originalBitmap}")
+                Logger.d("AIC-Sample", "Original uri: ${result.originalUri}")
+                Logger.d("AIC-Sample", "Output bitmap: ${result.bitmap}")
+                Logger.d("AIC-Sample", "Output uri: ${result.getUriFilePath(this)}")
                 handleCropImageResult(result.uriContent.toString())
             }
             result is CropImage.CancelledResult -> showErrorMessage("cropping image was cancelled by the user")
@@ -110,12 +107,11 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     }
 
     private fun showErrorMessage(message: String) {
-        Timber.tag("AIC-Sample").e("Camera error: $message")
+        Logger.d("AIC-Sample", "Camera error: $message")
         Toast.makeText(this, "Crop failed: $message", Toast.LENGTH_SHORT).show()
     }
 
     private fun handleCropImageResult(uri: String) {
-//        SampleResultScreen.start(this, null, Uri.parse(uri.replace("file:", "")), null)
         Toast.makeText(this, "!@# handleCropImageResult called : $uri", Toast.LENGTH_SHORT).show()
     }
 
@@ -126,9 +122,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     override fun initViews() {
         super.initViews()
-        /*setupOutputUri()
-        takePicture.launch(outputUri)*/
-
         Bridge.initialize(applicationContext, object : SavedStateHandler {
             override fun saveInstanceState(@NonNull target: Any, @NonNull state: Bundle) {
             }
@@ -266,7 +259,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             MediaType.IMAGE -> {
                 if (LassiConfig.isSingleMediaSelection() && LassiConfig.getConfig().isCrop) {
                     val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
-//                    CropUtils.beginCrop(this, uri)
                     croppingOptions(uri = uri)
                 } else {
                     setResultOk(viewModel.selectedMediaLiveData.value)
@@ -287,7 +279,11 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         }
     }
 
-    private fun croppingOptions(uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false) {
+    private fun croppingOptions(
+        uri: Uri? = null,
+        includeCamera: Boolean? = false,
+        includeGallery: Boolean? = false
+    ) {
         // Start picker to get image for cropping and then use the image in cropping activity.
         cropImage.launch(
             includeCamera?.let { includeCamera ->
@@ -309,23 +305,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 )
             }
         )
-
-        /*// Start picker to get image for cropping from only gallery and then use the image in cropping activity.
-        cropImage.launch(
-            CropImageContractOptions {
-                setImagePickerContractOptions(
-                    PickImageContractOptions(includeGallery = true, includeCamera = false)
-                )
-            }
-        )
-
-        // Start cropping activity for pre-acquired image saved on the device and customize settings.
-        cropImage.launch(
-            CropImageContractOptions(uri = imageUri) {
-                setGuidelines(CropImageView.Guidelines.ON)
-                setOutputCompressFormat(CompressFormat.PNG)
-            }
-        )*/
     }
 
     private fun initCamera() {
@@ -347,8 +326,9 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private val getActivityResult =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
-            if(it.resultCode == Activity.RESULT_OK){
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
                 var data = it.data
                 if (data != null) {
                     if (data.hasExtra(KeyUtils.SELECTED_MEDIA)) {
@@ -387,7 +367,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 if (data.hasExtra(KeyUtils.SELECTED_MEDIA)) {
                     val selectedMedia =
                         data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                    Logger.d("LASSI", "!@# LassiMediaPickerActivity Media size 390 => ${selectedMedia?.size}")
+                    Logger.d(
+                        "LASSI",
+                        "!@# LassiMediaPickerActivity Media size 390 => ${selectedMedia?.size}"
+                    )
                     LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
                     viewModel.addAllSelectedMedia(selectedMedia)
                     folderViewModel.checkInsert()
@@ -396,7 +379,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     }
                 } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
                     val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
-                    Logger.d("LASSI", "!@# LassiMediaPickerActivity Media path 398 => ${selectedMedia?.path}")
+                    Logger.d(
+                        "LASSI",
+                        "!@# LassiMediaPickerActivity Media path 398 => ${selectedMedia?.path}"
+                    )
                     if (LassiConfig.isSingleMediaSelection()) {
                         setResultOk(arrayListOf(selectedMedia!!))
                     } else {
@@ -416,7 +402,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         val intent = Intent().apply {
             putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
         }
-        Logger.d("LASSI", "!@# LassiMediaPickerActivity selectedMedia size 417 => ${selectedMedia?.size}")
+        Logger.d(
+            "LASSI",
+            "!@# LassiMediaPickerActivity selectedMedia size 417 => ${selectedMedia?.size}"
+        )
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -424,7 +413,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     private fun setupOutputUri() {
         if (outputUri == null) {
             this.let { ctx ->
-//                val authorities = "${ctx.applicationContext?.packageName}$AUTHORITY_SUFFIX"
                 val authorities = applicationContext.packageName + ".fileprovider"
                 outputUri = FileProvider.getUriForFile(ctx, authorities, createImageFile())
             }
@@ -467,6 +455,5 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         const val FILE_NAMING_PREFIX = "JPEG_"
         const val FILE_NAMING_SUFFIX = "_"
         const val FILE_FORMAT = ".jpg"
-//        const val AUTHORITY_SUFFIX = "${applicationContext.packageName}" + ".fileprovider"
     }
 }

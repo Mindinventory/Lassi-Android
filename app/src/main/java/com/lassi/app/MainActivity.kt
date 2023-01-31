@@ -241,7 +241,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                Logger.d("LASSI", "!@# selectedMedia size => ${selectedMedia.size}")
                 if (selectedMedia.isNotEmpty()) {
                     ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)

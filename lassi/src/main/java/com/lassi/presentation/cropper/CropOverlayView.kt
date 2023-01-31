@@ -173,7 +173,6 @@ internal class CropOverlayView @JvmOverloads constructor(
   var guidelines: Guidelines? = null
     private set
   /** The shape of the cropping area - rectangle/circular. */
-  /** The shape of the cropping area - rectangle/circular. */
   var cropShape: CropShape? = null
     private set
 

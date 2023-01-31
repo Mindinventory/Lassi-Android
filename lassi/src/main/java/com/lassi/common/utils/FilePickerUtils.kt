@@ -15,7 +15,6 @@ import java.io.OutputStream
 import java.util.*
 
 object FilePickerUtils {
-//    private const val AUTHORITY = "${BuildConfig.LIBRARY_PACKAGE_NAME}.provider"
 
     fun contains(types: Array<String>, path: String): Boolean {
         for (string in types) {
@@ -35,10 +34,7 @@ object FilePickerUtils {
                 it,
                 arrayOf(filePath),
                 arrayOf(mimeType)
-            ) { path, uri ->
-                Log.d("ExternalStorage", "Scanned $path")
-
-//                val uriTemp: Uri = FileProvider.getUriForFile(context, AUTHORITY, File(filePath))
+            ) { path, _ ->
                 onFileScanComplete(Uri.fromFile(File(path)), path)
             }
         }

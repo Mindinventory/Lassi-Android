@@ -22,14 +22,18 @@ import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
-import com.lassi.presentation.cropper.*
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.adapter.MediaAdapter
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.fragment_media_picker.*
 import java.io.File
 
-class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
+class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
+    CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
     private val mediaAdapter by lazy { MediaAdapter(this::onItemClick) }
     private var bucket: MiItemMedia? = null
     private var mediaPickerConfig = LassiConfig.getConfig()
@@ -81,7 +85,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), Crop
         }
     }
 
-    private fun croppingOptions(uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false) {
+    private fun croppingOptions(
+        uri: Uri? = null,
+        includeCamera: Boolean? = false,
+        includeGallery: Boolean? = false
+    ) {
         // Start picker to get image for cropping and then use the image in cropping activity.
         cropImage.launch(
             includeCamera?.let { includeCamera ->
@@ -103,23 +111,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), Crop
                 )
             }
         )
-
-        /*// Start picker to get image for cropping from only gallery and then use the image in cropping activity.
-        cropImage.launch(
-            CropImageContractOptions {
-                setImagePickerContractOptions(
-                    PickImageContractOptions(includeGallery = true, includeCamera = false)
-                )
-            }
-        )
-
-        // Start cropping activity for pre-acquired image saved on the device and customize settings.
-        cropImage.launch(
-            CropImageContractOptions(uri = imageUri) {
-                setGuidelines(CropImageView.Guidelines.ON)
-                setOutputCompressFormat(CompressFormat.PNG)
-            }
-        )*/
     }
 
     override fun buildViewModel(): SelectedMediaViewModel {
@@ -161,16 +152,8 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), Crop
                 if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.getConfig().isCrop) {
                     uri = Uri.fromFile(selectedMedias[0].path?.let { File(it) })
                     uri?.let {
-//                        CropUtils.beginCrop(requireActivity(), it)
                         croppingOptions(uri = uri)
                     }
-                    /*cropImage.launch(
-                        CropImageContractOptions(
-                            uri = uri,
-                            cropImageOptions = CropImageOptions(),
-                        ),
-                    )*/
-//                    croppingOptions(uri = uri)
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
 
@@ -215,7 +198,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), Crop
 
     override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
         if (error != null) {
-//            Timber.tag("AIC-Sample").e(error, "Failed to load image by URI")
             Toast.makeText(activity, "Image load failed: " + error.message, Toast.LENGTH_LONG)
                 .show()
         }
@@ -223,20 +205,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(), Crop
 
     override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
         if (result.error == null) {
-            /*val imageBitmap = if (binding.cropImageView.cropShape == CropImageView.CropShape.OVAL) {
-                result.bitmap?.let(CropImage::toOvalBitmap)
-            } else {
-                result.bitmap
-            }*/
-//            Timber.tag("AIC-Sample").i("Original bitmap: ${result.originalBitmap}")
-//            Timber.tag("AIC-Sample").i("Original uri: ${result.originalUri}")
-//            Timber.tag("AIC-Sample").i("Output bitmap: $imageBitmap")
-//            Timber.tag("AIC-Sample").i("Output uri: ${result.getUriFilePath(view.context)}")
-//            SampleResultScreen.start(this, imageBitmap, result.uriContent, result.sampleSize)
-
-//            CropUtils.beginCrop(requireActivity(), uri)
         } else {
-//            Timber.tag("AIC-Sample").e(result.error, "Failed to crop image")
             Toast
                 .makeText(activity, "Crop failed: ${result.error?.message}", Toast.LENGTH_SHORT)
                 .show()

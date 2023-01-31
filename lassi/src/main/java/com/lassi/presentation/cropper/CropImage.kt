@@ -99,17 +99,17 @@ object CropImage {
     )
 
     @Suppress("DEPRECATION")
-    protected constructor(`in`: Parcel) : super(
+    protected constructor(parcel: Parcel) : super(
       originalBitmap = null,
-      originalUri = `in`.readParcelable<Parcelable>(Uri::class.java.classLoader) as Uri?,
+      originalUri = parcel.readParcelable<Parcelable>(Uri::class.java.classLoader) as Uri?,
       bitmap = null,
-      uriContent = `in`.readParcelable<Parcelable>(Uri::class.java.classLoader) as Uri?,
-      error = `in`.readSerializable() as Exception?,
-      cropPoints = `in`.createFloatArray()!!,
-      cropRect = `in`.readParcelable<Parcelable>(Rect::class.java.classLoader) as Rect?,
-      wholeImageRect = `in`.readParcelable<Parcelable>(Rect::class.java.classLoader) as Rect?,
-      rotation = `in`.readInt(),
-      sampleSize = `in`.readInt(),
+      uriContent = parcel.readParcelable<Parcelable>(Uri::class.java.classLoader) as Uri?,
+      error = parcel.readSerializable() as Exception?,
+      cropPoints = parcel.createFloatArray()!!,
+      cropRect = parcel.readParcelable<Parcelable>(Rect::class.java.classLoader) as Rect?,
+      wholeImageRect = parcel.readParcelable<Parcelable>(Rect::class.java.classLoader) as Rect?,
+      rotation = parcel.readInt(),
+      sampleSize = parcel.readInt(),
     )
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -130,8 +130,8 @@ object CropImage {
       @JvmField
       val CREATOR: Parcelable.Creator<ActivityResult?> =
         object : Parcelable.Creator<ActivityResult?> {
-          override fun createFromParcel(`in`: Parcel): ActivityResult =
-            ActivityResult(`in`)
+          override fun createFromParcel(parcel: Parcel): ActivityResult =
+            ActivityResult(parcel)
 
           override fun newArray(size: Int): Array<ActivityResult?> = arrayOfNulls(size)
         }

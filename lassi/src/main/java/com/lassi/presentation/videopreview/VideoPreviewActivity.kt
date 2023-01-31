@@ -19,13 +19,13 @@ import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
 import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.cropper.CropImageContract
 import kotlinx.android.synthetic.main.activity_video_preview.*
-import timber.log.Timber
 import java.io.File
 
 class VideoPreviewActivity : LassiBaseActivity() {
@@ -39,7 +39,6 @@ class VideoPreviewActivity : LassiBaseActivity() {
             val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
                 putExtra(KeyUtils.VIDEO_PATH, videoPath)
             }
-//            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
         }
     }
 
@@ -85,10 +84,10 @@ class VideoPreviewActivity : LassiBaseActivity() {
     private val cropImageListener = registerForActivityResult(CropImageContract()) { result ->
         when {
             result.isSuccessful -> {
-                Timber.tag("AIC-Sample").i("Original bitmap: ${result.originalBitmap}")
-                Timber.tag("AIC-Sample").i("Original uri: ${result.originalUri}")
-                Timber.tag("AIC-Sample").i("Output bitmap: ${result.bitmap}")
-                Timber.tag("AIC-Sample").i("Output uri: ${result.getUriFilePath(this)}")
+                Logger.d("AIC-Sample", "Original bitmap: ${result.originalBitmap}")
+                Logger.d("AIC-Sample", "Original uri: ${result.originalUri}")
+                Logger.d("AIC-Sample", "Output bitmap: ${result.bitmap}")
+                Logger.d("AIC-Sample", "Output uri: ${result.getUriFilePath(this)}")
                 handleCropImageResult(result.uriContent.toString())
             }
             result is CropImage.CancelledResult -> showErrorMessage("cropping image was cancelled by the user")
@@ -97,7 +96,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     private fun showErrorMessage(message: String) {
-        Timber.tag("AIC-Sample").e("Camera error: $message")
+        Logger.d("AIC-Sample", "Camera error: $message")
         Toast.makeText(this, "!@# Crop failed: $message", Toast.LENGTH_SHORT).show()
     }
 

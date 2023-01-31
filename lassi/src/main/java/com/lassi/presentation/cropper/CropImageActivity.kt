@@ -2,9 +2,6 @@ package com.lassi.presentation.cropper
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -31,7 +28,6 @@ import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.databinding.CropImageActivityBinding
 import com.lassi.presentation.cropper.utils.getUriForFile
-import kotlinx.android.synthetic.main.activity_media_picker.*
 import java.io.File
 
 open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriCompleteListener,
@@ -69,7 +65,6 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         binding = CropImageActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setCropImageView(binding.cropImageView)
-//        setSupportActionBar(toolbar)
         val bundle = intent.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)
         cropImageUri = bundle?.parcelable(CropImage.CROP_IMAGE_EXTRA_SOURCE)
         cropImageOptions =
@@ -107,37 +102,6 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         cropImageOptions.activityBackgroundColor.let { activityBackgroundColor ->
             binding.root.setBackgroundColor(activityBackgroundColor)
         }
-
-//        supportActionBar?.let {
-//            title = cropImageOptions.activityTitle.ifEmpty { "Testing" }
-//            it.setDisplayHomeAsUpEnabled(true)
-//            cropImageOptions.toolbarColor?.let { toolbarColor ->
-//                it.setBackgroundDrawable(ColorDrawable(toolbarColor))
-//            }
-//            cropImageOptions.toolbarTitleColor?.let { toolbarTitleColor ->
-//                val spannableTitle: Spannable = SpannableString(title)
-//                spannableTitle.setSpan(
-//                    ForegroundColorSpan(toolbarTitleColor),
-//                    0,
-//                    spannableTitle.length,
-//                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE,
-//                )
-//                title = spannableTitle
-//            }
-//            cropImageOptions.toolbarBackButtonColor?.let { backBtnColor ->
-//                try {
-//                    val upArrow = ContextCompat.getDrawable(
-//                        this,
-//                        R.drawable.ic_arrow_back_24,
-//                    )
-//                    upArrow?.colorFilter =
-//                        PorterDuffColorFilter(backBtnColor, PorterDuff.Mode.SRC_ATOP)
-//                    it.setHomeAsUpIndicator(upArrow)
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }
-//        }
     }
 
     private fun showIntentChooser() {
@@ -409,15 +373,13 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 onFileScanComplete = this::onFileScanComplete
             )
         }
-//        setResult(
-//            error?.let { CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE } ?: RESULT_OK,
-//            getResultIntent(uri, error, sampleSize),
-//        )
-//        finish()
     }
 
     private fun onFileScanComplete(uri: Uri?, imagePath: String?) {
-        Logger.d("LASSI", "!@# CropImageActivity setResult() 420 uri => $uri, imagePath => $imagePath")
+        Logger.d(
+            "LASSI",
+            "!@# CropImageActivity setResult() 420 uri => $uri, imagePath => $imagePath"
+        )
         uri?.let { returnUri ->
             Logger.d("LASSI", "!@# CropImageActivity setResult() 422 => $returnUri")
             contentResolver.query(returnUri, null, null, null, null)
