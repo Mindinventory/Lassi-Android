@@ -16,7 +16,6 @@ import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnImagePicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(4)
+                    .setMaxCount(1)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)

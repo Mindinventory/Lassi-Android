@@ -157,8 +157,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
                         showCropOverlay = true,
                         guidelines = CropImageView.Guidelines.ON,
                         multiTouchEnabled = false,
-
-                        )
+                    )
                 }
             }?.let {
                 CropImageContractOptions(

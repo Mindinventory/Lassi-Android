@@ -326,8 +326,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private val getActivityResult =
         registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
+            ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 var data = it.data
                 if (data != null) {
