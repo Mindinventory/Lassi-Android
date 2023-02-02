@@ -195,7 +195,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuCamera?.isVisible =
-            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA ||
+                    LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
@@ -263,7 +264,9 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
                     viewModel.addAllSelectedMedia(selectedMedia)
                     folderViewModel.checkInsert()
-                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY ||
+                        LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
+                    ) {
                         supportFragmentManager.popBackStack()
                     }
                 } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
@@ -274,7 +277,9 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                         LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
                         viewModel.addSelectedMedia(selectedMedia)
                         folderViewModel.checkInsert()
-                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY ||
+                            LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
+                        ) {
                             supportFragmentManager.popBackStack()
                         }
                     }
