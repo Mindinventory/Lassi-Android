@@ -668,14 +668,21 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         Context c = getContext();
         boolean needsCamera = true;
         boolean needsStorage = true;
-        boolean needsAudio = LassiConfig.Companion.getConfig().getMediaType() == MediaType.VIDEO && audio == Audio.ON;
+        boolean needsAudio = LassiConfig.Companion.getConfig().getMediaType() ==
+                MediaType.VIDEO && audio == Audio.ON;
 
-        needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
-        needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED;
+        needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) !=
+                PackageManager.PERMISSION_GRANTED;
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;

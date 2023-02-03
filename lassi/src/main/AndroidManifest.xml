@@ -29,7 +29,7 @@
             android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
-            android:theme="@style/AppTheme.Sample"
+            android:theme="@style/AppTheme.cropper"
             tools:targetApi="n" />
         <activity
             android:name=".presentation.videopreview.VideoPreviewActivity"
