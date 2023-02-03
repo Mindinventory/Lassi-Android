@@ -337,8 +337,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                         LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
                         viewModel.addAllSelectedMedia(selectedMedia)
                         folderViewModel.checkInsert()
-                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY ||
-                            LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY
+                            || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
                         ) {
                             supportFragmentManager.popBackStack()
                         }
@@ -350,8 +350,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                             LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
                             viewModel.addSelectedMedia(selectedMedia)
                             folderViewModel.checkInsert()
-                            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY ||
-                                LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
+                            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY
+                                || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY
                             ) {
                                 supportFragmentManager.popBackStack()
                             }
