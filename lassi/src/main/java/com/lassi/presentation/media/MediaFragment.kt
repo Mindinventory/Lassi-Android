@@ -15,10 +15,12 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.KeyUtils.SELECTED_FOLDER
 import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
+import com.lassi.data.common.StartVideoContract
 import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
+import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
@@ -27,8 +29,9 @@ import com.lassi.presentation.cropper.CropImageContractOptions
 import com.lassi.presentation.cropper.CropImageOptions
 import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.adapter.MediaAdapter
+import com.lassi.presentation.mediadirectory.FolderViewModel
+import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
-import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.fragment_media_picker.*
 import java.io.File
 
@@ -49,6 +52,22 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
             }
             miMediaPickerFragment.arguments = args
             return miMediaPickerFragment
+        }
+    }
+
+    private val folderViewModel by lazy {
+        ViewModelProvider(
+            this, FolderViewModelFactory(requireContext())
+        )[FolderViewModel::class.java]
+    }
+    private val startMediaContract = registerForActivityResult(StartVideoContract()) { miMedia ->
+        miMedia?.let {
+            LassiConfig.getConfig().selectedMedias.addAll(arrayListOf(it))
+            viewModel.addAllSelectedMedia(arrayListOf(it))
+        }
+        folderViewModel.checkInsert()
+        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+            parentFragmentManager.popBackStack()
         }
     }
 
@@ -166,10 +185,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                 if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
                 } else {
-                    VideoPreviewActivity.startVideoPreview(
+                    /*VideoPreviewActivity.startVideoPreview(
                         activity,
                         selectedMedias[0].path!!
-                    )
+                    )*/
+                    startMediaContract.launch(selectedMedias[0].path!!)
                 }
             }
             else -> {}

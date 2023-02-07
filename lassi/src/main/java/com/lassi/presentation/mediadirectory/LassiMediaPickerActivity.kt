@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -23,6 +24,7 @@ import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
+import com.lassi.data.common.StartVideoContract
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
@@ -61,6 +63,73 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                 setResultOk(list)
             }
         }
+
+/*    val startVideoContract = registerForActivityResult(StartVideoContract()) {data ->
+        with(data) {
+            if (this!= null) {
+                if (this.hasExtra(KeyUtils.SELECTED_MEDIA)) {
+                    val selectedMedia = this.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                    Logger.d("LASSI", "!@# registerForActivityResult Media size 390 => ${selectedMedia.size}")
+                    LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
+                    viewModel.addAllSelectedMedia(selectedMedia)
+                    folderViewModel.checkInsert()
+                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                        supportFragmentManager.popBackStack()
+                    }
+                } else if (this.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
+                    val selectedMedia = this.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
+                    Logger.d("LASSI", "!@# registerForActivityResult Media path 85 => ${selectedMedia?.path}")
+                    if (LassiConfig.isSingleMediaSelection()) {
+                        setResultOk(arrayListOf(selectedMedia!!))
+                    } else {
+                        LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
+                        viewModel.addSelectedMedia(selectedMedia)
+                        folderViewModel.checkInsert()
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                            supportFragmentManager.popBackStack()
+                        }
+                    }
+                }
+            }
+        }
+    }*/
+
+/*     val video = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { data ->
+        with(data.data) {
+            if (this!= null) {
+                if (this.hasExtra(KeyUtils.SELECTED_MEDIA)) {
+                    val selectedMedia =
+                        this.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                    Logger.d(
+                        "LASSI",
+                        "!@# registerForActivityResult Media size 390 => ${selectedMedia.size}"
+                    )
+                    LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
+                    viewModel.addAllSelectedMedia(selectedMedia)
+                    folderViewModel.checkInsert()
+                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                        supportFragmentManager.popBackStack()
+                    }
+                } else if (this.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
+                    val selectedMedia = this.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
+                    Logger.d(
+                        "LASSI",
+                        "!@# registerForActivityResult Media path 85 => ${selectedMedia?.path}"
+                    )
+                    if (LassiConfig.isSingleMediaSelection()) {
+                        setResultOk(arrayListOf(selectedMedia!!))
+                    } else {
+                        LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
+                        viewModel.addSelectedMedia(selectedMedia)
+                        folderViewModel.checkInsert()
+                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                            supportFragmentManager.popBackStack()
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 
     private var outputUri: Uri? = null
     private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) {
@@ -385,7 +454,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                     val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
                     Logger.d(
                         "LASSI",
-                        "!@# LassiMediaPickerActivity Media path 398 => ${selectedMedia?.path}"
+                        "!@# LassiMediaPickerActivity Media path 481 => ${selectedMedia?.path}"
                     )
                     if (LassiConfig.isSingleMediaSelection()) {
                         setResultOk(arrayListOf(selectedMedia!!))

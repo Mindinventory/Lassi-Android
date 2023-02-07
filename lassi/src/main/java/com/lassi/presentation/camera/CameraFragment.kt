@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -19,11 +20,14 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
+import com.lassi.data.common.StartVideoContract
 import com.lassi.data.common.VideoRecord
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
+import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.cameraview.audio.Audio
 import com.lassi.presentation.cameraview.audio.Flash
@@ -33,10 +37,11 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
-import com.lassi.presentation.cropper.CropImageContract
-import com.lassi.presentation.cropper.CropImageContractOptions
-import com.lassi.presentation.cropper.CropImageOptions
-import com.lassi.presentation.cropper.CropImageView
+import com.lassi.presentation.cropper.*
+import com.lassi.presentation.media.SelectedMediaViewModel
+import com.lassi.presentation.mediadirectory.FolderViewModel
+import com.lassi.presentation.mediadirectory.FolderViewModelFactory
+import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
@@ -44,6 +49,31 @@ import java.io.File
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnClickListener {
 
     private lateinit var cameraMode: Mode
+
+    private val cameraViewModel by lazy {
+        ViewModelProvider(
+            this, SelectedMediaViewModelFactory(requireContext())
+        )[SelectedMediaViewModel::class.java]
+    }
+
+    private val folderViewModel by lazy {
+        ViewModelProvider(
+            this, FolderViewModelFactory(requireContext())
+        )[FolderViewModel::class.java]
+    }
+
+    private val startVideoContract = registerForActivityResult(StartVideoContract()) { miMedia ->
+        if (LassiConfig.isSingleMediaSelection()) {
+            miMedia?.let { setResultOk(arrayListOf(it)) }
+        } else {
+            LassiConfig.getConfig().selectedMedias.add(miMedia!!)
+            cameraViewModel.addSelectedMedia(miMedia)
+            folderViewModel.checkInsert()
+            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                parentFragmentManager.popBackStack()
+            }
+        }
+    }
 
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
         if (result.isSuccessful) {
@@ -115,7 +145,8 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             override fun onVideoTaken(video: VideoResult) {
                 super.onVideoTaken(video)
                 stopVideoRecording()
-                VideoPreviewActivity.startVideoPreview(activity, video.file.absolutePath)
+//                VideoPreviewActivity.startVideoPreview(activity, video.file.absolutePath)
+                startVideoContract.launch(video.file.absolutePath)
             }
         })
         initCamera()
