@@ -7,126 +7,25 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.MediaController
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.Logger
-import com.lassi.data.common.StartVideoContract
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
-import com.lassi.domain.media.LassiOption
 import com.lassi.presentation.common.LassiBaseActivity
-import com.lassi.presentation.cropper.CropImage
-import com.lassi.presentation.cropper.CropImageContract
-import com.lassi.presentation.media.SelectedMediaViewModel
-import com.lassi.presentation.mediadirectory.FolderViewModel
-import com.lassi.presentation.mediadirectory.FolderViewModelFactory
-import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
-import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import kotlinx.android.synthetic.main.activity_video_preview.*
 import java.io.File
-import java.util.ArrayList
 
 class VideoPreviewActivity : LassiBaseActivity() {
-
-    private val logTag = VideoPreviewActivity::class.java.simpleName
     private var videoPath: String? = null
     override fun getContentResource() = R.layout.activity_video_preview
-
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this, SelectedMediaViewModelFactory(this)
-        )[SelectedMediaViewModel::class.java]
-    }
-
-    private val folderViewModel by lazy {
-        ViewModelProvider(
-            this, FolderViewModelFactory(this)
-        )[FolderViewModel::class.java]
-    }
-
-/*    private val startVideoContract = registerForActivityResult(StartVideoContract()) { data ->
-        with(data) {
-            if (this!= null) {
-                if (this.hasExtra(KeyUtils.SELECTED_MEDIA)) {
-                    val selectedMedia = this.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                    Logger.d("LASSI", "!@# registerForActivityResult Media size 390 => ${selectedMedia.size}")
-                    LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
-                    viewModel.addAllSelectedMedia(selectedMedia)
-                    folderViewModel.checkInsert()
-                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                        supportFragmentManager.popBackStack()
-                    }
-                } else if (this.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
-                    val selectedMedia = this.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
-                    Logger.d("LASSI", "!@# registerForActivityResult Media path 85 => ${selectedMedia?.path}")
-                    if (LassiConfig.isSingleMediaSelection()) {
-                        setResultOk(arrayListOf(selectedMedia!!))
-                    } else {
-                        LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
-                        viewModel.addSelectedMedia(selectedMedia)
-                        folderViewModel.checkInsert()
-                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                            supportFragmentManager.popBackStack()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
-        val intent = Intent().apply {
-            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
-        }
-        Logger.d(
-            "LASSI",
-            "!@# VideoPreviewActivity selectedMedia size 96 => ${selectedMedia?.size}"
-        )
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-    }*/
-
-/*    init {
-        startVideoPreview()
-    }
-    open fun startVideoPreview(activity: FragmentActivity? = null, videoPath: String = "") {
-        Log.d("TAG", "!@# startVideoPreview: videoPath => $videoPath")
-        activity?.let {
-            val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
-                putExtra(KeyUtils.VIDEO_PATH, videoPath)
-            }
-            if (videoPath  != "") {
-//            activity?.startActivityForResult(intent, 203)
-                startVideoContract.launch(videoPath)
-                StartVideoContract().parseResult(203, intent)
-            }
-        }
-    }*/
-
-    companion object {
-        fun startVideoPreview(activity: FragmentActivity?, videoPath: String) {
-            Log.d("TAG", "!@# startVideoPreview: videoPath => $videoPath")
-            val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
-                putExtra(KeyUtils.VIDEO_PATH, videoPath)
-            }
-//            activity?.startActivityForResult(intent, 203)
-
-            StartVideoContract().parseResult(203, intent)
-        }
-    }
 
     override fun initViews() {
         super.initViews()
@@ -140,7 +39,6 @@ class VideoPreviewActivity : LassiBaseActivity() {
             return
         }
         videoPath = intent.getStringExtra(KeyUtils.VIDEO_PATH)
-        Log.d("TAG", "!@# initViews: videoPath => $videoPath")
         val controller = MediaController(this)
         controller.setAnchorView(videoView)
         controller.setMediaPlayer(videoView)
@@ -168,15 +66,6 @@ class VideoPreviewActivity : LassiBaseActivity() {
         }
     }
 
-    private fun showErrorMessage(message: String) {
-        Logger.d("AIC-Sample", "Camera error: $message")
-        Toast.makeText(this, "!@# Crop failed: $message", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun handleCropImageResult(uri: String) {
-        Toast.makeText(this, "!@# handleCropImageResult: URI => : $uri", Toast.LENGTH_SHORT).show()
-    }
-
     private fun playVideo() {
         if (videoView.isPlaying) return
         videoView.start()
@@ -188,7 +77,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
+        when (item.itemId) {
             R.id.menuDone -> {
                 videoPath?.let {
                     FilePickerUtils.notifyGalleryUpdateNewFile(

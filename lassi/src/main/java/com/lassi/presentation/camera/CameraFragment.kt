@@ -20,7 +20,6 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
-import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.StartVideoContract
 import com.lassi.data.common.VideoRecord
@@ -37,12 +36,14 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
-import com.lassi.presentation.cropper.*
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
-import com.lassi.presentation.videopreview.VideoPreviewActivity
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
 
@@ -70,19 +71,22 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             cameraViewModel.addSelectedMedia(miMedia)
             folderViewModel.checkInsert()
             if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                parentFragmentManager.popBackStack()
+                miMedia?.let { setResultOk(arrayListOf(it)) }
             }
         }
     }
 
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) {
-            // Use the returned uri.
-            val uriContent = result.uriContent
-            val uriFilePath = result.getUriFilePath(requireContext()) // optional usage
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+        if (LassiConfig.isSingleMediaSelection()) {
+            miMedia?.let { setResultOk(arrayListOf(it)) }
         } else {
-            // An error occurred.
-            val exception = result.error
+            LassiConfig.getConfig().selectedMedias.add(miMedia!!)
+            cameraViewModel.addSelectedMedia(miMedia)
+            folderViewModel.checkInsert()
+            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                setResultOk(arrayListOf(miMedia))
+                parentFragmentManager.popBackStack()
+            }
         }
     }
 
@@ -145,7 +149,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
             override fun onVideoTaken(video: VideoResult) {
                 super.onVideoTaken(video)
                 stopVideoRecording()
-//                VideoPreviewActivity.startVideoPreview(activity, video.file.absolutePath)
                 startVideoContract.launch(video.file.absolutePath)
             }
         })

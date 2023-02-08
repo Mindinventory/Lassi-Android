@@ -61,24 +61,30 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
         )[FolderViewModel::class.java]
     }
     private val startMediaContract = registerForActivityResult(StartVideoContract()) { miMedia ->
-        miMedia?.let {
-            LassiConfig.getConfig().selectedMedias.addAll(arrayListOf(it))
-            viewModel.addAllSelectedMedia(arrayListOf(it))
-        }
-        folderViewModel.checkInsert()
-        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-            parentFragmentManager.popBackStack()
+        if (LassiConfig.isSingleMediaSelection()) {
+            miMedia?.let { setResultOk(arrayListOf(it)) }
+        } else {
+            LassiConfig.getConfig().selectedMedias.add(miMedia!!)
+            viewModel.addSelectedMedia(miMedia)
+            folderViewModel.checkInsert()
+            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                setResultOk(arrayListOf(miMedia))
+                parentFragmentManager.popBackStack()
+            }
         }
     }
 
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) {
-            // Use the returned uri.
-            val uriContent = result.uriContent
-            val uriFilePath = result.getUriFilePath(requireContext()) // optional usage
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+        if (LassiConfig.isSingleMediaSelection()) {
+            miMedia?.let { setResultOk(arrayListOf(it)) }
         } else {
-            // An error occurred.
-            val exception = result.error
+            LassiConfig.getConfig().selectedMedias.add(miMedia!!)
+            viewModel.addSelectedMedia(miMedia)
+            folderViewModel.checkInsert()
+            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
+                setResultOk(arrayListOf(miMedia))
+                parentFragmentManager.popBackStack()
+            }
         }
     }
 
@@ -185,10 +191,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                 if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
                 } else {
-                    /*VideoPreviewActivity.startVideoPreview(
-                        activity,
-                        selectedMedias[0].path!!
-                    )*/
                     startMediaContract.launch(selectedMedias[0].path!!)
                 }
             }
@@ -227,7 +229,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
         if (result.error == null) {
         } else {
             Toast
-                .makeText(activity, "Crop failed: ${result.error?.message}", Toast.LENGTH_SHORT)
+                .makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
                 .show()
         }
     }
