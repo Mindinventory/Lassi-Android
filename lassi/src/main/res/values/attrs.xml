@@ -45,6 +45,17 @@
         <attr name="ls_cropMaxCropResultHeightPX" format="float" />
         <attr name="ls_cropFlipHorizontally" format="boolean" />
         <attr name="ls_cropFlipVertically" format="boolean" />
+        <attr name="ls_cornerShape">
+            <enum name="rectangle" value="0"/>
+            <enum name="oval" value="1"/>
+        </attr>
+        <attr name="ls_cropCenterMoveEnabled" format="boolean"/>
+        <attr name="ls_cropCornerRadius" format="dimension"/>
+        <attr name="ls_cropCornerCircleFillColor" format="color"/>
+        <attr name="ls_cropperLabelTextSize" format="float"/>
+        <attr name="ls_cropperLabelTextColor" format="color"/>
+        <attr name="ls_cropShowLabel" format="boolean"/>
+        <attr name="ls_cropperLabelText" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="CameraView">
