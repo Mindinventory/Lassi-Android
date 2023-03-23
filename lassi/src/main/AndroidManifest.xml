@@ -13,6 +13,7 @@
     <!-- Required to maintain app compatibility. -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true">
@@ -28,7 +29,7 @@
             android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.cropper"
             tools:targetApi="n" />
         <activity
             android:name=".presentation.videopreview.VideoPreviewActivity"

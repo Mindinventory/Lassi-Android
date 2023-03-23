@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.lassi.presentation.cropper.CropImageView
+    android:id="@+id/cropImageView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="@android:color/black"
-        android:clipToPadding="false"
-        android:elevation="2dp"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp" />
-
-    <com.lassi.presentation.cropper.CropImageView
-        android:id="@+id/cropImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+    />

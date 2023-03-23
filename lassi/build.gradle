@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 33
-        versionCode 24
-        versionName "1.1.0"
+        versionCode 25
+        versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -41,6 +41,10 @@ android {
 
     androidExtensions {
         experimental = true
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 

@@ -14,31 +14,18 @@ import android.widget.MediaController
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
-import com.lassi.presentation.cropper.CropImage
 import kotlinx.android.synthetic.main.activity_video_preview.*
 import java.io.File
 
 class VideoPreviewActivity : LassiBaseActivity() {
-
-    private val logTag = VideoPreviewActivity::class.java.simpleName
     private var videoPath: String? = null
     override fun getContentResource() = R.layout.activity_video_preview
-
-    companion object {
-        fun startVideoPreview(activity: FragmentActivity?, videoPath: String) {
-            val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
-                putExtra(KeyUtils.VIDEO_PATH, videoPath)
-            }
-            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
-        }
-    }
 
     override fun initViews() {
         super.initViews()
@@ -90,7 +77,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
+        when (item.itemId) {
             R.id.menuDone -> {
                 videoPath?.let {
                     FilePickerUtils.notifyGalleryUpdateNewFile(
