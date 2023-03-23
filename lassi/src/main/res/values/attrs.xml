@@ -1,130 +1,141 @@
 <resources>
 
     <declare-styleable name="CropImageView">
-        <attr name="cropGuidelines">
+        <attr name="ls_cropGuidelines">
             <enum name="off" value="0" />
             <enum name="onTouch" value="1" />
             <enum name="on" value="2" />
         </attr>
-        <attr name="cropScaleType">
+        <attr name="ls_cropScaleType">
             <enum name="fitCenter" value="0" />
             <enum name="center" value="1" />
             <enum name="centerCrop" value="2" />
             <enum name="centerInside" value="3" />
         </attr>
-        <attr name="cropShape">
+        <attr name="ls_cropShape">
             <enum name="rectangle" value="0" />
             <enum name="oval" value="1" />
         </attr>
-        <attr name="cropAutoZoomEnabled" format="boolean" />
-        <attr name="cropMaxZoom" format="integer" />
-        <attr name="cropMultiTouchEnabled" format="boolean" />
-        <attr name="cropFixAspectRatio" format="boolean" />
-        <attr name="cropAspectRatioX" format="integer" />
-        <attr name="cropAspectRatioY" format="integer" />
-        <attr name="cropInitialCropWindowPaddingRatio" format="float" />
-        <attr name="cropBorderLineThickness" format="dimension" />
-        <attr name="cropBorderLineColor" format="color" />
-        <attr name="cropBorderCornerThickness" format="dimension" />
-        <attr name="cropBorderCornerOffset" format="dimension" />
-        <attr name="cropBorderCornerLength" format="dimension" />
-        <attr name="cropBorderCornerColor" format="color" />
-        <attr name="cropGuidelinesThickness" format="dimension" />
-        <attr name="cropGuidelinesColor" format="color" />
-        <attr name="cropBackgroundColor" format="color" />
-        <attr name="cropSnapRadius" format="dimension" />
-        <attr name="cropTouchRadius" format="dimension" />
-        <attr name="cropSaveBitmapToInstanceState" format="boolean" />
-        <attr name="cropShowCropOverlay" format="boolean" />
-        <attr name="cropShowProgressBar" format="boolean" />
-        <attr name="cropMinCropWindowWidth" format="dimension" />
-        <attr name="cropMinCropWindowHeight" format="dimension" />
-        <attr name="cropMinCropResultWidthPX" format="float" />
-        <attr name="cropMinCropResultHeightPX" format="float" />
-        <attr name="cropMaxCropResultWidthPX" format="float" />
-        <attr name="cropMaxCropResultHeightPX" format="float" />
-        <attr name="cropFlipHorizontally" format="boolean" />
-        <attr name="cropFlipVertically" format="boolean" />
+        <attr name="ls_cropAutoZoomEnabled" format="boolean" />
+        <attr name="ls_cropMaxZoom" format="integer" />
+        <attr name="ls_cropMultiTouchEnabled" format="boolean" />
+        <attr name="ls_cropFixAspectRatio" format="boolean" />
+        <attr name="ls_cropAspectRatioX" format="integer" />
+        <attr name="ls_cropAspectRatioY" format="integer" />
+        <attr name="ls_cropInitialCropWindowPaddingRatio" format="float" />
+        <attr name="ls_cropBorderLineThickness" format="dimension" />
+        <attr name="ls_cropBorderLineColor" format="color" />
+        <attr name="ls_cropBorderCornerThickness" format="dimension" />
+        <attr name="ls_cropBorderCornerOffset" format="dimension" />
+        <attr name="ls_cropBorderCornerLength" format="dimension" />
+        <attr name="ls_cropBorderCornerColor" format="color" />
+        <attr name="ls_cropGuidelinesThickness" format="dimension" />
+        <attr name="ls_cropGuidelinesColor" format="color" />
+        <attr name="ls_cropBackgroundColor" format="color" />
+        <attr name="ls_cropSnapRadius" format="dimension" />
+        <attr name="ls_cropTouchRadius" format="dimension" />
+        <attr name="ls_cropSaveBitmapToInstanceState" format="boolean" />
+        <attr name="ls_cropShowCropOverlay" format="boolean" />
+        <attr name="ls_cropShowProgressBar" format="boolean" />
+        <attr name="ls_cropMinCropWindowWidth" format="dimension" />
+        <attr name="ls_cropMinCropWindowHeight" format="dimension" />
+        <attr name="ls_cropMinCropResultWidthPX" format="float" />
+        <attr name="ls_cropMinCropResultHeightPX" format="float" />
+        <attr name="ls_cropMaxCropResultWidthPX" format="float" />
+        <attr name="ls_cropMaxCropResultHeightPX" format="float" />
+        <attr name="ls_cropFlipHorizontally" format="boolean" />
+        <attr name="ls_cropFlipVertically" format="boolean" />
+        <attr name="ls_cornerShape">
+            <enum name="rectangle" value="0"/>
+            <enum name="oval" value="1"/>
+        </attr>
+        <attr name="ls_cropCenterMoveEnabled" format="boolean"/>
+        <attr name="ls_cropCornerRadius" format="dimension"/>
+        <attr name="ls_cropCornerCircleFillColor" format="color"/>
+        <attr name="ls_cropperLabelTextSize" format="float"/>
+        <attr name="ls_cropperLabelTextColor" format="color"/>
+        <attr name="ls_cropShowLabel" format="boolean"/>
+        <attr name="ls_cropperLabelText" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="CameraView">
 
-        <attr name="cameraPictureSizeMinWidth" format="integer|reference" />
-        <attr name="cameraPictureSizeMaxWidth" format="integer|reference" />
-        <attr name="cameraPictureSizeMinHeight" format="integer|reference" />
-        <attr name="cameraPictureSizeMaxHeight" format="integer|reference" />
-        <attr name="cameraPictureSizeMinArea" format="integer|reference" />
-        <attr name="cameraPictureSizeMaxArea" format="integer|reference" />
-        <attr name="cameraPictureSizeSmallest" format="boolean" />
-        <attr name="cameraPictureSizeBiggest" format="boolean" />
-        <attr name="cameraPictureSizeAspectRatio" format="string|reference" />
+        <attr name="ls_cameraPictureSizeMinWidth" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeMaxWidth" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeMinHeight" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeMaxHeight" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeMinArea" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeMaxArea" format="integer|reference" />
+        <attr name="ls_cameraPictureSizeSmallest" format="boolean" />
+        <attr name="ls_cameraPictureSizeBiggest" format="boolean" />
+        <attr name="ls_cameraPictureSizeAspectRatio" format="string|reference" />
 
-        <attr name="cameraVideoSizeMinWidth" format="integer|reference" />
-        <attr name="cameraVideoSizeMaxWidth" format="integer|reference" />
-        <attr name="cameraVideoSizeMinHeight" format="integer|reference" />
-        <attr name="cameraVideoSizeMaxHeight" format="integer|reference" />
-        <attr name="cameraVideoSizeMinArea" format="integer|reference" />
-        <attr name="cameraVideoSizeMaxArea" format="integer|reference" />
-        <attr name="cameraVideoSizeSmallest" format="boolean" />
-        <attr name="cameraVideoSizeBiggest" format="boolean" />
-        <attr name="cameraVideoSizeAspectRatio" format="string|reference" />
+        <attr name="ls_cameraVideoSizeMinWidth" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeMaxWidth" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeMinHeight" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeMaxHeight" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeMinArea" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeMaxArea" format="integer|reference" />
+        <attr name="ls_cameraVideoSizeSmallest" format="boolean" />
+        <attr name="ls_cameraVideoSizeBiggest" format="boolean" />
+        <attr name="ls_cameraVideoSizeAspectRatio" format="string|reference" />
 
-        <attr name="cameraVideoBitRate" format="integer|reference" />
-        <attr name="cameraAudioBitRate" format="integer|reference" />
+        <attr name="ls_cameraVideoBitRate" format="integer|reference" />
+        <attr name="ls_cameraAudioBitRate" format="integer|reference" />
 
-        <attr name="cameraSnapshotMaxWidth" format="integer|reference" />
-        <attr name="cameraSnapshotMaxHeight" format="integer|reference" />
+        <attr name="ls_cameraSnapshotMaxWidth" format="integer|reference" />
+        <attr name="ls_cameraSnapshotMaxHeight" format="integer|reference" />
 
-        <attr name="cameraGestureTap" format="enum">
+        <attr name="ls_cameraGestureTap" format="enum">
             <enum name="none" value="0" />
             <enum name="focus" value="1" />
             <enum name="focusWithMarker" value="2" />
             <enum name="capture" value="3" />
         </attr>
 
-        <attr name="cameraGestureLongTap" format="enum">
+        <attr name="ls_cameraGestureLongTap" format="enum">
             <enum name="none" value="0" />
             <enum name="focus" value="1" />
             <enum name="focusWithMarker" value="2" />
             <enum name="capture" value="3" />
         </attr>
 
-        <attr name="cameraGesturePinch" format="enum">
+        <attr name="ls_cameraGesturePinch" format="enum">
             <enum name="none" value="0" />
             <enum name="zoom" value="4" />
             <enum name="exposureCorrection" value="5" />
         </attr>
 
-        <attr name="cameraGestureScrollHorizontal" format="enum">
+        <attr name="ls_cameraGestureScrollHorizontal" format="enum">
             <enum name="none" value="0" />
             <enum name="zoom" value="4" />
             <enum name="exposureCorrection" value="5" />
         </attr>
 
-        <attr name="cameraGestureScrollVertical" format="enum">
+        <attr name="ls_cameraGestureScrollVertical" format="enum">
             <enum name="none" value="0" />
             <enum name="zoom" value="4" />
             <enum name="exposureCorrection" value="5" />
         </attr>
 
-        <attr name="cameraFacing" format="enum">
+        <attr name="ls_cameraFacing" format="enum">
             <enum name="back" value="0" />
             <enum name="front" value="1" />
         </attr>
 
-        <attr name="cameraHdr" format="enum">
+        <attr name="ls_cameraHdr" format="enum">
             <enum name="off" value="0" />
             <enum name="on" value="1" />
         </attr>
 
-        <attr name="cameraFlash" format="enum">
+        <attr name="ls_cameraFlash" format="enum">
             <enum name="off" value="0" />
             <enum name="on" value="1" />
             <enum name="auto" value="2" />
             <enum name="torch" value="3" />
         </attr>
 
-        <attr name="cameraWhiteBalance" format="enum">
+        <attr name="ls_cameraWhiteBalance" format="enum">
             <enum name="auto" value="0" />
             <enum name="incandescent" value="1" />
             <enum name="fluorescent" value="2" />
@@ -132,46 +143,46 @@
             <enum name="cloudy" value="4" />
         </attr>
 
-        <attr name="cameraGrid" format="enum">
+        <attr name="ls_cameraGrid" format="enum">
             <enum name="off" value="0" />
             <enum name="draw3x3" value="1" />
             <enum name="draw4x4" value="2" />
             <enum name="drawPhi" value="3" />
         </attr>
 
-        <attr name="cameraGridColor" format="color|reference" />
+        <attr name="ls_cameraGridColor" format="color|reference" />
 
-        <attr name="cameraMode" format="enum">
+        <attr name="ls_cameraMode" format="enum">
             <enum name="picture" value="0" />
             <enum name="video" value="1" />
         </attr>
 
-        <attr name="cameraAudio" format="enum">
+        <attr name="ls_cameraAudio" format="enum">
             <enum name="off" value="0" />
             <enum name="on" value="1" />
         </attr>
 
-        <attr name="cameraPreview" format="enum">
+        <attr name="ls_cameraPreview" format="enum">
             <enum name="surface" value="0" />
             <enum name="texture" value="1" />
             <enum name="glSurface" value="2" />
         </attr>
 
-        <attr name="cameraPlaySounds" format="boolean" />
+        <attr name="ls_cameraPlaySounds" format="boolean" />
 
-        <attr name="cameraVideoMaxSize" format="float" />
+        <attr name="ls_cameraVideoMaxSize" format="float" />
 
-        <attr name="cameraVideoMaxDuration" format="integer" />
+        <attr name="ls_cameraVideoMaxDuration" format="integer" />
 
-        <attr name="cameraVideoCodec" format="enum">
+        <attr name="ls_cameraVideoCodec" format="enum">
             <enum name="deviceDefault" value="0" />
             <enum name="h263" value="1" />
             <enum name="h264" value="2" />
         </attr>
 
-        <attr name="cameraExperimental" format="boolean" />
+        <attr name="ls_cameraExperimental" format="boolean" />
 
-        <attr name="cameraAutoFocusResetDelay" format="integer|reference" />
+        <attr name="ls_cameraAutoFocusResetDelay" format="integer|reference" />
 
     </declare-styleable>
 

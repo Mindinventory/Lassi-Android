@@ -71,7 +71,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 public class CameraView extends FrameLayout implements LifecycleObserver {
 
     public final static int PERMISSION_REQUEST_CODE = 16;
@@ -124,54 +123,54 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CameraView, 0, 0);
 
         // Self managed
-        boolean playSounds = a.getBoolean(R.styleable.CameraView_cameraPlaySounds, DEFAULT_PLAY_SOUNDS);
-        mExperimental = a.getBoolean(R.styleable.CameraView_cameraExperimental, false);
-        mPreview = Preview.fromValue(a.getInteger(R.styleable.CameraView_cameraPreview, Preview.DEFAULT.value()));
+        boolean playSounds = a.getBoolean(R.styleable.CameraView_ls_cameraPlaySounds, DEFAULT_PLAY_SOUNDS);
+        mExperimental = a.getBoolean(R.styleable.CameraView_ls_cameraExperimental, false);
+        mPreview = Preview.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraPreview, Preview.DEFAULT.value()));
 
         // Camera controller params
-        Facing facing = Facing.fromValue(a.getInteger(R.styleable.CameraView_cameraFacing, Facing.DEFAULT(context).value()));
-        Flash flash = Flash.fromValue(a.getInteger(R.styleable.CameraView_cameraFlash, Flash.DEFAULT.value()));
-        Grid grid = Grid.fromValue(a.getInteger(R.styleable.CameraView_cameraGrid, Grid.DEFAULT.value()));
-        int gridColor = a.getColor(R.styleable.CameraView_cameraGridColor, GridLinesLayout.DEFAULT_COLOR);
-        WhiteBalance whiteBalance = WhiteBalance.fromValue(a.getInteger(R.styleable.CameraView_cameraWhiteBalance, WhiteBalance.DEFAULT.value()));
-        Mode mode = Mode.fromValue(a.getInteger(R.styleable.CameraView_cameraMode, Mode.DEFAULT.value()));
-        Hdr hdr = Hdr.fromValue(a.getInteger(R.styleable.CameraView_cameraHdr, Hdr.DEFAULT.value()));
-        Audio audio = Audio.fromValue(a.getInteger(R.styleable.CameraView_cameraAudio, Audio.DEFAULT.value()));
-        VideoCodec codec = VideoCodec.fromValue(a.getInteger(R.styleable.CameraView_cameraVideoCodec, VideoCodec.DEFAULT.value()));
-        long videoMaxSize = (long) a.getFloat(R.styleable.CameraView_cameraVideoMaxSize, 0);
-        int videoMaxDuration = a.getInteger(R.styleable.CameraView_cameraVideoMaxDuration, 0);
-        int videoBitRate = a.getInteger(R.styleable.CameraView_cameraVideoBitRate, 0);
-        int audioBitRate = a.getInteger(R.styleable.CameraView_cameraAudioBitRate, 0);
-        long autoFocusResetDelay = a.getInteger(R.styleable.CameraView_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
+        Facing facing = Facing.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraFacing, Facing.DEFAULT(context).value()));
+        Flash flash = Flash.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraFlash, Flash.DEFAULT.value()));
+        Grid grid = Grid.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGrid, Grid.DEFAULT.value()));
+        int gridColor = a.getColor(R.styleable.CameraView_ls_cameraGridColor, GridLinesLayout.DEFAULT_COLOR);
+        WhiteBalance whiteBalance = WhiteBalance.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraWhiteBalance, WhiteBalance.DEFAULT.value()));
+        Mode mode = Mode.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraMode, Mode.DEFAULT.value()));
+        Hdr hdr = Hdr.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraHdr, Hdr.DEFAULT.value()));
+        Audio audio = Audio.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraAudio, Audio.DEFAULT.value()));
+        VideoCodec codec = VideoCodec.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraVideoCodec, VideoCodec.DEFAULT.value()));
+        long videoMaxSize = (long) a.getFloat(R.styleable.CameraView_ls_cameraVideoMaxSize, 0);
+        int videoMaxDuration = a.getInteger(R.styleable.CameraView_ls_cameraVideoMaxDuration, 0);
+        int videoBitRate = a.getInteger(R.styleable.CameraView_ls_cameraVideoBitRate, 0);
+        int audioBitRate = a.getInteger(R.styleable.CameraView_ls_cameraAudioBitRate, 0);
+        long autoFocusResetDelay = (long) a.getInteger(R.styleable.CameraView_ls_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
 
         // Picture size selector
         List<SizeSelector> pictureConstraints = new ArrayList<>(3);
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMinWidth)) {
-            pictureConstraints.add(SizeSelectors.minWidth(a.getInteger(R.styleable.CameraView_cameraPictureSizeMinWidth, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMinWidth)) {
+            pictureConstraints.add(SizeSelectors.minWidth(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMinWidth, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMaxWidth)) {
-            pictureConstraints.add(SizeSelectors.maxWidth(a.getInteger(R.styleable.CameraView_cameraPictureSizeMaxWidth, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMaxWidth)) {
+            pictureConstraints.add(SizeSelectors.maxWidth(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMaxWidth, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMinHeight)) {
-            pictureConstraints.add(SizeSelectors.minHeight(a.getInteger(R.styleable.CameraView_cameraPictureSizeMinHeight, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMinHeight)) {
+            pictureConstraints.add(SizeSelectors.minHeight(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMinHeight, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMaxHeight)) {
-            pictureConstraints.add(SizeSelectors.maxHeight(a.getInteger(R.styleable.CameraView_cameraPictureSizeMaxHeight, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMaxHeight)) {
+            pictureConstraints.add(SizeSelectors.maxHeight(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMaxHeight, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMinArea)) {
-            pictureConstraints.add(SizeSelectors.minArea(a.getInteger(R.styleable.CameraView_cameraPictureSizeMinArea, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMinArea)) {
+            pictureConstraints.add(SizeSelectors.minArea(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMinArea, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeMaxArea)) {
-            pictureConstraints.add(SizeSelectors.maxArea(a.getInteger(R.styleable.CameraView_cameraPictureSizeMaxArea, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeMaxArea)) {
+            pictureConstraints.add(SizeSelectors.maxArea(a.getInteger(R.styleable.CameraView_ls_cameraPictureSizeMaxArea, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraPictureSizeAspectRatio)) {
+        if (a.hasValue(R.styleable.CameraView_ls_cameraPictureSizeAspectRatio)) {
             //noinspection ConstantConditions
-            pictureConstraints.add(SizeSelectors.aspectRatio(AspectRatio.Companion.parse(a.getString(R.styleable.CameraView_cameraPictureSizeAspectRatio)), 0));
+            pictureConstraints.add(SizeSelectors.aspectRatio(AspectRatio.Companion.parse(a.getString(R.styleable.CameraView_ls_cameraPictureSizeAspectRatio)), 0));
         }
 
-        if (a.getBoolean(R.styleable.CameraView_cameraPictureSizeSmallest, false))
+        if (a.getBoolean(R.styleable.CameraView_ls_cameraPictureSizeSmallest, false))
             pictureConstraints.add(SizeSelectors.smallest());
-        if (a.getBoolean(R.styleable.CameraView_cameraPictureSizeBiggest, false))
+        if (a.getBoolean(R.styleable.CameraView_ls_cameraPictureSizeBiggest, false))
             pictureConstraints.add(SizeSelectors.biggest());
         SizeSelector pictureSelector = !pictureConstraints.isEmpty() ?
                 SizeSelectors.and(pictureConstraints.toArray(new SizeSelector[0])) :
@@ -179,42 +178,42 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
 
         // Video size selector
         List<SizeSelector> videoConstraints = new ArrayList<>(3);
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMinWidth)) {
-            videoConstraints.add(SizeSelectors.minWidth(a.getInteger(R.styleable.CameraView_cameraVideoSizeMinWidth, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMinWidth)) {
+            videoConstraints.add(SizeSelectors.minWidth(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMinWidth, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMaxWidth)) {
-            videoConstraints.add(SizeSelectors.maxWidth(a.getInteger(R.styleable.CameraView_cameraVideoSizeMaxWidth, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMaxWidth)) {
+            videoConstraints.add(SizeSelectors.maxWidth(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMaxWidth, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMinHeight)) {
-            videoConstraints.add(SizeSelectors.minHeight(a.getInteger(R.styleable.CameraView_cameraVideoSizeMinHeight, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMinHeight)) {
+            videoConstraints.add(SizeSelectors.minHeight(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMinHeight, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMaxHeight)) {
-            videoConstraints.add(SizeSelectors.maxHeight(a.getInteger(R.styleable.CameraView_cameraVideoSizeMaxHeight, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMaxHeight)) {
+            videoConstraints.add(SizeSelectors.maxHeight(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMaxHeight, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMinArea)) {
-            videoConstraints.add(SizeSelectors.minArea(a.getInteger(R.styleable.CameraView_cameraVideoSizeMinArea, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMinArea)) {
+            videoConstraints.add(SizeSelectors.minArea(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMinArea, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeMaxArea)) {
-            videoConstraints.add(SizeSelectors.maxArea(a.getInteger(R.styleable.CameraView_cameraVideoSizeMaxArea, 0)));
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeMaxArea)) {
+            videoConstraints.add(SizeSelectors.maxArea(a.getInteger(R.styleable.CameraView_ls_cameraVideoSizeMaxArea, 0)));
         }
-        if (a.hasValue(R.styleable.CameraView_cameraVideoSizeAspectRatio)) {
+        if (a.hasValue(R.styleable.CameraView_ls_cameraVideoSizeAspectRatio)) {
             //noinspection ConstantConditions
-            videoConstraints.add(SizeSelectors.aspectRatio(AspectRatio.Companion.parse(a.getString(R.styleable.CameraView_cameraVideoSizeAspectRatio)), 0));
+            videoConstraints.add(SizeSelectors.aspectRatio(AspectRatio.Companion.parse(a.getString(R.styleable.CameraView_ls_cameraVideoSizeAspectRatio)), 0));
         }
-        if (a.getBoolean(R.styleable.CameraView_cameraVideoSizeSmallest, false))
+        if (a.getBoolean(R.styleable.CameraView_ls_cameraVideoSizeSmallest, false))
             videoConstraints.add(SizeSelectors.smallest());
-        if (a.getBoolean(R.styleable.CameraView_cameraVideoSizeBiggest, false))
+        if (a.getBoolean(R.styleable.CameraView_ls_cameraVideoSizeBiggest, false))
             videoConstraints.add(SizeSelectors.biggest());
         SizeSelector videoSelector = !videoConstraints.isEmpty() ?
                 SizeSelectors.and(videoConstraints.toArray(new SizeSelector[0])) :
                 SizeSelectors.biggest();
 
         // Gestures
-        GestureAction tapGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_cameraGestureTap, GestureAction.DEFAULT_TAP.value()));
-        GestureAction longTapGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_cameraGestureLongTap, GestureAction.DEFAULT_LONG_TAP.value()));
-        GestureAction pinchGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_cameraGesturePinch, GestureAction.DEFAULT_PINCH.value()));
-        GestureAction scrollHorizontalGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_cameraGestureScrollHorizontal, GestureAction.DEFAULT_SCROLL_HORIZONTAL.value()));
-        GestureAction scrollVerticalGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_cameraGestureScrollVertical, GestureAction.DEFAULT_SCROLL_VERTICAL.value()));
+        GestureAction tapGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGestureTap, GestureAction.DEFAULT_TAP.value()));
+        GestureAction longTapGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGestureLongTap, GestureAction.DEFAULT_LONG_TAP.value()));
+        GestureAction pinchGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGesturePinch, GestureAction.DEFAULT_PINCH.value()));
+        GestureAction scrollHorizontalGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGestureScrollHorizontal, GestureAction.DEFAULT_SCROLL_HORIZONTAL.value()));
+        GestureAction scrollVerticalGesture = GestureAction.fromValue(a.getInteger(R.styleable.CameraView_ls_cameraGestureScrollVertical, GestureAction.DEFAULT_SCROLL_VERTICAL.value()));
 
         a.recycle();
 
@@ -668,14 +667,21 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         Context c = getContext();
         boolean needsCamera = true;
         boolean needsStorage = true;
-        boolean needsAudio = LassiConfig.Companion.getConfig().getMediaType() == MediaType.VIDEO && audio == Audio.ON;
+        boolean needsAudio = LassiConfig.Companion.getConfig().getMediaType() ==
+                MediaType.VIDEO && audio == Audio.ON;
 
-        needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED;
-        needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED;
-        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED;
+        needsCamera = needsCamera && c.checkSelfPermission(Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsAudio = needsAudio && c.checkSelfPermission(Manifest.permission.RECORD_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) !=
+                PackageManager.PERMISSION_GRANTED;
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
@@ -1498,7 +1504,6 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     }
 
     // If we end up here, we're in M.
-    @SuppressLint("SuspiciousIndentation")
     @TargetApi(Build.VERSION_CODES.M)
     private void requestPermissions(boolean requestCamera, boolean requestAudio) {
         Activity activity = null;

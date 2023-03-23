@@ -15,10 +15,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.lassi.R
 import com.lassi.common.extenstions.getFileName
 import com.lassi.common.extenstions.getFileSize
-import com.lassi.common.utils.CropUtils
 import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.common.SafeObserver
@@ -27,10 +27,8 @@ import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
-import com.lassi.presentation.cropper.CropImage
 import com.lassi.presentation.docs.DocsFragment
 import com.lassi.presentation.media.SelectedMediaViewModel
-import com.lassi.presentation.videopreview.VideoPreviewActivity
 import com.livefront.bridge.Bridge
 import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
@@ -64,12 +62,6 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             this,
             SelectedMediaViewModelFactory(this)
         )[SelectedMediaViewModel::class.java]
-    }
-
-    private val folderViewModel by lazy {
-        ViewModelProvider(
-            this, FolderViewModelFactory(this)
-        )[FolderViewModel::class.java]
     }
 
     override fun initLiveDataObservers() {
@@ -194,9 +186,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuCamera?.isVisible =
-            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA ||
+                    LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
@@ -213,23 +206,8 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     private fun setSelectedMediaResult() {
         // Allow crop for single image
         when (LassiConfig.getConfig().mediaType) {
-            MediaType.IMAGE -> {
-                if (LassiConfig.isSingleMediaSelection() && LassiConfig.getConfig().isCrop) {
-                    val uri = Uri.fromFile(File(viewModel.selectedMediaLiveData.value!![0].path!!))
-                    CropUtils.beginCrop(this, uri)
-                } else {
-                    setResultOk(viewModel.selectedMediaLiveData.value)
-                }
-            }
-            MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
-                if (LassiConfig.isSingleMediaSelection()) {
-                    VideoPreviewActivity.startVideoPreview(
-                        this,
-                        viewModel.selectedMediaLiveData.value!![0].path!!
-                    )
-                } else {
-                    setResultOk(viewModel.selectedMediaLiveData.value)
-                }
+            MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
+                setResultOk(viewModel.selectedMediaLiveData.value)
             }
             else -> {
             }
@@ -249,47 +227,25 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun handleSelectedMedia(selectedMedias: ArrayList<MiMedia>) {
         setToolbarTitle(selectedMedias)
-        menuDone?.isVisible = selectedMedias.isNotEmpty()
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
-            && resultCode == Activity.RESULT_OK
-        ) {
-            if (data != null) {
-                if (data.hasExtra(KeyUtils.SELECTED_MEDIA)) {
-                    val selectedMedia =
-                        data.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                    LassiConfig.getConfig().selectedMedias.addAll(selectedMedia)
-                    viewModel.addAllSelectedMedia(selectedMedia)
-                    folderViewModel.checkInsert()
-                    if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                        supportFragmentManager.popBackStack()
-                    }
-                } else if (data.hasExtra(KeyUtils.MEDIA_PREVIEW)) {
-                    val selectedMedia = data.getParcelableExtra<MiMedia>(KeyUtils.MEDIA_PREVIEW)
-                    if (LassiConfig.isSingleMediaSelection()) {
-                        setResultOk(arrayListOf(selectedMedia!!))
-                    } else {
-                        LassiConfig.getConfig().selectedMedias.add(selectedMedia!!)
-                        viewModel.addSelectedMedia(selectedMedia)
-                        folderViewModel.checkInsert()
-                        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                            supportFragmentManager.popBackStack()
-                        }
-                    }
-                }
-            }
-        }
+        menuDone?.isVisible = !selectedMedias.isNullOrEmpty()
     }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
         val intent = Intent().apply {
             putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
         }
+        Logger.d(
+            "LASSI",
+            "!@# LassiMediaPickerActivity selectedMedia size 417 => ${selectedMedia?.size}"
+        )
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    companion object {
+        const val DATE_FORMAT = "yyyyMMdd_HHmmss"
+        const val FILE_NAMING_PREFIX = "JPEG_"
+        const val FILE_NAMING_SUFFIX = "_"
+        const val FILE_FORMAT = ".jpg"
     }
 }
