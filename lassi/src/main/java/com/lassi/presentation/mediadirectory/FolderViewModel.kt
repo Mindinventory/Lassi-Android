@@ -1,6 +1,5 @@
 package com.lassi.presentation.mediadirectory
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import com.lassi.domain.media.MediaRepository
 import com.lassi.presentation.common.LassiBaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -96,43 +94,46 @@ class FolderViewModel(
             .onStart {
                 _fetchMediaFolderLiveData.setLoading()
             }
-            .map { result ->
+            .collectLatest { result ->
                 when (result) {
-                    is Result.Success -> result.data.filter {
-                        !it.bucketName.isNullOrEmpty()
+                    is Result.Success -> {
+                        val mediaItemList = result.data.filter {
+                            !it.bucketName.isNullOrEmpty()
+                        } as ArrayList<MiItemMedia>
+                        list.postValue(mediaItemList as ArrayList<MiItemMedia>)
+                        if (mediaItemList.isEmpty()) {
+                            emptyList.postValue(true)
+                        }
                     }
-                    is Result.Error -> TODO()
-                    Result.Loading -> TODO()
-                }
-            }
-            .collectLatest { mediaItemList ->
-                withContext(Dispatchers.Main) {
-                    list.value = mediaItemList as ArrayList<MiItemMedia>
-
-                    if (mediaItemList.isNullOrEmpty()) {
-                        emptyList.value = true
+                    is Result.Error -> {
+                        _fetchMediaFolderLiveData.setError(result.throwable)
+                    }
+                    is Result.Loading -> {
+                        //Nothings to do
                     }
                 }
             }
     }
 
     private suspend fun getAllPhotoVidDataFromDatabase() {
-        mediaRepository.getAllImgVidMediaFile().map { result ->
+        mediaRepository.getAllImgVidMediaFile()
+            .collectLatest { result ->
                 when (result) {
-                    is Result.Success ->
-                        result.data.filter {
+                    is Result.Success -> {
+                        val mediaItemList = result.data.filter {
                             _fileRemovalCheck.postValue(true)
-                            !it.mediaBucket.isNullOrEmpty()
+                            it.mediaBucket.isNotEmpty()
                         }
-                    is Result.Error -> TODO()
-                    Result.Loading -> TODO()
-                }
-            }
-            .collectLatest { mediaItemList ->
-                withContext(Dispatchers.Main) {
-                    mediaRepository.removeMediaData(mediaItemList)
-                    if (mediaItemList.isNullOrEmpty()) {
-                        emptyList.value = true
+                        mediaRepository.removeMediaData(mediaItemList)
+                        if (mediaItemList.isEmpty()) {
+                            emptyList.postValue(true)
+                        }
+                    }
+                    is Result.Error -> {
+                        //Nothings to do
+                    }
+                    is Result.Loading -> {
+                        //Nothings to do
                     }
                 }
             }
