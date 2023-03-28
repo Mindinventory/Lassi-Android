@@ -15,6 +15,7 @@ import com.lassi.presentation.common.LassiBaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -94,47 +95,31 @@ class FolderViewModel(
             .onStart {
                 _fetchMediaFolderLiveData.setLoading()
             }
+            .takeWhile {
+                it is Result.Success
+            }
             .collectLatest { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val mediaItemList = result.data.filter {
-                            !it.bucketName.isNullOrEmpty()
-                        } as ArrayList<MiItemMedia>
-                        list.postValue(mediaItemList as ArrayList<MiItemMedia>)
-                        if (mediaItemList.isEmpty()) {
-                            emptyList.postValue(true)
-                        }
-                    }
-                    is Result.Error -> {
-                        _fetchMediaFolderLiveData.setError(result.throwable)
-                    }
-                    is Result.Loading -> {
-                        //Nothings to do
-                    }
+                val mediaItemList = (result as Result.Success).data.filter {
+                    !it.bucketName.isNullOrEmpty()
+                } as ArrayList<MiItemMedia>
+                list.postValue(mediaItemList as ArrayList<MiItemMedia>)
+                if (mediaItemList.isEmpty()) {
+                    emptyList.postValue(true)
                 }
             }
     }
 
     private suspend fun getAllPhotoVidDataFromDatabase() {
         mediaRepository.getAllImgVidMediaFile()
+            .takeWhile { it is Result.Success }
             .collectLatest { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val mediaItemList = result.data.filter {
-                            _fileRemovalCheck.postValue(true)
-                            it.mediaBucket.isNotEmpty()
-                        }
-                        mediaRepository.removeMediaData(mediaItemList)
-                        if (mediaItemList.isEmpty()) {
-                            emptyList.postValue(true)
-                        }
-                    }
-                    is Result.Error -> {
-                        //Nothings to do
-                    }
-                    is Result.Loading -> {
-                        //Nothings to do
-                    }
+                val mediaItemList = (result as Result.Success).data.filter {
+                    _fileRemovalCheck.postValue(true)
+                    it.mediaBucket.isNotEmpty()
+                }
+                mediaRepository.removeMediaData(mediaItemList)
+                if (mediaItemList.isEmpty()) {
+                    emptyList.postValue(true)
                 }
             }
     }
