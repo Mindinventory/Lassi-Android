@@ -6,6 +6,8 @@ import com.lassi.common.utils.Logger
 import com.lassi.data.common.Result
 import com.lassi.data.database.MediaFileDatabase
 import com.lassi.data.media.MiMedia
+import com.lassi.data.media.entity.MediaFileEntity
+import com.lassi.data.media.entity.SelectedMediaModel
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.SelectedMediaRepository
@@ -31,41 +33,37 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
                     MediaType.AUDIO -> MediaType.AUDIO.value
                     else -> MediaType.IMAGE.value
                 }
-                if (mediaType == MediaType.IMAGE.value) {
-                    mediaDatabase.mediaFileDao().getSelectedImageMediaFile(bucket, mediaType)
-                        .collect { selectedMediaFileEntity ->
-                            miMediaFileEntityList.clear()
-                            selectedMediaFileEntity.forEach { selectedMediaModel ->
-                                miMediaFileEntityList.add(
-                                    MiMedia(
-                                        id = selectedMediaModel.mediaId,
-                                        name = selectedMediaModel.mediaName,
-                                        path = selectedMediaModel.mediaPath,
-                                        fileSize = selectedMediaModel.mediaSize,
-                                    )
-                                )
-                            }
-                            emit(Result.Success(miMediaFileEntityList))
-                        }
 
+                val selectedImageMediaItemList: List<MediaFileEntity>
+                val selectedMediaItemList: List<SelectedMediaModel>
+                if (mediaType == MediaType.IMAGE.value) {
+                    selectedImageMediaItemList =
+                        mediaDatabase.mediaFileDao().getSelectedImageMediaFile(bucket, mediaType)
+                    selectedImageMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                            )
+                        )
+                    }
                 } else {
-                    mediaDatabase.mediaFileDao().getSelectedMediaFile(bucket, mediaType)
-                        .collect { selectedMediaFileEntity ->
-                            miMediaFileEntityList.clear()
-                            selectedMediaFileEntity.forEach { selectedMediaModel ->
-                                miMediaFileEntityList.add(
-                                    MiMedia(
-                                        id = selectedMediaModel.mediaId,
-                                        name = selectedMediaModel.mediaName,
-                                        path = selectedMediaModel.mediaPath,
-                                        fileSize = selectedMediaModel.mediaSize,
-                                        duration = selectedMediaModel.mediaDuration,
-                                        thumb = selectedMediaModel.mediaAlbumCoverPath,
-                                    )
-                                )
-                            }
-                            emit(Result.Success(miMediaFileEntityList))
-                        }
+                    selectedMediaItemList =
+                        mediaDatabase.mediaFileDao().getSelectedMediaFile(bucket, mediaType)
+                    selectedMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                                duration = selectedMediaModel.mediaDuration,
+                                thumb = selectedMediaModel.mediaAlbumCoverPath,
+                            )
+                        )
+                    }
                 }
                 emit(Result.Success(miMediaFileEntityList))
             } catch (e: java.lang.Exception) {
