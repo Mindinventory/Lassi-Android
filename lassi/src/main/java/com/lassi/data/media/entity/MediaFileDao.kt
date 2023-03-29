@@ -37,6 +37,9 @@ interface MediaFileDao {
     @Query("SELECT COUNT(*) == 0 FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_TYPE = :mediaType")
     suspend fun getDataCount(mediaType: Int): Boolean
 
+    @Query("SELECT EXISTS(SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_PATH = :mediaPath)")
+    suspend fun checkMediaFileExistence(mediaPath: String): Boolean
+
     @Query("SELECT DISTINCT $MEDIA_BUCKET FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_TYPE = :mediaType")
     fun getDistinctBucketList(mediaType: Int): Flow<List<String>>
 
@@ -59,8 +62,14 @@ interface MediaFileDao {
                 " ON $MEDIA_FILE_ENTITY.$MEDIA_ID = $ALBUM_COVER_ENTITY.$ALBUM_COVER_MEDIA_ID" +
                 " WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType"
     )
-    fun getSelectedMediaFile(bucket: String, mediaType: Int): List<SelectedMediaModel>
+    fun getSelectedMediaFile(bucket: String, mediaType: Int): Flow<List<SelectedMediaModel>>
 
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType")
-    fun getSelectedImageMediaFile(bucket: String, mediaType: Int): List<MediaFileEntity>
+    fun getSelectedImageMediaFile(bucket: String, mediaType: Int): Flow<List<MediaFileEntity>>
+
+    @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_TYPE = 1 OR $MEDIA_TYPE = 2 OR $MEDIA_TYPE = 3")
+    fun getAllImgVidMediaFile(): List<MediaFileEntity>
+
+    @Query("DELETE FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_PATH = :mediaPath")
+    fun deleteByMediaPath(mediaPath: String)
 }
