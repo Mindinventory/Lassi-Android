@@ -6,6 +6,8 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
+import com.lassi.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -32,9 +34,8 @@ object FilePickerUtils {
                 it,
                 arrayOf(filePath),
                 arrayOf(mimeType)
-            ) { path, uri ->
-                Log.d("ExternalStorage", "Scanned $path")
-                onFileScanComplete(uri, path)
+            ) { path, _ ->
+                onFileScanComplete(Uri.fromFile(File(path)), path)
             }
         }
     }
