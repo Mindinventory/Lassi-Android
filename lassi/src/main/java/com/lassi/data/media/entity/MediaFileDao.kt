@@ -67,7 +67,7 @@ interface MediaFileDao {
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType")
     fun getSelectedImageMediaFile(bucket: String, mediaType: Int): List<MediaFileEntity>
 
-    @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType ORDER BY CASE WHEN :isAsc = 1 THEN media_date_added END ASC, CASE WHEN :isAsc = 0 THEN media_name END DESC")
+    @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType ORDER BY CASE WHEN :isAsc = 1 THEN media_date_added END ASC, CASE WHEN :isAsc = 0 THEN media_date_added END DESC")
     fun getSelectedSortedMediaFile(
         bucket: String,
         isAsc: Int,
