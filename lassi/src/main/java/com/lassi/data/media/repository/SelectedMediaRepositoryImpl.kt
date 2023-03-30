@@ -88,7 +88,7 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
         return flow {
             initMediaDb(context)
             try {
-                val mediaType = when (LassiConfig.getConfig().mediaType) {
+                val mediaTypeValue = when (mediaType) {
                     MediaType.IMAGE -> MediaType.IMAGE.value
                     MediaType.VIDEO -> MediaType.VIDEO.value
                     MediaType.AUDIO -> MediaType.AUDIO.value
@@ -97,12 +97,10 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
 
                 miMediaFileEntityList.clear()
 
-                val sortedImageMediaItemList: List<MediaFileEntity>
-                val sortedMediaItemList: List<SelectedMediaModel>
-                if (mediaType == MediaType.IMAGE.value) {
-                    sortedImageMediaItemList =
+                if (mediaTypeValue == MediaType.IMAGE.value) {
+                    val sortedImageMediaItemList: List<MediaFileEntity> =
                         mediaDatabase.mediaFileDao()
-                            .getSelectedSortedMediaFile(bucket, isAsc, mediaType)
+                            .getSelectedSortedImageMediaFile(bucket, isAsc, mediaTypeValue)
                     sortedImageMediaItemList.forEach { selectedMediaModel ->
                         miMediaFileEntityList.add(
                             MiMedia(
@@ -114,8 +112,9 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
                         )
                     }
                 } else {
-                    sortedMediaItemList =
-                        mediaDatabase.mediaFileDao().getSelectedMediaFile(bucket, mediaType)
+                    val sortedMediaItemList: List<SelectedMediaModel> =
+                        mediaDatabase.mediaFileDao()
+                            .getSelectedSortedMediaFile(bucket, isAsc, mediaTypeValue)
                     sortedMediaItemList.forEach { selectedMediaModel ->
                         miMediaFileEntityList.add(
                             MiMedia(
