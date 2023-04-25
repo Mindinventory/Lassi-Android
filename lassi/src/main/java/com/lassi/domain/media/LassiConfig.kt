@@ -1,5 +1,6 @@
 package com.lassi.domain.media
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
@@ -36,7 +37,10 @@ data class LassiConfig(
     var compressionRation: Int = 0,
     var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
-    var isCrop: Boolean = true
+    var isCrop: Boolean = true,
+    var alertDialogNegativeButtonColor: Int = Color.BLACK,
+    var alertDialogPositiveButtonColor: Int = Color.BLACK,
+    var customLimitExceedingErrorMessage: Int = R.string.default_exceed_error_msg
 ) : Parcelable {
     companion object {
 
@@ -69,6 +73,9 @@ data class LassiConfig(
                 minFileSize = lassiConfig.minFileSize
                 maxFileSize = lassiConfig.maxFileSize
                 isCrop = lassiConfig.isCrop
+                alertDialogNegativeButtonColor = lassiConfig.alertDialogNegativeButtonColor
+                alertDialogPositiveButtonColor = lassiConfig.alertDialogPositiveButtonColor
+                customLimitExceedingErrorMessage = lassiConfig.customLimitExceedingErrorMessage
             }
         }
 

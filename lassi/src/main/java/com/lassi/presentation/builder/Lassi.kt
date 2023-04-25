@@ -273,6 +273,32 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set color for the Negative button of the Alert dialog
+     */
+    fun setAlertDialogNegativeButtonColor(@ColorRes negativeBtnColor: Int): Lassi {
+        lassiConfig.alertDialogNegativeButtonColor =
+            ContextCompat.getColor(context, negativeBtnColor)
+        return this
+    }
+
+    /**
+     * Set color for the Positive button of the Alert dialog
+     */
+    fun setAlertDialogPositiveButtonColor(@ColorRes positiveBtnColor: Int): Lassi {
+        lassiConfig.alertDialogPositiveButtonColor =
+            ContextCompat.getColor(context, positiveBtnColor)
+        return this
+    }
+
+    /**
+     * To set custom error message when picked items exceeds the defined maxCount
+     */
+    fun setCustomLimitExceedingErrorMessage(errorMessage: Int): Lassi {
+        lassiConfig.customLimitExceedingErrorMessage = errorMessage
+        return this
+    }
+
+    /**
      * Create intent for LassiMediaPickerActivity with config
      */
     fun build(): Intent {

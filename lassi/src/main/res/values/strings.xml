@@ -16,6 +16,7 @@
     <string name="crop_image_activity_no_permissions">Cancelling, required permissions are not granted</string>
     <string name="crop_image_activity_title"></string>
     <string name="camera">Camera</string>
+    <string name="sort">Sort</string>
     <string name="done">DONE</string>
     <string name="already_selected_max_items">Already selected max items</string>
     <string name="camera_audio_storage_permission_rational">Camera, Microphone and/or Storage permissions are not granted. Please allow it from setting.</string>
@@ -26,6 +27,8 @@
     <string name="read_media_images_video_permission_rational">Photos and Videos related permission is not granted. Please allow it from the setting.</string>
     <string name="read_media_audio_permission_rational">Music and audio related permission is not granted. Please allow it from the setting.</string>
     <string name="min_video_recording_time_error">Record video longer then %s</string>
+    <string name="error_exceed_msg">You are exceeding the defined Max limit…</string>
+    <string name="default_exceed_error_msg">Exceeding defined maxCount!</string>
 
     <!--Cropper New-->
     <string name="ic_rotate_left_24">Rotate counter clockwise</string>
@@ -42,4 +45,13 @@
 
     <!--No Data Found-->
     <string name="no_data_found">No Data Found!</string>
+
+    <!--Sorting-->
+    <string name="sort_by_date">Sort by Date</string>
+    <string name="sort_ascending">Ascending</string>
+    <string name="sort_descending">Descending</string>
+    <string-array name="sorting_options">
+        <item>@string/sort_ascending</item>
+        <item>@string/sort_descending</item>
+    </string-array>
 </resources>

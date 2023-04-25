@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
+                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
                     .setCropType(CropImageView.CropShape.OVAL)
@@ -85,6 +88,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
+                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
                     .setPlaceHolder(R.drawable.ic_video_placeholder)
@@ -141,6 +146,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     )
+                    .setMaxCount(3)
+                    .setCustomLimitExceedingErrorMessage(R.string.error_exceed_msg)
                     .build()
                 receiveData.launch(intent)
             }
@@ -158,6 +165,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
+                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setMediaType(MediaType.IMAGE)
                     .setCropType(CropImageView.CropShape.OVAL)
                     .setCropAspectRatio(1, 1)
@@ -188,6 +197,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setMediaType(MediaType.VIDEO)
                     .setToolbarResourceColor(android.R.color.white)
+                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
                     .setCropType(CropImageView.CropShape.OVAL)
@@ -216,6 +227,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .setStatusBarColor(R.color.colorPrimaryDark)
             .setToolbarColor(R.color.colorPrimary)
             .setToolbarResourceColor(android.R.color.white)
+            .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+            .setAlertDialogPositiveButtonColor(R.color.emerald_green)
             .setGalleryBackgroundColor(R.color.colorGrey)
             .setSupportedFileTypes(
                 "pdf",
@@ -240,6 +253,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+
                 if (selectedMedia.isNotEmpty()) {
                     ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)

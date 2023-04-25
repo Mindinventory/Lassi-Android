@@ -2,6 +2,7 @@ package com.lassi.presentation.camera
 
 import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -328,6 +329,13 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel>(), View.OnCli
         val permissionDialog = alertDialog.create()
         permissionDialog.setCancelable(false)
         permissionDialog.show()
+
+        with(LassiConfig.getConfig()) {
+            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                .setTextColor(alertDialogNegativeButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                .setTextColor(alertDialogPositiveButtonColor)
+        }
     }
 
     private fun checkPermissions(audio: Audio): Boolean {

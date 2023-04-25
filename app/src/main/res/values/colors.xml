@@ -4,4 +4,8 @@
     <color name="colorPrimaryDark">#FFA000</color>
     <color name="colorAccent">#FFC107</color>
     <color name="colorGrey">#E3E3E3</color>
+
+    <color name="cherry_red">#E9333C</color>
+    <color name="chartreuse">#DFFF00</color>
+    <color name="emerald_green">#50C878</color>
 </resources>

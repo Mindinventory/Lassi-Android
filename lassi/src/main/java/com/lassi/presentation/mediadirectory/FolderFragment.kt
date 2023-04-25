@@ -2,6 +2,7 @@ package com.lassi.presentation.mediadirectory
 
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -87,8 +88,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         rvMedia.addItemDecoration(GridSpacingItemDecoration(LassiConfig.getConfig().gridSize, 10))
         progressBar.indeterminateDrawable.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                LassiConfig.getConfig().progressBarColor,
-                BlendModeCompat.SRC_ATOP
+                LassiConfig.getConfig().progressBarColor, BlendModeCompat.SRC_ATOP
             )
         requestPermission()
     }
@@ -137,21 +137,18 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES
+                    requireContext(), Manifest.permission.READ_MEDIA_IMAGES
                 ) != PackageManager.PERMISSION_GRANTED
                 requestPermission.launch(photoPermission.toTypedArray())
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_VIDEO
+                    requireContext(), Manifest.permission.READ_MEDIA_VIDEO
                 ) != PackageManager.PERMISSION_GRANTED
                 requestPermission.launch(vidPermission.toTypedArray())
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_MEDIA_AUDIO
+                        requireContext(), Manifest.permission.READ_MEDIA_AUDIO
                     ) != PackageManager.PERMISSION_GRANTED
                     requestPermission.launch(audioPermission.toTypedArray())
                 }
@@ -176,16 +173,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
     }
 
     private fun onItemClick(bucket: MiItemMedia) {
-        activity?.supportFragmentManager?.beginTransaction()
-            ?.setCustomAnimations(
-                R.anim.right_in,
-                R.anim.right_out,
-                R.anim.right_in,
-                R.anim.right_out
-            )
-            ?.add(R.id.ftContainer, MediaFragment.getInstance(bucket))
-            ?.addToBackStack(MediaFragment::class.java.simpleName)
-            ?.commitAllowingStateLoss()
+        activity?.supportFragmentManager?.beginTransaction()?.setCustomAnimations(
+            R.anim.right_in, R.anim.right_out, R.anim.right_in, R.anim.right_out
+        )?.add(R.id.ftContainer, MediaFragment.getInstance(bucket))
+            ?.addToBackStack(MediaFragment::class.java.simpleName)?.commitAllowingStateLoss()
     }
 
     private fun showPermissionDisableAlert() {
@@ -221,17 +212,24 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel>() {
         val permissionDialog = alertDialog.create()
         permissionDialog.setCancelable(false)
         permissionDialog.show()
+        with(LassiConfig.getConfig()) {
+            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+                .setTextColor(alertDialogNegativeButtonColor)
+            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                .setTextColor(alertDialogPositiveButtonColor)
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menuCamera)?.isVisible =
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
-                || LassiConfig.getConfig().mediaType == MediaType.VIDEO
-            ) {
-                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
+                || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY
+                        || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
             } else {
                 false
             }
+        menu.findItem(R.id.menuSort)?.isVisible = false
         return super.onPrepareOptionsMenu(menu)
     }
 

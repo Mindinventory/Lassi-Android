@@ -1,10 +1,12 @@
 package com.lassi.presentation.media
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -41,6 +43,8 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
     private var bucket: MiItemMedia? = null
     private var mediaPickerConfig = LassiConfig.getConfig()
     private var uri: Uri? = null
+    private var menu: Menu? = null
+
 
     override fun getContentResource() = R.layout.fragment_media_picker
 
@@ -91,6 +95,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
     override fun initViews() {
         super.initViews()
         rvMedia.setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
+        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
         bucket?.let {
             it.bucketName?.let { bucketName ->
                 viewModel.getSelectedMediaData(bucket = bucketName)
@@ -181,7 +186,6 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                     }
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
-
                 } else {
                     viewModel.addAllSelectedMedia(selectedMedias)
                     setResultOk(selectedMedias)
@@ -207,10 +211,53 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
+        this.menu = menu
+        menu.findItem(R.id.menuSort)?.isVisible = true
         val item = menu.findItem(R.id.menuCamera)
         if (item != null)
             item.isVisible = false
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menuSort -> handleSorting()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun handleSorting() {
+        // setup the alert builder
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle(R.string.sort_by_date)
+            setItems(R.array.sorting_options) { _, isAsc ->
+                when (isAsc) {
+                    0 -> { /* Ascending */
+                        bucket?.let {
+                            it.bucketName?.let { bucketName ->
+                                viewModel.getSortedDataFromDb(
+                                    bucket = bucketName,
+                                    isAsc = 0,
+                                    mediaType = LassiConfig.getConfig().mediaType
+                                )
+                            }
+                        }
+                    }
+                    1 -> { /* Descending */
+                        bucket?.let {
+                            it.bucketName?.let { bucketName ->
+                                viewModel.getSortedDataFromDb(
+                                    bucket = bucketName,
+                                    isAsc = 1,
+                                    mediaType = LassiConfig.getConfig().mediaType
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            create().show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

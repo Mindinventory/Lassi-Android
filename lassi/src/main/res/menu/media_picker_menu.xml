@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menuSort"
+        android:icon="@drawable/ic_sorting_foreground"
+        android:title="@string/sort"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menuCamera"
         android:icon="@drawable/ic_camera_white"
         android:title="@string/camera"
