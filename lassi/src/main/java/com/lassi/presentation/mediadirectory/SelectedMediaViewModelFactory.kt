@@ -12,7 +12,7 @@ class SelectedMediaViewModelFactory(val context: Context) : ViewModelProvider.Fa
     private val selectedMediaRepository: SelectedMediaRepository =
         SelectedMediaRepositoryImpl(context)
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SelectedMediaViewModel(selectedMediaRepository) as T
     }
 }

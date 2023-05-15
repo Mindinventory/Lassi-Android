@@ -9,7 +9,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LassiConfig(

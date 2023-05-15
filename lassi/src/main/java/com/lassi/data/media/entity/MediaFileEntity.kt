@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.lassi.data.media.entity.MediaFileEntity.Companion.MEDIA_FILE_ENTITY
 import com.lassi.data.media.entity.MediaFileEntity.Companion.MEDIA_ID
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = MEDIA_FILE_ENTITY, indices = [Index(value = [MEDIA_ID], unique = true)])

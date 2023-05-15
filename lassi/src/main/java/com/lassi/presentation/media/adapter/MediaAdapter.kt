@@ -4,16 +4,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.lassi.R
-import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
+import com.lassi.common.extenstions.toBinding
 import com.lassi.common.utils.DurationUtils.getDuration
 import com.lassi.common.utils.ImageUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.ItemMediaBinding
 import com.lassi.domain.media.LassiConfig
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_media.*
 
 class MediaAdapter(
     private val onItemClick: (selectedMedias: ArrayList<MiMedia>) -> Unit
@@ -30,7 +28,7 @@ class MediaAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        return MyViewHolder(parent.inflate(R.layout.item_media))
+        return MyViewHolder(parent.toBinding())
     }
 
     override fun getItemCount() = images.size
@@ -57,39 +55,41 @@ class MediaAdapter(
         }
     }
 
-    inner class MyViewHolder(override val containerView: View) :
-        RecyclerView.ViewHolder(containerView), LayoutContainer {
+    inner class MyViewHolder(private val binding: ItemMediaBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(miMedia: MiMedia) {
-            with(miMedia) {
-                var isSelect = isSelected(this)
-                tvFolderName.text = miMedia.name
-                viewAlpha.alpha = if (isSelect) 0.5f else 0.0f
-                ivSelect.setImageResource(LassiConfig.getConfig().selectionDrawable)
-                ivSelect.isVisible = isSelect
-                ivFolderThumbnail.loadImage(ImageUtils.getThumb(this))
-                if (duration != 0L) {
-                    tvDuration.visibility = View.VISIBLE
-                    tvDuration.text = getDuration(duration)
-                }
+            binding.apply {
+                with(miMedia) {
+                    var isSelect = isSelected(this)
+                    tvFolderName.text = miMedia.name
+                    viewAlpha.alpha = if (isSelect) 0.5f else 0.0f
+                    ivSelect.setImageResource(LassiConfig.getConfig().selectionDrawable)
+                    ivSelect.isVisible = isSelect
+                    ivFolderThumbnail.loadImage(ImageUtils.getThumb(this))
+                    if (duration != 0L) {
+                        tvDuration.visibility = View.VISIBLE
+                        tvDuration.text = getDuration(duration)
+                    }
 
-                containerView.setOnClickListener {
-                    if (LassiConfig.getConfig().maxCount > 1) {
-                        isSelect = !isSelect
-                        if (!isSelect) {
-                            removeSelected(miMedia, absoluteAdapterPosition)
-                        } else {
-                            addSelected(miMedia, absoluteAdapterPosition)
-                        }
-                    } else {
-                        with(LassiConfig.getConfig()) {
-                            if (selectedMedias.size != maxCount) {
-                                selectedMedias.add(0, miMedia)
+                    root.setOnClickListener {
+                        if (LassiConfig.getConfig().maxCount > 1) {
+                            isSelect = !isSelect
+                            if (!isSelect) {
+                                removeSelected(miMedia, absoluteAdapterPosition)
                             } else {
-                                selectedMedias[0] = miMedia
+                                addSelected(miMedia, absoluteAdapterPosition)
+                            }
+                        } else {
+                            with(LassiConfig.getConfig()) {
+                                if (selectedMedias.size != maxCount) {
+                                    selectedMedias.add(0, miMedia)
+                                } else {
+                                    selectedMedias[0] = miMedia
+                                }
                             }
                         }
+                        onItemClick(LassiConfig.getConfig().selectedMedias)
                     }
-                    onItemClick(LassiConfig.getConfig().selectedMedias)
                 }
             }
         }

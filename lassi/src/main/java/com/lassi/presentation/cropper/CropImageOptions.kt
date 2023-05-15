@@ -11,7 +11,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
 import com.lassi.presentation.cropper.CropImageView.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CropImageOptions @JvmOverloads constructor(

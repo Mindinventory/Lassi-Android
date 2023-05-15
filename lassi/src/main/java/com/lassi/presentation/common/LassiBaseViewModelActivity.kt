@@ -2,8 +2,9 @@ package com.lassi.presentation.common
 
 import android.os.Bundle
 import androidx.annotation.CallSuper
+import androidx.viewbinding.ViewBinding
 
-abstract class LassiBaseViewModelActivity<T : LassiBaseViewModel> : LassiBaseActivity() {
+abstract class LassiBaseViewModelActivity<T : LassiBaseViewModel, VB: ViewBinding> : LassiBaseActivity<VB>() {
 
     protected val viewModel by lazy { buildViewModel() }
 

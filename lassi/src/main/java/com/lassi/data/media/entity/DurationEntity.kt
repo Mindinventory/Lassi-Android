@@ -4,12 +4,12 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import com.lassi.data.media.entity.DurationEntity.Companion.DURATION_ENTITY
 import com.lassi.data.media.entity.DurationEntity.Companion.DURATION_MEDIA_ID
 import com.lassi.data.media.entity.MediaFileEntity.Companion.MEDIA_ID
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(

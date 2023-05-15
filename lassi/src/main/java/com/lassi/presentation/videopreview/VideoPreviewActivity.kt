@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -18,19 +19,22 @@ import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.ActivityVideoPreviewBinding
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
-import kotlinx.android.synthetic.main.activity_video_preview.*
 import java.io.File
 
-class VideoPreviewActivity : LassiBaseActivity() {
+class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
     private var videoPath: String? = null
-    override fun getContentResource() = R.layout.activity_video_preview
+
+    override fun inflateLayout(layoutInflater: LayoutInflater): ActivityVideoPreviewBinding {
+        return ActivityVideoPreviewBinding.inflate(layoutInflater)
+    }
 
     override fun initViews() {
         super.initViews()
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        binding.toolbar.title = ""
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         playVideo()
@@ -40,18 +44,20 @@ class VideoPreviewActivity : LassiBaseActivity() {
         }
         videoPath = intent.getStringExtra(KeyUtils.VIDEO_PATH)
         val controller = MediaController(this)
-        controller.setAnchorView(videoView)
-        controller.setMediaPlayer(videoView)
-        videoView.setMediaController(controller)
-        videoView.setVideoURI(Uri.fromFile(File(videoPath)))
+        binding.videoView.apply {
+            controller.setAnchorView(this)
+            controller.setMediaPlayer(this)
+            setMediaController(controller)
+            setVideoURI(Uri.fromFile(File(videoPath)))
+        }
     }
 
     private fun setThemeAttributes() {
-        toolbar.title = ""
+        binding.toolbar.title = ""
         with(LassiConfig.getConfig()) {
-            toolbar.background =
+            binding.toolbar.background =
                 ColorDrawable(toolbarColor)
-            toolbar.setTitleTextColor(toolbarResourceColor)
+            binding.toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@VideoPreviewActivity, R.drawable.ic_back_white)
             upArrow?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -67,8 +73,8 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     private fun playVideo() {
-        if (videoView.isPlaying) return
-        videoView.start()
+        if (binding.videoView.isPlaying) return
+        binding.videoView.start()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -88,6 +94,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
                     )
                 }
             }
+
             android.R.id.home -> onBackPressed()
         }
         return super.onOptionsItemSelected(item)
