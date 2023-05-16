@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -20,6 +21,7 @@ import com.lassi.data.common.Response
 import com.lassi.data.common.StartVideoContract
 import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.FragmentMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
@@ -34,19 +36,16 @@ import com.lassi.presentation.media.adapter.MediaAdapter
 import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
-import kotlinx.android.synthetic.main.fragment_media_picker.*
 import java.io.File
 
-class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
+class MediaFragment :
+    LassiBaseViewModelFragment<SelectedMediaViewModel, FragmentMediaPickerBinding>(),
     CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
     private val mediaAdapter by lazy { MediaAdapter(this::onItemClick) }
     private var bucket: MiItemMedia? = null
     private var mediaPickerConfig = LassiConfig.getConfig()
     private var uri: Uri? = null
     private var menu: Menu? = null
-
-
-    override fun getContentResource() = R.layout.fragment_media_picker
 
     companion object {
         fun getInstance(bucket: MiItemMedia): MediaFragment {
@@ -92,24 +91,29 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
         }
     }
 
+    override fun inflateLayout(layoutInflater: LayoutInflater): FragmentMediaPickerBinding {
+        return FragmentMediaPickerBinding.inflate(layoutInflater)
+    }
+
     override fun initViews() {
         super.initViews()
-        rvMedia.setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
-        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
         bucket?.let {
             it.bucketName?.let { bucketName ->
                 viewModel.getSelectedMediaData(bucket = bucketName)
             }
         }
-        progressBar.indeterminateDrawable.colorFilter =
+        binding.progressBar.indeterminateDrawable.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 mediaPickerConfig.progressBarColor,
                 BlendModeCompat.SRC_ATOP
             )
-
-        rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
-        rvMedia.adapter = mediaAdapter
-        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+        binding.rvMedia.apply {
+            setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
+            addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+            layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
+            adapter = mediaAdapter
+            addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+        }
     }
 
     override fun getBundle() {
@@ -169,9 +173,11 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                 Logger.d("mediaFragment", "handleFetchedData SUCCESS size -> ${response.item.size}")
                 mediaAdapter.setList(response.item)
             }
+
             is Response.Error -> {
                 Logger.d("mediaFragment", "!@# handleFetchedData ERROR")
             }
+
             else -> {}
         }
     }
@@ -191,6 +197,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                     setResultOk(selectedMedias)
                 }
             }
+
             MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
                 if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
@@ -198,6 +205,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                     startMediaContract.launch(selectedMedias[0].path!!)
                 }
             }
+
             else -> {}
         }
     }
@@ -237,18 +245,19 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
                                     bucket = bucketName,
-                                    isAsc = 0,
+                                    isAsc = 1,
                                     mediaType = LassiConfig.getConfig().mediaType
                                 )
                             }
                         }
                     }
+
                     1 -> { /* Descending */
                         bucket?.let {
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
                                     bucket = bucketName,
-                                    isAsc = 1,
+                                    isAsc = 0,
                                     mediaType = LassiConfig.getConfig().mediaType
                                 )
                             }
@@ -260,10 +269,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    override fun hasOptionMenu(): Boolean = true
 
     override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
         if (error != null) {
@@ -273,8 +279,7 @@ class MediaFragment : LassiBaseViewModelFragment<SelectedMediaViewModel>(),
     }
 
     override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
-        if (result.error == null) {
-        } else {
+        if (result.error != null) {
             Toast
                 .makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
                 .show()

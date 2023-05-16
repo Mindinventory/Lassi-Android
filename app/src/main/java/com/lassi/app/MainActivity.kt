@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
+import com.lassi.app.databinding.ActivityMainBinding
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
@@ -23,26 +23,30 @@ import com.lassi.domain.media.MediaType
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.util.*
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private var _binding: ActivityMainBinding? = null
+    protected val binding get() = _binding!!
 
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        btnImagePicker.setOnClickListener(this)
-        btnVideoPicker.setOnClickListener(this)
-        btnAudioPicker.setOnClickListener(this)
-        btnDocPicker.setOnClickListener(this)
-        btnImageCapture.setOnClickListener(this)
-        btnVideoCapture.setOnClickListener(this)
-        btnDocumentSystemIntent.setOnClickListener(this)
-        rvSelectedMedia.adapter = selectedMediaAdapter
-        rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        binding.also {
+            setContentView(it.root)
+            it.btnImagePicker.setOnClickListener(this)
+            it.btnVideoPicker.setOnClickListener(this)
+            it.btnAudioPicker.setOnClickListener(this)
+            it.btnDocPicker.setOnClickListener(this)
+            it.btnImageCapture.setOnClickListener(this)
+            it.btnVideoCapture.setOnClickListener(this)
+            it.btnDocumentSystemIntent.setOnClickListener(this)
+            it.rvSelectedMedia.adapter = selectedMediaAdapter
+            it.rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
+        }
     }
 
     override fun onClick(v: View?) {
@@ -75,6 +79,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 receiveData.launch(intent)
 
             }
+
             R.id.btnVideoPicker -> {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
@@ -83,7 +88,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setMinTime(5)
                     .setMaxTime(30)
                     .setMinFileSize(0)
-                    .setMaxFileSize(2000)
+                    .setMaxFileSize(20000)
                     .setMediaType(MediaType.VIDEO)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
@@ -116,9 +121,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .build()
                 receiveData.launch(intent)
             }
+
             R.id.btnDocPicker -> {
                 requestPermissionForDocument()
             }
+
             R.id.btnDocumentSystemIntent -> {
                 val intent = Lassi(this)
                     .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW)
@@ -255,7 +262,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
 
                 if (selectedMedia.isNotEmpty()) {
-                    ivEmpty.isVisible = selectedMedia.isEmpty()
+                    binding.ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)
                 }
             }
@@ -315,6 +322,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
+
             else -> {
                 launchDocPicker()
             }

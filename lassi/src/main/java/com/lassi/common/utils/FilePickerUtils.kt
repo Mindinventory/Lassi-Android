@@ -4,15 +4,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.core.content.FileProvider
-import com.lassi.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
+import java.util.Locale
 
 object FilePickerUtils {
 

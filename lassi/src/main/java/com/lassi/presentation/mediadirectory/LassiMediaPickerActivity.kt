@@ -3,9 +3,9 @@ package com.lassi.presentation.mediadirectory
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -21,6 +21,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.ActivityMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
@@ -33,10 +34,9 @@ import com.livefront.bridge.Bridge
 import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
 import io.reactivex.annotations.Nullable
-import kotlinx.android.synthetic.main.activity_media_picker.*
-import java.io.File
 
-class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewModel>() {
+class LassiMediaPickerActivity :
+    LassiBaseViewModelActivity<SelectedMediaViewModel, ActivityMediaPickerBinding>() {
     private var menuDone: MenuItem? = null
     private var menuCamera: MenuItem? = null
     private var menuSort: MenuItem? = null
@@ -59,14 +59,14 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                             this.resources.getString(LassiConfig.getConfig().customLimitExceedingErrorMessage)
                         )
                         finish()
+                    }else{
+                        setResultOk(list)
                     }
                 } else {
                     setResultOk(list)
                 }
             }
         }
-
-    override fun getContentResource() = R.layout.activity_media_picker
 
     override fun buildViewModel(): SelectedMediaViewModel {
         return ViewModelProvider(
@@ -80,6 +80,10 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         viewModel.selectedMediaLiveData.observe(this, SafeObserver(this::handleSelectedMedia))
     }
 
+    override fun inflateLayout(layoutInflater: LayoutInflater): ActivityMediaPickerBinding {
+        return ActivityMediaPickerBinding.inflate(layoutInflater)
+    }
+
     override fun initViews() {
         super.initViews()
         Bridge.initialize(applicationContext, object : SavedStateHandler {
@@ -90,7 +94,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             }
         })
         setToolbarTitle(LassiConfig.getConfig().selectedMedias)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         initiateFragment()
@@ -99,13 +103,13 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
     private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {
         val maxCount = LassiConfig.getConfig().maxCount
         if (maxCount > 1) {
-            toolbar.title = String.format(
+            binding.toolbar.title = String.format(
                 getString(R.string.selected_items),
                 selectedMedias.size,
                 maxCount
             )
         } else {
-            toolbar.title = ""
+            binding.toolbar.title = ""
         }
     }
 
@@ -128,9 +132,11 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
                             )
                             .commitAllowingStateLoss()
                     }
+
                     MediaType.FILE_TYPE_WITH_SYSTEM_VIEW -> {
                         browseFile()
                     }
+
                     else -> {
                         supportFragmentManager.beginTransaction()
                             .replace(
@@ -160,9 +166,9 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
 
     private fun setThemeAttributes() {
         with(LassiConfig.getConfig()) {
-            toolbar.background =
+            binding.toolbar.background =
                 ColorDrawable(toolbarColor)
-            toolbar.setTitleTextColor(toolbarResourceColor)
+            binding.toolbar.setTitleTextColor(toolbarResourceColor)
             supportActionBar?.setHomeAsUpIndicator(
                 changeIconColor(
                     this@LassiMediaPickerActivity,
@@ -227,6 +233,7 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
             MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
                 setResultOk(viewModel.selectedMediaLiveData.value)
             }
+
             else -> {
             }
         }
@@ -258,12 +265,5 @@ class LassiMediaPickerActivity : LassiBaseViewModelActivity<SelectedMediaViewMod
         )
         setResult(Activity.RESULT_OK, intent)
         finish()
-    }
-
-    companion object {
-        const val DATE_FORMAT = "yyyyMMdd_HHmmss"
-        const val FILE_NAMING_PREFIX = "JPEG_"
-        const val FILE_NAMING_SUFFIX = "_"
-        const val FILE_FORMAT = ".jpg"
     }
 }

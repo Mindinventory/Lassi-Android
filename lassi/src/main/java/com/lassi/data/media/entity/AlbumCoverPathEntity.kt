@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import com.lassi.data.media.entity.AlbumCoverPathEntity.Companion.ALBUM_COVER_ENTITY
 import com.lassi.data.media.entity.AlbumCoverPathEntity.Companion.ALBUM_COVER_MEDIA_ID
 import com.lassi.data.media.entity.MediaFileEntity.Companion.MEDIA_ID
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(
