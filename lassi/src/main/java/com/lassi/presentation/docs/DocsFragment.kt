@@ -5,9 +5,9 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.Menu
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,15 +23,15 @@ import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.FragmentMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.lassi.presentation.media.adapter.MediaAdapter
-import kotlinx.android.synthetic.main.fragment_media_picker.*
 
-class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
+class DocsFragment : LassiBaseViewModelFragment<DocsViewModel, FragmentMediaPickerBinding>() {
     private val mediaAdapter by lazy { MediaAdapter(this::onItemClick) }
     private var mediaPickerConfig = LassiConfig.getConfig()
     private val selectedMediaViewModel by lazy {
@@ -70,12 +70,14 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
         )[DocsViewModel::class.java]
     }
 
-    override fun getContentResource() = R.layout.fragment_media_picker
+    override fun inflateLayout(layoutInflater: LayoutInflater): FragmentMediaPickerBinding {
+        return FragmentMediaPickerBinding.inflate(layoutInflater)
+    }
 
     override fun initViews() {
         super.initViews()
         setImageAdapter()
-        progressBar.indeterminateDrawable.colorFilter =
+        binding.progressBar.indeterminateDrawable.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                 mediaPickerConfig.progressBarColor,
                 BlendModeCompat.SRC_ATOP
@@ -90,9 +92,11 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
                     fetchDocs()
                 }
             }
+
             Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> {
                 openSystemFileExplorer()
             }
+
             else -> {
                 mRequestPermission.launch(
                     arrayOf(
@@ -184,18 +188,21 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
     private fun handleDocs(response: Response<ArrayList<MiMedia>>) {
         when (response) {
             is Response.Success -> {
-                progressBar.hide()
+                binding.progressBar.hide()
                 mediaAdapter.setList(response.item)
             }
-            is Response.Loading -> progressBar.show()
-            is Response.Error -> progressBar.hide()
+
+            is Response.Loading -> binding.progressBar.show()
+            is Response.Error -> binding.progressBar.hide()
         }
     }
 
     private fun setImageAdapter() {
-        rvMedia.layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
-        rvMedia.adapter = mediaAdapter
-        rvMedia.addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+        binding.rvMedia.apply {
+            layoutManager = GridLayoutManager(context, mediaPickerConfig.gridSize)
+            adapter = mediaAdapter
+            addItemDecoration(GridSpacingItemDecoration(mediaPickerConfig.gridSize, 10))
+        }
     }
 
     private fun onItemClick(selectedMedias: ArrayList<MiMedia>) {
@@ -209,15 +216,13 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel>() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         val item = menu.findItem(R.id.menuCamera)
+        menu.findItem(R.id.menuSort)?.isVisible = false
         if (item != null)
             item.isVisible = false
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    override fun hasOptionMenu(): Boolean = true
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
         val intent = Intent().apply {

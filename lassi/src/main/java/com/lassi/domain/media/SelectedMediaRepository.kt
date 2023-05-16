@@ -6,4 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface SelectedMediaRepository {
     suspend fun getSelectedMediaData(bucket: String): Flow<Result<ArrayList<MiMedia>>>
+    suspend fun getSortedDataFromDb(
+        bucket: String,
+        isAsc: Int,
+        mediaType: MediaType
+    ): Flow<Result<ArrayList<MiMedia>>>
 }

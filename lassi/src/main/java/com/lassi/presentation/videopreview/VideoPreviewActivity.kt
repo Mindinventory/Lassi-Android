@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -14,36 +15,26 @@ import android.widget.MediaController
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.fragment.app.FragmentActivity
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
+import com.lassi.databinding.ActivityVideoPreviewBinding
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
-import com.lassi.presentation.cropper.CropImage
-import kotlinx.android.synthetic.main.activity_video_preview.*
 import java.io.File
 
-class VideoPreviewActivity : LassiBaseActivity() {
-
-    private val logTag = VideoPreviewActivity::class.java.simpleName
+class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
     private var videoPath: String? = null
-    override fun getContentResource() = R.layout.activity_video_preview
 
-    companion object {
-        fun startVideoPreview(activity: FragmentActivity?, videoPath: String) {
-            val intent = Intent(activity, VideoPreviewActivity::class.java).apply {
-                putExtra(KeyUtils.VIDEO_PATH, videoPath)
-            }
-            activity?.startActivityForResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
-        }
+    override fun inflateLayout(layoutInflater: LayoutInflater): ActivityVideoPreviewBinding {
+        return ActivityVideoPreviewBinding.inflate(layoutInflater)
     }
 
     override fun initViews() {
         super.initViews()
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        binding.toolbar.title = ""
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         playVideo()
@@ -53,18 +44,20 @@ class VideoPreviewActivity : LassiBaseActivity() {
         }
         videoPath = intent.getStringExtra(KeyUtils.VIDEO_PATH)
         val controller = MediaController(this)
-        controller.setAnchorView(videoView)
-        controller.setMediaPlayer(videoView)
-        videoView.setMediaController(controller)
-        videoView.setVideoURI(Uri.fromFile(File(videoPath)))
+        binding.videoView.apply {
+            controller.setAnchorView(this)
+            controller.setMediaPlayer(this)
+            setMediaController(controller)
+            setVideoURI(Uri.fromFile(File(videoPath)))
+        }
     }
 
     private fun setThemeAttributes() {
-        toolbar.title = ""
+        binding.toolbar.title = ""
         with(LassiConfig.getConfig()) {
-            toolbar.background =
+            binding.toolbar.background =
                 ColorDrawable(toolbarColor)
-            toolbar.setTitleTextColor(toolbarResourceColor)
+            binding.toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@VideoPreviewActivity, R.drawable.ic_back_white)
             upArrow?.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -80,8 +73,8 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     private fun playVideo() {
-        if (videoView.isPlaying) return
-        videoView.start()
+        if (binding.videoView.isPlaying) return
+        binding.videoView.start()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -90,7 +83,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item?.itemId) {
+        when (item.itemId) {
             R.id.menuDone -> {
                 videoPath?.let {
                     FilePickerUtils.notifyGalleryUpdateNewFile(
@@ -101,6 +94,7 @@ class VideoPreviewActivity : LassiBaseActivity() {
                     )
                 }
             }
+
             android.R.id.home -> onBackPressed()
         }
         return super.onOptionsItemSelected(item)

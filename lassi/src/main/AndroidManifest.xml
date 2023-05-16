@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.lassi">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -13,6 +12,7 @@
     <!-- Required to maintain app compatibility. -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true">
@@ -28,7 +28,7 @@
             android:resizeableActivity="false"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.cropper"
             tools:targetApi="n" />
         <activity
             android:name=".presentation.videopreview.VideoPreviewActivity"

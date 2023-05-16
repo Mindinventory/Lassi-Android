@@ -79,4 +79,60 @@ class SelectedMediaRepositoryImpl(private val context: Context) : SelectedMediaR
             Logger.d(TAG, "MEDIA FILE DATABASE Initialized ")
         }
     }
+
+    override suspend fun getSortedDataFromDb(
+        bucket: String,
+        isAsc: Int,
+        mediaType: MediaType
+    ): Flow<Result<ArrayList<MiMedia>>> {
+        return flow {
+            initMediaDb(context)
+            try {
+                val mediaTypeValue = when (mediaType) {
+                    MediaType.IMAGE -> MediaType.IMAGE.value
+                    MediaType.VIDEO -> MediaType.VIDEO.value
+                    MediaType.AUDIO -> MediaType.AUDIO.value
+                    else -> MediaType.IMAGE.value
+                }
+
+                miMediaFileEntityList.clear()
+
+                if (mediaTypeValue == MediaType.IMAGE.value) {
+                    val sortedImageMediaItemList: List<MediaFileEntity> =
+                        mediaDatabase.mediaFileDao()
+                            .getSelectedSortedImageMediaFile(bucket, isAsc, mediaTypeValue)
+                    sortedImageMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                            )
+                        )
+                    }
+                } else {
+                    val sortedMediaItemList: List<SelectedMediaModel> =
+                        mediaDatabase.mediaFileDao()
+                            .getSelectedSortedMediaFile(bucket, isAsc, mediaTypeValue)
+                    sortedMediaItemList.forEach { selectedMediaModel ->
+                        miMediaFileEntityList.add(
+                            MiMedia(
+                                id = selectedMediaModel.mediaId,
+                                name = selectedMediaModel.mediaName,
+                                path = selectedMediaModel.mediaPath,
+                                fileSize = selectedMediaModel.mediaSize,
+                                duration = selectedMediaModel.mediaDuration,
+                                thumb = selectedMediaModel.mediaAlbumCoverPath,
+                            )
+                        )
+                    }
+                }
+                emit(Result.Success(miMediaFileEntityList))
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                emit(Result.Error(Throwable()))
+            }
+        }.catch().flowOn(Dispatchers.IO)
+    }
 }

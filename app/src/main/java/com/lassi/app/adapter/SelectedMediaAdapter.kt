@@ -1,14 +1,12 @@
 package com.lassi.app.adapter
 
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.lassi.app.R
-import com.lassi.common.extenstions.inflate
+import com.lassi.app.databinding.RowSelectedMediaBinding
 import com.lassi.common.extenstions.loadImage
+import com.lassi.common.extenstions.toBinding
 import com.lassi.common.utils.ImageUtils
 import com.lassi.data.media.MiMedia
-import kotlinx.android.synthetic.main.row_selected_media.view.*
 
 class SelectedMediaAdapter(private val onItemClicked: (miMedia: MiMedia) -> Unit) :
     RecyclerView.Adapter<SelectedMediaAdapter.MediaViewHolder>() {
@@ -24,7 +22,7 @@ class SelectedMediaAdapter(private val onItemClicked: (miMedia: MiMedia) -> Unit
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaViewHolder {
-        return MediaViewHolder(parent.inflate(R.layout.row_selected_media))
+        return MediaViewHolder(parent.toBinding())
     }
 
     override fun getItemCount() = this.selectedMedias.size
@@ -33,10 +31,11 @@ class SelectedMediaAdapter(private val onItemClicked: (miMedia: MiMedia) -> Unit
         holder.bind(this.selectedMedias[position])
     }
 
-    inner class MediaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MediaViewHolder(private val binding: RowSelectedMediaBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(miMedia: MiMedia) {
-            itemView.ivSelectedMediaThumbnail.loadImage(ImageUtils.getThumb(miMedia))
-            itemView.setOnClickListener {
+            binding.ivSelectedMediaThumbnail.loadImage(ImageUtils.getThumb(miMedia))
+            binding.root.setOnClickListener {
                 onItemClicked(miMedia)
             }
         }

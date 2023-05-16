@@ -1,24 +1,30 @@
 package com.lassi.presentation.common
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewbinding.ViewBinding
 import com.livefront.bridge.Bridge
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class LassiBaseActivity : AppCompatActivity() {
+abstract class LassiBaseActivity<VB : ViewBinding> : AppCompatActivity() {
+
+    private var _binding: VB? = null
+    protected val binding get() = _binding!!
 
     private val compositeDisposable = CompositeDisposable()
 
-    protected abstract fun getContentResource(): Int
+    abstract fun inflateLayout(layoutInflater: LayoutInflater): VB
 
     protected open fun getBundle() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getBundle()
-        setContentView(getContentResource())
+        _binding = inflateLayout(layoutInflater)
+        setContentView(binding.root)
         initViews()
         Bridge.restoreInstanceState(this, savedInstanceState)
     }
@@ -42,5 +48,6 @@ abstract class LassiBaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Bridge.clear(this)
+        _binding = null
     }
 }

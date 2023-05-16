@@ -1,16 +1,14 @@
 package com.lassi.presentation.mediadirectory.adapter
 
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.lassi.R
 import com.lassi.common.extenstions.hide
-import com.lassi.common.extenstions.inflate
 import com.lassi.common.extenstions.loadImage
 import com.lassi.common.extenstions.show
+import com.lassi.common.extenstions.toBinding
 import com.lassi.data.media.MiItemMedia
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_media.*
+import com.lassi.databinding.ItemMediaBinding
 
 class FolderAdapter(
     private val onItemClick: (bucket: MiItemMedia) -> Unit
@@ -27,7 +25,7 @@ class FolderAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderViewHolder {
-        return FolderViewHolder(parent.inflate(R.layout.item_media))
+        return FolderViewHolder(parent.toBinding())
     }
 
     override fun getItemCount() = buckets.size
@@ -42,20 +40,22 @@ class FolderAdapter(
         notifyItemRangeRemoved(0, size)
     }
 
-    inner class FolderViewHolder(override val containerView: View) :
-        RecyclerView.ViewHolder(containerView), LayoutContainer {
+    inner class FolderViewHolder(val binding: ItemMediaBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(bucket: MiItemMedia) {
             with(bucket) {
-                tvFolderName.show()
-                tvDuration.hide()
-                ivFolderThumbnail.loadImage(bucket.latestItemPathForBucket)
-                tvFolderName.text = String.format(
-                    tvFolderName.context.getString(R.string.directory_with_item_count),
-                    bucketName,
-                    totalItemSizeForBucket.toString()
-                )
-                itemView.setOnClickListener {
-                    onItemClick(bucket)
+                binding.apply {
+                    tvFolderName.show()
+                    tvDuration.hide()
+                    ivFolderThumbnail.loadImage(bucket.latestItemPathForBucket)
+                    tvFolderName.text = String.format(
+                        tvFolderName.context.getString(R.string.directory_with_item_count),
+                        bucketName,
+                        totalItemSizeForBucket.toString()
+                    )
+                    itemView.setOnClickListener {
+                        onItemClick(bucket)
+                    }
                 }
             }
         }

@@ -4,13 +4,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.util.Log
 import android.webkit.MimeTypeMap
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
+import java.util.Locale
 
 object FilePickerUtils {
 
@@ -32,9 +31,8 @@ object FilePickerUtils {
                 it,
                 arrayOf(filePath),
                 arrayOf(mimeType)
-            ) { path, uri ->
-                Log.d("ExternalStorage", "Scanned $path")
-                onFileScanComplete(uri, path)
+            ) { path, _ ->
+                onFileScanComplete(Uri.fromFile(File(path)), path)
             }
         }
     }

@@ -10,7 +10,7 @@ import com.lassi.domain.media.MediaRepository
 class FolderViewModelFactory(val context: Context) : ViewModelProvider.Factory {
     private val mediaRepository: MediaRepository = MediaRepositoryImpl(context)
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return FolderViewModel(mediaRepository) as T
     }
 }

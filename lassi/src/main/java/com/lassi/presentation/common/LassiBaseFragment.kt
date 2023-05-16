@@ -6,29 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
+import androidx.viewbinding.ViewBinding
 import com.livefront.bridge.Bridge
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class LassiBaseFragment : Fragment() {
+abstract class LassiBaseFragment<VB : ViewBinding> : Fragment() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    protected abstract fun getContentResource(): Int
+    abstract fun inflateLayout(layoutInflater: LayoutInflater): VB
 
-    protected open fun getBundle() = Unit
+    open fun hasOptionMenu(): Boolean = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        getBundle()
-        return inflater.inflate(getContentResource(), container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews()
     }
 
