@@ -141,7 +141,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
         int videoMaxDuration = a.getInteger(R.styleable.CameraView_ls_cameraVideoMaxDuration, 0);
         int videoBitRate = a.getInteger(R.styleable.CameraView_ls_cameraVideoBitRate, 0);
         int audioBitRate = a.getInteger(R.styleable.CameraView_ls_cameraAudioBitRate, 0);
-        long autoFocusResetDelay = (long) a.getInteger(R.styleable.CameraView_ls_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
+        long autoFocusResetDelay = a.getInteger(R.styleable.CameraView_ls_cameraAutoFocusResetDelay, (int) DEFAULT_AUTOFOCUS_RESET_DELAY_MILLIS);
 
         // Picture size selector
         List<SizeSelector> pictureConstraints = new ArrayList<>(3);
@@ -682,6 +682,9 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
                 PackageManager.PERMISSION_GRANTED;
         needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) !=
                 PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED;
+        needsStorage = needsStorage && c.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED;
 
         isAllowedCamera = needsCamera;
         isAllowedAudio = needsAudio;
@@ -1504,6 +1507,7 @@ public class CameraView extends FrameLayout implements LifecycleObserver {
     }
 
     // If we end up here, we're in M.
+    @SuppressLint("SuspiciousIndentation")
     @TargetApi(Build.VERSION_CODES.M)
     private void requestPermissions(boolean requestCamera, boolean requestAudio) {
         Activity activity = null;
