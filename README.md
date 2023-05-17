@@ -84,6 +84,8 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setPlaceHolder(R.drawable.ic_image_placeholder)
                 .setErrorDrawable(R.drawable.ic_image_placeholder)
                 .setSelectionDrawable(R.drawable.ic_checked_media)
+                .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                 .setGalleryBackgroundColor(R.color.colorGrey)//Customize background color of gallery (default color is white)
                 .setCropType(CropImageView.CropShape.RECTANGLE) // choose shape for cropping after capturing an image from camera (for MediaType.IMAGE only)
                 .setCropAspectRatio(1, 1) // define crop aspect ratio for cropping after capturing an image from camera (for MediaType.IMAGE only)
@@ -143,7 +145,7 @@ It would be great for us if the reporter can share the below things to understan
 
 ### Requirements
 
-* minSdkVersion >= 19
+* minSdkVersion >= 21
 * Androidx
 
 ### Library used
