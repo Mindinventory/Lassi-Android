@@ -195,8 +195,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGridSize(3)
                     .setMinTime(5)
                     .setMaxTime(30)
-                    .setMinFileSize(0)
-                    .setMaxFileSize(2000)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
