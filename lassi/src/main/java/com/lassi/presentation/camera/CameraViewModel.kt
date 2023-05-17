@@ -36,7 +36,7 @@ class CameraViewModel : LassiBaseViewModel() {
         if (LassiConfig.getConfig().minTime
             == KeyUtils.DEFAULT_DURATION
         ) {
-            KeyUtils.FIVE_SECOND_INTERVAL  // 10 sec
+            KeyUtils.FIVE_SECOND_INTERVAL  // 5 sec
         } else {
             (LassiConfig.getConfig().minTime * KeyUtils.ONE_SECOND_INTERVAL)
         }
