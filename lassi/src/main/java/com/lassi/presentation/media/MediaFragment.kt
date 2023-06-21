@@ -105,7 +105,7 @@ class MediaFragment :
                 Log.d("TAG", "!@# LassiConfig.getConfig().ascFlag: ${LassiConfig.getConfig().ascFlag}")
                 // If user has set
                 when (LassiConfig.getConfig().ascFlag) {
-                    ASCENDING_ORDER -> { /* Default Ascending */
+                    ASCENDING_ORDER -> {
                         viewModel.getSortedDataFromDb(
                             bucket = bucketName,
                             isAsc = ASCENDING_ORDER,
@@ -121,7 +121,7 @@ class MediaFragment :
                         )
                         Log.d("TAG", "!@# Media Sorting order: DESCENDING_ORDER")
                     }
-                    else -> {
+                    else -> {  /* Default Ascending */
                         Log.d("TAG", "!@# Media Sorting order: ELSE")
                         viewModel.getSelectedMediaData(bucket = bucketName)
                     }

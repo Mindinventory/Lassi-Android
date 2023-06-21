@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
                     .setMaxCount(1)
-                    .setAscSort(SortingOption.DESCENDING)
+                    .setAscSort(SortingOption.ASCENDING)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
