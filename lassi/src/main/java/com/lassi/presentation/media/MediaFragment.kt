@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -15,6 +16,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.KeyUtils.ASCENDING_ORDER
+import com.lassi.common.utils.KeyUtils.DESCENDING_ORDER
 import com.lassi.common.utils.KeyUtils.SELECTED_FOLDER
 import com.lassi.common.utils.Logger
 import com.lassi.data.common.Response
@@ -99,7 +102,30 @@ class MediaFragment :
         super.initViews()
         bucket?.let {
             it.bucketName?.let { bucketName ->
-                viewModel.getSelectedMediaData(bucket = bucketName)
+                Log.d("TAG", "!@# LassiConfig.getConfig().ascFlag: ${LassiConfig.getConfig().ascFlag}")
+                // If user has set
+                when (LassiConfig.getConfig().ascFlag) {
+                    ASCENDING_ORDER -> { /* Default Ascending */
+                        viewModel.getSortedDataFromDb(
+                            bucket = bucketName,
+                            isAsc = ASCENDING_ORDER,
+                            mediaType = LassiConfig.getConfig().mediaType
+                        )
+                        Log.d("TAG", "!@# Media Sorting order: ASCENDING_ORDER")
+                    }
+                    DESCENDING_ORDER -> {
+                        viewModel.getSortedDataFromDb(
+                            bucket = bucketName,
+                            isAsc = DESCENDING_ORDER,
+                            mediaType = LassiConfig.getConfig().mediaType
+                        )
+                        Log.d("TAG", "!@# Media Sorting order: DESCENDING_ORDER")
+                    }
+                    else -> {
+                        Log.d("TAG", "!@# Media Sorting order: ELSE")
+                        viewModel.getSelectedMediaData(bucket = bucketName)
+                    }
+                }
             }
         }
         binding.progressBar.indeterminateDrawable.colorFilter =
@@ -245,7 +271,7 @@ class MediaFragment :
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
                                     bucket = bucketName,
-                                    isAsc = 1,
+                                    isAsc = ASCENDING_ORDER,
                                     mediaType = LassiConfig.getConfig().mediaType
                                 )
                             }
@@ -257,7 +283,7 @@ class MediaFragment :
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
                                     bucket = bucketName,
-                                    isAsc = 0,
+                                    isAsc = DESCENDING_ORDER,
                                     mediaType = LassiConfig.getConfig().mediaType
                                 )
                             }

@@ -20,6 +20,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
                     .setMaxCount(1)
+                    .setAscSort(SortingOption.DESCENDING)
                     .setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)

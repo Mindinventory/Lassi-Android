@@ -10,6 +10,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
@@ -27,6 +28,19 @@ class Lassi(private val context: Context) {
             KeyUtils.DEFAULT_MEDIA_COUNT
         } else {
             maxCount
+        }
+        return this
+    }
+
+    /**
+     * Default sorting
+     * 1 - Ascending
+     * 0 - Descending
+     */
+    fun setAscSort(ascFlag: SortingOption): Lassi {
+        lassiConfig.ascFlag = when (ascFlag) {
+            SortingOption.ASCENDING -> KeyUtils.ASCENDING_ORDER
+            SortingOption.DESCENDING -> KeyUtils.DESCENDING_ORDER
         }
         return this
     }

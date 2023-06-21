@@ -24,6 +24,7 @@ data class LassiConfig(
     var selectedMedias: ArrayList<MiMedia> = ArrayList(),
     var mediaType: MediaType = MediaType.IMAGE,
     var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
+    var ascFlag: Int = KeyUtils.DEFAULT_ORDER,
     var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
     var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
     var minTime: Long = KeyUtils.DEFAULT_DURATION,
@@ -56,6 +57,7 @@ data class LassiConfig(
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount
+                ascFlag= lassiConfig.ascFlag
                 gridSize = lassiConfig.gridSize
                 lassiOption = lassiConfig.lassiOption
                 minTime = lassiConfig.minTime
