@@ -102,7 +102,6 @@ class MediaFragment :
         super.initViews()
         bucket?.let {
             it.bucketName?.let { bucketName ->
-                Log.d("TAG", "!@# LassiConfig.getConfig().ascFlag: ${LassiConfig.getConfig().ascFlag}")
                 // If user has set
                 when (LassiConfig.getConfig().ascFlag) {
                     ASCENDING_ORDER -> {
@@ -111,7 +110,6 @@ class MediaFragment :
                             isAsc = ASCENDING_ORDER,
                             mediaType = LassiConfig.getConfig().mediaType
                         )
-                        Log.d("TAG", "!@# Media Sorting order: ASCENDING_ORDER")
                     }
                     DESCENDING_ORDER -> {
                         viewModel.getSortedDataFromDb(
@@ -119,10 +117,8 @@ class MediaFragment :
                             isAsc = DESCENDING_ORDER,
                             mediaType = LassiConfig.getConfig().mediaType
                         )
-                        Log.d("TAG", "!@# Media Sorting order: DESCENDING_ORDER")
                     }
                     else -> {  /* Default Ascending */
-                        Log.d("TAG", "!@# Media Sorting order: ELSE")
                         viewModel.getSelectedMediaData(bucket = bucketName)
                     }
                 }

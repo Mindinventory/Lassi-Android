@@ -93,7 +93,6 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                         Log.d(TAG, "!@# removeMediaData: Nothing to remove")
                     } else {
                         //remove particular file, as it doesn't exist
-                        Log.d(TAG, "!@# removeMediaData: This file will be deleted ==> $mediaPath")
                         initMediaDb(context)
                         mediaDatabase.mediaFileDao().deleteByMediaPath(mediaPath)
                     }
