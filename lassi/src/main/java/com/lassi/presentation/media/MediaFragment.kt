@@ -5,10 +5,10 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -102,8 +102,7 @@ class MediaFragment :
         super.initViews()
         bucket?.let {
             it.bucketName?.let { bucketName ->
-                // If user has set
-                when (LassiConfig.getConfig().ascFlag) {
+                when (viewModel.currentSortingOption.value) {
                     ASCENDING_ORDER -> {
                         viewModel.getSortedDataFromDb(
                             bucket = bucketName,
@@ -111,6 +110,7 @@ class MediaFragment :
                             mediaType = LassiConfig.getConfig().mediaType
                         )
                     }
+
                     DESCENDING_ORDER -> {
                         viewModel.getSortedDataFromDb(
                             bucket = bucketName,
@@ -118,6 +118,7 @@ class MediaFragment :
                             mediaType = LassiConfig.getConfig().mediaType
                         )
                     }
+
                     else -> {  /* Default Ascending */
                         viewModel.getSelectedMediaData(bucket = bucketName)
                     }
@@ -126,8 +127,7 @@ class MediaFragment :
         }
         binding.progressBar.indeterminateDrawable.colorFilter =
             BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                mediaPickerConfig.progressBarColor,
-                BlendModeCompat.SRC_ATOP
+                mediaPickerConfig.progressBarColor, BlendModeCompat.SRC_ATOP
             )
         binding.rvMedia.apply {
             setBackgroundColor(LassiConfig.getConfig().galleryBackgroundColor)
@@ -146,37 +146,31 @@ class MediaFragment :
     }
 
     private fun croppingOptions(
-        uri: Uri? = null,
-        includeCamera: Boolean? = false,
-        includeGallery: Boolean? = false
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false
     ) {
         // Start picker to get image for cropping and then use the image in cropping activity.
-        cropImage.launch(
-            includeCamera?.let { includeCamera ->
-                includeGallery?.let { includeGallery ->
-                    CropImageOptions(
-                        imageSourceIncludeCamera = includeCamera,
-                        imageSourceIncludeGallery = includeGallery,
-                        cropShape = CropImageView.CropShape.RECTANGLE,
-                        showCropOverlay = true,
-                        guidelines = CropImageView.Guidelines.ON,
-                        multiTouchEnabled = false,
-
-                        )
-                }
-            }?.let {
-                CropImageContractOptions(
-                    uri = uri,
-                    cropImageOptions = it,
+        cropImage.launch(includeCamera?.let { includeCamera ->
+            includeGallery?.let { includeGallery ->
+                CropImageOptions(
+                    imageSourceIncludeCamera = includeCamera,
+                    imageSourceIncludeGallery = includeGallery,
+                    cropShape = CropImageView.CropShape.RECTANGLE,
+                    showCropOverlay = true,
+                    guidelines = CropImageView.Guidelines.ON,
+                    multiTouchEnabled = false
                 )
             }
-        )
+        }?.let {
+            CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = it,
+            )
+        })
     }
 
     override fun buildViewModel(): SelectedMediaViewModel {
         return ViewModelProvider(
-            requireActivity(),
-            SelectedMediaViewModelFactory(requireActivity())
+            requireActivity(), SelectedMediaViewModelFactory(requireActivity())
         )[SelectedMediaViewModel::class.java]
     }
 
@@ -184,8 +178,7 @@ class MediaFragment :
         super.initLiveDataObservers()
 
         viewModel.fetchedMediaLiveData.observe(
-            viewLifecycleOwner,
-            SafeObserver(::handleFetchedData)
+            viewLifecycleOwner, SafeObserver(::handleFetchedData)
         )
     }
 
@@ -244,8 +237,7 @@ class MediaFragment :
         this.menu = menu
         menu.findItem(R.id.menuSort)?.isVisible = true
         val item = menu.findItem(R.id.menuCamera)
-        if (item != null)
-            item.isVisible = false
+        if (item != null) item.isVisible = false
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -257,12 +249,33 @@ class MediaFragment :
     }
 
     private fun handleSorting() {
-        // setup the alert builder
+        val customDialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.sorting_option, null)
+        val sortingRadioGroup = customDialogView.findViewById<RadioGroup>(R.id.sortingRadioGroup)
+
+        //To set the previously selected option as checked.
+        sortingRadioGroup.check(
+            when (viewModel.currentSortingOption.value) {
+                ASCENDING_ORDER -> R.id.radioAscending
+                DESCENDING_ORDER -> R.id.radioDescending
+                else -> R.id.radioAscending
+            }
+        )
+
+        //Set up the alert builder with the custom layout..
         AlertDialog.Builder(requireContext()).apply {
             setTitle(R.string.sort_by_date)
-            setItems(R.array.sorting_options) { _, isAsc ->
-                when (isAsc) {
-                    0 -> { /* Ascending */
+            setView(customDialogView)
+            setPositiveButton(android.R.string.ok) { _, _ ->
+                val checkedRadioButtonId = sortingRadioGroup.checkedRadioButtonId
+                val selectedOption =
+                    if (checkedRadioButtonId == R.id.radioAscending) ASCENDING_ORDER else DESCENDING_ORDER
+
+                viewModel.currentSortingOptionUpdater(selectedOption)
+
+                when (selectedOption) {
+                    ASCENDING_ORDER -> {
+                        // Handle ascending sorting
                         bucket?.let {
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
@@ -274,7 +287,8 @@ class MediaFragment :
                         }
                     }
 
-                    1 -> { /* Descending */
+                    DESCENDING_ORDER -> {
+                        // Handle descending sorting
                         bucket?.let {
                             it.bucketName?.let { bucketName ->
                                 viewModel.getSortedDataFromDb(
@@ -287,6 +301,7 @@ class MediaFragment :
                     }
                 }
             }
+            setNegativeButton(android.R.string.cancel, null)
             create().show()
         }
     }
@@ -302,8 +317,7 @@ class MediaFragment :
 
     override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
         if (result.error != null) {
-            Toast
-                .makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
+            Toast.makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
                 .show()
         }
     }

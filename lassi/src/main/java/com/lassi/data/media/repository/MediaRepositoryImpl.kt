@@ -463,8 +463,8 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                     0
                                 }
 
-                            val dateAdded =
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_ADDED))
+                            val dateModified =
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED))
 
                             val file = makeSafeFile(path)
 
@@ -482,7 +482,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                         duration,
                                         albumCoverPath,
                                         size,
-                                        dateAdded,
+                                        dateModified,
                                         LassiConfig.getConfig().mediaType
                                     )
                                 } else {
@@ -496,7 +496,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                                 duration,
                                                 thumb = albumCoverPath
                                             ),
-                                            dateAdded,
+                                            dateModified,
                                             LassiConfig.getConfig().mediaType
                                         )
                                     }
