@@ -74,8 +74,8 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     MediaType.AUDIO -> MediaType.AUDIO.value
                     else -> MediaType.IMAGE.value
                 }
-                val latestImgFileDate: Long = mediaDatabase.mediaFileDao()
-                    .getMaxDateFromMediaTable(mediaType)
+                val latestImgFileDate: Long =
+                    mediaDatabase.mediaFileDao().getMaxDateFromMediaTable(mediaType)
                 return@async fetchAndInsertMediaHelper(latestImgFileDate)
             } catch (e: Exception) {
                 return@async Result.Error(e)
@@ -105,7 +105,8 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         return flow {
             try {
                 initMediaDb(context)
-                val allData = mediaDatabase.mediaFileDao().getAllImgVidMediaFile() as ArrayList<MediaFileEntity>
+                val allData = mediaDatabase.mediaFileDao()
+                    .getAllImgVidMediaFile() as ArrayList<MediaFileEntity>
                 emit(Result.Success(allData))
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -140,8 +141,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     else -> MediaType.IMAGE.value
                 }
                 val miItemMediaList = ArrayList<MiItemMedia>()
-                mediaDatabase.mediaFileDao()
-                    .getDistinctBucketList(mediaType)
+                mediaDatabase.mediaFileDao().getDistinctBucketList(mediaType)
                     .collect { folderList ->
                         miItemMediaList.clear()
                         folderList.forEach { bucket ->
@@ -151,9 +151,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                 .getTotalItemSizeForBucket(bucket = bucket, mediaType = mediaType)
                             miItemMediaList.add(
                                 MiItemMedia(
-                                    bucket,
-                                    latestItemPathForBucket,
-                                    totalItemSizeForBucket
+                                    bucket, latestItemPathForBucket, totalItemSizeForBucket
                                 )
                             )
                         }
@@ -191,17 +189,11 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
      * check if file size is valid duration
      */
     private fun isValidFileSize(fileSize: Long): Boolean {
-        return if (minFileSize > KeyUtils.DEFAULT_FILE_SIZE &&
-            maxFileSize > KeyUtils.DEFAULT_FILE_SIZE
-        ) {
+        return if (minFileSize > KeyUtils.DEFAULT_FILE_SIZE && maxFileSize > KeyUtils.DEFAULT_FILE_SIZE) {
             fileSize in minFileSize..maxFileSize
-        } else if (minFileSize == KeyUtils.DEFAULT_FILE_SIZE &&
-            maxFileSize != KeyUtils.DEFAULT_FILE_SIZE
-        ) {
+        } else if (minFileSize == KeyUtils.DEFAULT_FILE_SIZE && maxFileSize != KeyUtils.DEFAULT_FILE_SIZE) {
             fileSize <= maxFileSize
-        } else if (maxFileSize == KeyUtils.DEFAULT_FILE_SIZE &&
-            minFileSize != KeyUtils.DEFAULT_FILE_SIZE
-        ) {
+        } else if (maxFileSize == KeyUtils.DEFAULT_FILE_SIZE && minFileSize != KeyUtils.DEFAULT_FILE_SIZE) {
             minFileSize <= fileSize
         } else {
             true
@@ -212,17 +204,11 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
      * check if video/audio has valid duration
      */
     private fun isValidDuration(duration: Long): Boolean {
-        return if (minTimeInMillis > KeyUtils.DEFAULT_DURATION &&
-            maxTimeInMillis > KeyUtils.DEFAULT_DURATION
-        ) {
+        return if (minTimeInMillis > KeyUtils.DEFAULT_DURATION && maxTimeInMillis > KeyUtils.DEFAULT_DURATION) {
             duration in minTimeInMillis..maxTimeInMillis
-        } else if (minTimeInMillis == KeyUtils.DEFAULT_DURATION &&
-            maxTimeInMillis != KeyUtils.DEFAULT_DURATION
-        ) {
+        } else if (minTimeInMillis == KeyUtils.DEFAULT_DURATION && maxTimeInMillis != KeyUtils.DEFAULT_DURATION) {
             duration <= maxTimeInMillis
-        } else if (maxTimeInMillis == KeyUtils.DEFAULT_DURATION &&
-            minTimeInMillis != KeyUtils.DEFAULT_DURATION
-        ) {
+        } else if (maxTimeInMillis == KeyUtils.DEFAULT_DURATION && minTimeInMillis != KeyUtils.DEFAULT_DURATION) {
             minTimeInMillis <= duration
         } else {
             true
@@ -275,6 +261,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                         mediaDatabase.mediaFileDao()
                             .insertDuration(DurationEntity(miMedia.id, miMedia.duration))
                     }
+
                     else -> {
                     }
                 }
@@ -336,6 +323,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.DATE_ADDED
             )
+
             MediaType.VIDEO -> arrayOf(
                 MediaStore.Video.Media._ID,
                 MediaStore.Video.Media.TITLE,
@@ -345,6 +333,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 MediaStore.Video.Media.DATE_ADDED,
                 MediaStore.Video.VideoColumns.SIZE
             )
+
             MediaType.AUDIO -> arrayOf(
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
@@ -355,6 +344,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.SIZE
             )
+
             else -> arrayOf(
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.Files.FileColumns.TITLE,
@@ -380,6 +370,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     MediaStore.Images.Media.DATE_ADDED
                 )
             }
+
             MediaType.VIDEO -> context.contentResolver.query(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
@@ -391,6 +382,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 if (latestImageFileDate != 0L) arrayOf(latestImageFileDate.toString()) else null,
                 MediaStore.Video.Media.DATE_ADDED
             )
+
             MediaType.AUDIO -> context.contentResolver.query(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     MediaStore.Audio.Media.getContentUri(
@@ -404,14 +396,13 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                 if (latestImageFileDate != 0L) arrayOf(latestImageFileDate.toString()) else null,
                 MediaStore.Audio.Media.DATE_ADDED
             )
+
             MediaType.DOC -> {
                 val mimeTypes = mutableListOf<String>()
                 LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
-                    MimeTypeMap
-                        .getSingleton()
-                        .getMimeTypeFromExtension(mimeType)?.let {
-                            mimeTypes.add("'$it'")
-                        }
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeType)?.let {
+                        mimeTypes.add("'$it'")
+                    }
                 }
                 val selectionMimeType =
                     MediaStore.Files.FileColumns.MIME_TYPE + " IN (${mimeTypes.joinToString()})"
@@ -423,6 +414,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                     MediaStore.Video.Media.DATE_ADDED
                 )
             }
+
             else -> {
                 null
             }
@@ -463,17 +455,15 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                     0
                                 }
 
-                            val dateModified =
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_MODIFIED))
+                            val dateAdded =
+                                cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_ADDED))
 
                             val file = makeSafeFile(path)
 
                             initMediaDb(context)
 
                             if (file != null && file.exists()) {
-                                if (LassiConfig.getConfig().mediaType == MediaType.VIDEO ||
-                                    LassiConfig.getConfig().mediaType == MediaType.AUDIO
-                                ) {
+                                if (LassiConfig.getConfig().mediaType == MediaType.VIDEO || LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                                     checkDurationAndAddFileToDatabase(
                                         bucket,
                                         id,
@@ -482,22 +472,15 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
                                         duration,
                                         albumCoverPath,
                                         size,
-                                        dateModified,
+                                        dateAdded,
                                         LassiConfig.getConfig().mediaType
                                     )
                                 } else {
                                     if (isValidFileSize(size)) {
                                         addFileToDatabase(
-                                            bucket,
-                                            MiMedia(
-                                                id,
-                                                name,
-                                                path,
-                                                duration,
-                                                thumb = albumCoverPath
-                                            ),
-                                            dateModified,
-                                            LassiConfig.getConfig().mediaType
+                                            bucket, MiMedia(
+                                                id, name, path, duration, thumb = albumCoverPath
+                                            ), dateAdded, LassiConfig.getConfig().mediaType
                                         )
                                     }
                                 }
@@ -523,13 +506,9 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     private fun getAlbumArt(albumId: String): String {
         var albumCoverPath = ""
         val cursorAlbum = context.contentResolver.query(
-            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-            arrayOf(
-                MediaStore.Audio.Albums._ID,
-                MediaStore.Audio.Albums.ALBUM_ART
-            ),
-            MediaStore.Audio.Albums._ID + "=" + albumId,
-            null, null
+            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, arrayOf(
+                MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART
+            ), MediaStore.Audio.Albums._ID + "=" + albumId, null, null
         )
 
         if (cursorAlbum != null) {
