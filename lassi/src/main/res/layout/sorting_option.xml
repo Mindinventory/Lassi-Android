@@ -8,7 +8,7 @@
     android:padding="16dp">
 
     <RadioGroup
-        android:id="@+id/sortingRadioGrouxp"
+        android:id="@+id/sortingRadioGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

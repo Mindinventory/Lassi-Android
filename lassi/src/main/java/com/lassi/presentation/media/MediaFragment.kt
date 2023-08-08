@@ -138,6 +138,13 @@ class MediaFragment :
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (LassiConfig.getConfig().maxCount == 1 && LassiConfig.getConfig().selectedMedias.isNotEmpty()) {
+            LassiConfig.getConfig().selectedMedias.clear()
+        }
+    }
+
     override fun getBundle() {
         super.getBundle()
         arguments?.let {
