@@ -158,14 +158,21 @@ class MediaFragment :
         // Start picker to get image for cropping and then use the image in cropping activity.
         cropImage.launch(includeCamera?.let { includeCamera ->
             includeGallery?.let { includeGallery ->
-                CropImageOptions(
-                    imageSourceIncludeCamera = includeCamera,
-                    imageSourceIncludeGallery = includeGallery,
-                    cropShape = CropImageView.CropShape.RECTANGLE,
-                    showCropOverlay = true,
-                    guidelines = CropImageView.Guidelines.ON,
-                    multiTouchEnabled = false
-                )
+                LassiConfig.getConfig().cropAspectRatio?.x?.let { x ->
+                    LassiConfig.getConfig().cropAspectRatio?.y?.let { y ->
+                        CropImageOptions(
+                            imageSourceIncludeCamera = includeCamera,
+                            imageSourceIncludeGallery = includeGallery,
+                            cropShape = LassiConfig.getConfig().cropType,
+                            showCropOverlay = true,
+                            guidelines = CropImageView.Guidelines.ON,
+                            multiTouchEnabled = false,
+                            aspectRatioX = x,
+                            aspectRatioY = y,
+                            fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop
+                        )
+                    }
+                }
             }
         }?.let {
             CropImageContractOptions(

@@ -68,7 +68,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setMaxCount(5)
                 .setGridSize(3)
                 .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC
-                .setCompressionRation(10) // compress image for single item selection (can be 0 to 100)
+                .setCompressionRatio(10) // compress image for single item selection (can be 0 to 100)
                 .setMinTime(15) // for MediaType.VIDEO only
                 .setMaxTime(30) // for MediaType.VIDEO only
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
