@@ -15,4 +15,7 @@ object KeyUtils {
     const val TEN_SECOND_INTERVAL = 10 * 1000L
     const val SETTINGS_REQUEST_CODE = 100
     const val DEFAULT_FILE_SIZE = 0L
+    const val DESCENDING_ORDER = 0
+    const val ASCENDING_ORDER = 1
+    const val DEFAULT_ORDER = 2
 }
