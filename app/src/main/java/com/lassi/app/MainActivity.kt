@@ -53,6 +53,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnImagePicker -> {
+                Lassi(this).getMultiLngBuilder(
+                    setOkLbl = "d'accord",
+                    setCancelLbl = "Annuler"
+                )
+
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
                     .setMaxCount(1)

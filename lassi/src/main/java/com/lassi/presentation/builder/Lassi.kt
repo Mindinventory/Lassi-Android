@@ -10,6 +10,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
@@ -18,6 +19,95 @@ import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 class Lassi(private val context: Context) {
 
     private var lassiConfig = LassiConfig()
+
+    /**
+     * Multi-language support
+     */
+    fun getMultiLngBuilder(
+        setOkLbl: String? = "",
+        setCancelLbl: String? = "",
+        setLassiAllLbl: String? = "",
+        setCropImageMenuRotateLeftLbl: String? = "",
+        setCropImageMenuRotateRightLbl: String? = "",
+        setCropImageMenuFlipLbl: String? = "",
+        setCropImageMenuFlipHorizontallyLbl: String? = "",
+        setCropImageMenuFlipVerticallyLbl: String? = "",
+        setPickImageIntentChooserTitleLbl: String? = "",
+        setCropImageActivityNoPermissionsLbl: String? = "",
+        setCropImageActivityTitleLbl: String? = "",
+        setCameraLbl: String? = "",
+        setSortLbl: String? = "",
+        setDoneLbl: String? = "",
+        setCameraAudioStoragePermissionRationalLbl: String? = "",
+        setCameraStoragePermissionRationalLbl: String? = "",
+        setCameraAudioPermissionRationalLbl: String? = "",
+        setCameraPermissionRationalLbl: String? = "",
+        setStoragePermissionRationalLbl: String? = "",
+        setReadMediaImagesVideoPermissionRationalLbl: String? = "",
+        setReadMediaAudioPermissionRationalLbl: String? = "",
+        setAlreadySelectedMaxItemsLbl: String? = "",
+        setErrorExceedMsgLbl: String? = "",
+        setDefaultExceedErrorMsgLbl: String? = "",
+        setNoDataFoundLbl: String? = "",
+        setSortByDateLbl: String? = "",
+        setSortAscendingLbl: String? = "",
+        setSortDescendingLbl: String? = "",
+        setIcRotateLeft24Lbl: String? = "",
+        setIcRotateRight24Lbl: String? = "",
+        setCropImageMenuCropLbl: String? = "",
+        setIcFlip24Lbl: String? = "",
+        setIcFlip24HorizontallyLbl: String? = "",
+        setIcFlip24VerticallyLbl: String? = "",
+        setPickImageChooserTitleLbl: String? = "",
+        setPickImageCameraLbl: String? = "",
+        setPickImageGalleryLbl: String? = "",
+        setMainActionRotateLbl: String? = "",
+        setMainActionCropLbl: String? = "",
+    ): Lassi {
+        //Initialized default values
+
+        MultiLangModel.initializeDefaultValues(context)
+        setOkLbl?.let { MultiLangModel.Common.setOk(it) }
+        setCancelLbl?.let { MultiLangModel.Common.setCancel(it) }
+        setLassiAllLbl?.let { MultiLangModel.Common.setLassiAll(it) }
+        setCropImageMenuRotateLeftLbl?.let { MultiLangModel.CropImage.setCropImageMenuRotateLeft(it) }
+        setCropImageMenuRotateRightLbl?.let { MultiLangModel.CropImage.setCropImageMenuRotateRight(it) }
+        setCropImageMenuFlipLbl?.let { MultiLangModel.CropImage.setCropImageMenuFlip(it) }
+        setCropImageMenuFlipHorizontallyLbl?.let { MultiLangModel.CropImage.setCropImageMenuFlipHorizontally(it) }
+        setCropImageMenuFlipVerticallyLbl?.let { MultiLangModel.CropImage.setCropImageMenuFlipVertically(it) }
+        setPickImageIntentChooserTitleLbl?.let { MultiLangModel.CropImage.setPickImageIntentChooserTitle(it) }
+        setCropImageActivityNoPermissionsLbl?.let { MultiLangModel.CropImage.setCropImageActivityNoPermissions(it) }
+        setCropImageActivityTitleLbl?.let { MultiLangModel.CropImage.setCropImageActivityTitle(it) }
+        setCameraLbl?.let { MultiLangModel.MediaPickerMenu.setCamera(it) }
+        setSortLbl?.let { MultiLangModel.MediaPickerMenu.setSort(it) }
+        setDoneLbl?.let { MultiLangModel.MediaPickerMenu.setDone(it) }
+        setCameraAudioStoragePermissionRationalLbl?.let { MultiLangModel.MediaPermission.setCameraAudioStoragePermissionRational(it) }
+        setCameraStoragePermissionRationalLbl?.let { MultiLangModel.MediaPermission.setCameraStoragePermissionRational(it) }
+        setCameraAudioPermissionRationalLbl?.let { MultiLangModel.MediaPermission.setCameraAudioPermissionRational(it) }
+        setCameraPermissionRationalLbl?.let { MultiLangModel.MediaPermission.setCameraPermissionRational(it) }
+        setStoragePermissionRationalLbl?.let { MultiLangModel.MediaPermission.setStoragePermissionRational(it) }
+        setReadMediaImagesVideoPermissionRationalLbl?.let { MultiLangModel.MediaPermission.setReadMediaImagesVideoPermissionRational(it) }
+        setReadMediaAudioPermissionRationalLbl?.let { MultiLangModel.MediaPermission.setReadMediaAudioPermissionRational(it) }
+        setAlreadySelectedMaxItemsLbl?.let { MultiLangModel.ErrorOrAlertMessage.setAlreadySelectedMaxItems(it) }
+        setErrorExceedMsgLbl?.let { MultiLangModel.ErrorOrAlertMessage.setErrorExceedMsg(it) }
+        setDefaultExceedErrorMsgLbl?.let { MultiLangModel.ErrorOrAlertMessage.setDefaultExceedErrorMsg(it) }
+        setNoDataFoundLbl?.let { MultiLangModel.ErrorOrAlertMessage.setNoDataFound(it) }
+        setSortByDateLbl?.let { MultiLangModel.Sorting.setSortByDate(it) }
+        setSortAscendingLbl?.let { MultiLangModel.Sorting.setSortAscending(it) }
+        setSortDescendingLbl?.let { MultiLangModel.Sorting.setSortDescending(it) }
+        setIcRotateLeft24Lbl?.let { MultiLangModel.ImageActions.setIcRotateLeft24(it) }
+        setIcRotateRight24Lbl?.let { MultiLangModel.ImageActions.setIcRotateRight24(it) }
+        setCropImageMenuCropLbl?.let { MultiLangModel.ImageActions.setCropImageMenuCrop(it) }
+        setIcFlip24Lbl?.let { MultiLangModel.ImageActions.setIcFlip24(it) }
+        setIcFlip24HorizontallyLbl?.let { MultiLangModel.ImageActions.setIcFlip24Horizontally(it) }
+        setIcFlip24VerticallyLbl?.let { MultiLangModel.ImageActions.setIcFlip24Vertically(it) }
+        setPickImageChooserTitleLbl?.let { MultiLangModel.ImageActions.setPickImageChooserTitle(it) }
+        setPickImageCameraLbl?.let { MultiLangModel.ImageActions.setPickImageCamera(it) }
+        setPickImageGalleryLbl?.let { MultiLangModel.ImageActions.setPickImageGallery(it) }
+        setMainActionRotateLbl?.let { MultiLangModel.ImageActions.setMainActionRotate(it) }
+        setMainActionCropLbl?.let { MultiLangModel.ImageActions.setMainActionCrop(it) }
+        return this
+    }
 
     /**
      * Limit max item selection
