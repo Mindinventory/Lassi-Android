@@ -21,6 +21,7 @@ import com.lassi.data.media.entity.MediaFileEntity
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaRepository
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
@@ -224,7 +225,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         dateAdded: Long,
         mediaType: MediaType,
     ) {
-        val bucketName = bucket ?: context.getString(R.string.lassi_all)
+        val bucketName = bucket ?: MultiLangModel.Common.lassiAll
         if (isFileTypeSupported(miMedia.path)) {
             CoroutineScope(IO).launch {
                 miMedia.path?.let { path ->

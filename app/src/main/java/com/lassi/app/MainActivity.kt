@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
+//        Lassi(this).getMultiLngBuilder()    //Initially set it
         binding.also {
             setContentView(it.root)
             it.btnImagePicker.setOnClickListener(this)
@@ -48,15 +51,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             it.rvSelectedMedia.adapter = selectedMediaAdapter
             it.rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
         }
+
+        Log.d("TAG", "!@# OCCURRENCE: MAINACTIVITY")
+
+        //TODO - For now this method calling is must or else string defaults won't set
+        Lassi(this).getMultiLngBuilder(
+            setOkLbl = "d'accord",
+            setCancelLbl = "Annuler",
+            setCameraAudioStoragePermissionRationalLbl = "Les autorisations de caméra, de microphone et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+            setCameraStoragePermissionRationalLbl = "Les autorisations de caméra et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+            setCameraAudioPermissionRationalLbl = "Les autorisations de caméra et/ou de microphone ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+            setCameraPermissionRationalLbl = "L'autorisation de la caméra n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+            setStoragePermissionRationalLbl = "L'autorisation de stockage n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+            setReadMediaImagesVideoPermissionRationalLbl = "Les autorisations relatives aux photos et vidéos ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+            setReadMediaAudioPermissionRationalLbl = "Les autorisations relatives à la musique et à l'audio ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+            setSortAscendingLbl = "Ascendant",
+            setSortDescendingLbl = "Descendant",
+            setSortByDateLbl = "Trier par date"
+        )
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnImagePicker -> {
-                Lassi(this).getMultiLngBuilder(
-                    setOkLbl = "d'accord",
-                    setCancelLbl = "Annuler"
-                )
 
                 val intent = Lassi(this)
                     .with(LassiOption.CAMERA_AND_GALLERY)
@@ -161,7 +178,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xls"
                     )
                     .setMaxCount(3)
-                    .setCustomLimitExceedingErrorMessage(R.string.error_exceed_msg)
+                    .setCustomLimitExceedingErrorMessage(MultiLangModel.ErrorOrAlertMessage.errorExceedMsg)
                     .build()
                 receiveData.launch(intent)
             }

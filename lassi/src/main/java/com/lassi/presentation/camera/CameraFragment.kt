@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +31,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.presentation.cameraview.audio.Audio
 import com.lassi.presentation.cameraview.audio.Flash
 import com.lassi.presentation.cameraview.audio.Mode
@@ -325,29 +327,32 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
             ) {
-                R.string.camera_audio_storage_permission_rational
+                MultiLangModel.MediaPermission.cameraAudioStoragePermissionRational
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) {
-                R.string.camera_audio_permission_rational
+                MultiLangModel.MediaPermission.cameraAudioPermissionRational
             } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) {
-                R.string.camera_permission_rational
+                MultiLangModel.MediaPermission.cameraPermissionRational
             } else {
-                R.string.camera_storage_permission_rational
+                MultiLangModel.MediaPermission.cameraStoragePermissionRational
             }
+        Log.d("TAG", "!@# LASSI:: CAMERA: MultiLangModel.Common.ok: ${MultiLangModel.Common.ok}")
+
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
             .setMessage(alertMessage)
             .setCancelable(false)
-            .setPositiveButton(R.string.ok) { _, _ ->
+            .setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
+
                 val intent = Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     data = Uri.fromParts("package", activity?.packageName, null)
                 }
                 permissionSettingResult.launch(intent)
             }
-            .setNegativeButton(R.string.cancel) { _, _ ->
+            .setNegativeButton(MultiLangModel.Common.cancel) { _, _ ->
                 activity?.onBackPressed()
             }
         val permissionDialog = alertDialog.create()

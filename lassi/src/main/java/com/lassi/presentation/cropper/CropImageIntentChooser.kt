@@ -14,6 +14,7 @@ import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.lassi.R
+import com.lassi.domain.media.MultiLangModel
 
 internal class CropImageIntentChooser(
     private val activity: ComponentActivity,
@@ -32,7 +33,7 @@ internal class CropImageIntentChooser(
         const val MIUI_GALLERY = "com.miui.gallery"
     }
 
-    private var title: String = activity.getString(R.string.pick_image_chooser_title)
+    private var title: String = MultiLangModel.ImageActions.pickImageChooserTitle
     private var priorityIntentList = listOf(
         GOOGLE_PHOTOS,
         GOOGLE_PHOTOS_GO,

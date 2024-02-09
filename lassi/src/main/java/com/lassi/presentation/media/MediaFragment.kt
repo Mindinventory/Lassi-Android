@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -29,6 +30,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageContract
@@ -268,19 +270,45 @@ class MediaFragment :
         val sortingRadioGroup = customDialogView.findViewById<RadioGroup>(R.id.sortingRadioGroup)
 
         //To set the previously selected option as checked.
-        sortingRadioGroup.check(
+        /*sortingRadioGroup.check(
             when (viewModel.currentSortingOption.value) {
                 ASCENDING_ORDER -> R.id.radioAscending
                 DESCENDING_ORDER -> R.id.radioDescending
                 else -> R.id.radioAscending
             }
-        )
+        )*/
+
+        val currentSortingOption = viewModel.currentSortingOption.value
+        val ascendingLabel = MultiLangModel.Sorting.sortAscending
+        val descendingLabel = MultiLangModel.Sorting.sortDescending
+
+        val checkedId = when (currentSortingOption) {
+            ASCENDING_ORDER -> {
+                sortingRadioGroup.check(R.id.radioAscending)
+                R.id.radioAscending
+            }
+            DESCENDING_ORDER -> {
+                sortingRadioGroup.check(R.id.radioDescending)
+                R.id.radioDescending
+            }
+            else -> {
+                sortingRadioGroup.check(R.id.radioAscending)
+                R.id.radioAscending
+            }
+        }
+
+        // Set the labels for the radio buttons
+        sortingRadioGroup.findViewById<RadioButton>(R.id.radioAscending).text = ascendingLabel
+        sortingRadioGroup.findViewById<RadioButton>(R.id.radioDescending).text = descendingLabel
+
+        // Set the checked radio button in the RadioGroup
+        sortingRadioGroup.check(checkedId)
 
         //Set up the alert builder with the custom layout..
         AlertDialog.Builder(requireContext()).apply {
-            setTitle(R.string.sort_by_date)
+            setTitle(MultiLangModel.Sorting.sortByDate)
             setView(customDialogView)
-            setPositiveButton(android.R.string.ok) { _, _ ->
+            setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
                 val checkedRadioButtonId = sortingRadioGroup.checkedRadioButtonId
                 val selectedOption =
                     if (checkedRadioButtonId == R.id.radioAscending) ASCENDING_ORDER else DESCENDING_ORDER
@@ -315,7 +343,7 @@ class MediaFragment :
                     }
                 }
             }
-            setNegativeButton(android.R.string.cancel, null)
+            setNegativeButton(MultiLangModel.Common.cancel, null)
             create().show()
         }
     }

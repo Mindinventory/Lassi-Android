@@ -41,7 +41,7 @@ data class LassiConfig(
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: Int = R.string.default_exceed_error_msg
+    var customLimitExceedingErrorMessage: String = MultiLangModel.ErrorOrAlertMessage.defaultExceedErrorMsg
 ) : Parcelable {
     companion object {
 

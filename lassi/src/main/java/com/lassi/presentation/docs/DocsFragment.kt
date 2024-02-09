@@ -26,6 +26,7 @@ import com.lassi.data.media.MiMedia
 import com.lassi.databinding.FragmentMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.media.SelectedMediaViewModel
@@ -234,16 +235,16 @@ class DocsFragment : LassiBaseViewModelFragment<DocsViewModel, FragmentMediaPick
 
     private fun showPermissionDisableAlert() {
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
-        alertDialog.setMessage(R.string.storage_permission_rational)
+        alertDialog.setMessage(MultiLangModel.MediaPermission.storagePermissionRational)
         alertDialog.setCancelable(false)
-        alertDialog.setPositiveButton(R.string.ok) { _, _ ->
+        alertDialog.setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
             val intent = Intent().apply {
                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                 data = Uri.fromParts("package", activity?.packageName, null)
             }
             mPermissionSettingResult.launch(intent)
         }
-        alertDialog.setNegativeButton(R.string.cancel) { _, _ ->
+        alertDialog.setNegativeButton(MultiLangModel.Common.cancel) { _, _ ->
             activity?.onBackPressed()
         }
         val permissionDialog = alertDialog.create()

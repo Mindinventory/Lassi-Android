@@ -26,6 +26,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangModel
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
 import com.lassi.presentation.docs.DocsFragment
@@ -56,7 +57,7 @@ class LassiMediaPickerActivity :
                     if (list.size > LassiConfig.getConfig().maxCount) {
                         ToastUtils.showToast(
                             this,
-                            this.resources.getString(LassiConfig.getConfig().customLimitExceedingErrorMessage)
+                            LassiConfig.getConfig().customLimitExceedingErrorMessage
                         )
                         finish()
                     }else{
@@ -241,7 +242,7 @@ class LassiMediaPickerActivity :
 
     private fun initCamera() {
         if (viewModel.selectedMediaLiveData.value?.size == LassiConfig.getConfig().maxCount) {
-            ToastUtils.showToast(this, R.string.already_selected_max_items)
+            ToastUtils.showToast(this, MultiLangModel.ErrorOrAlertMessage.alreadySelectedMaxItems)
         } else {
             supportFragmentManager.beginTransaction()
                 .add(R.id.ftContainer, CameraFragment())

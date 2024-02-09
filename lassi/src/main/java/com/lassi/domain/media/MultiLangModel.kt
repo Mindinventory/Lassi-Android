@@ -47,16 +47,6 @@ object MultiLangModel {
         var ok: String = ""
         var cancel: String = ""
         var lassiAll: String = ""
-
-        fun setOk(value: String) {
-            ok = value
-        }
-        fun setCancel(value: String) {
-            cancel = value
-        }
-        fun setLassiAll(value: String) {
-            lassiAll = value
-        }
     }
     object CropImage {
         var cropImageMenuRotateLeft: String = ""
@@ -67,45 +57,11 @@ object MultiLangModel {
         var pickImageIntentChooserTitle: String = ""
         var cropImageActivityNoPermissions: String = ""
         var cropImageActivityTitle: String = ""
-        fun setCropImageMenuRotateLeft(value: String) {
-            cropImageMenuRotateLeft = value
-        }
-        fun setCropImageMenuRotateRight(value: String) {
-            cropImageMenuRotateRight = value
-        }
-        fun setCropImageMenuFlip(value: String) {
-            cropImageMenuFlip = value
-        }
-        fun setCropImageMenuFlipHorizontally(value: String) {
-            cropImageMenuFlipHorizontally = value
-        }
-        fun setCropImageMenuFlipVertically(value: String) {
-            cropImageMenuFlipVertically = value
-        }
-        fun setPickImageIntentChooserTitle(value: String) {
-            pickImageIntentChooserTitle = value
-        }
-        fun setCropImageActivityNoPermissions(value: String) {
-            cropImageActivityNoPermissions = value
-        }
-        fun setCropImageActivityTitle(value: String) {
-            cropImageActivityTitle = value
-        }
     }
     object MediaPickerMenu {
         var camera: String = ""
         var sort: String = ""
         var done: String = ""
-
-        fun setCamera(value: String) {
-            camera = value
-        }
-        fun setSort(value: String) {
-            sort = value
-        }
-        fun setDone(value: String) {
-            done = value
-        }
     }
     object MediaPermission {
         var cameraAudioStoragePermissionRational: String = ""
@@ -115,62 +71,17 @@ object MultiLangModel {
         var storagePermissionRational: String = ""
         var readMediaImagesVideoPermissionRational: String = ""
         var readMediaAudioPermissionRational: String = ""
-
-        fun setCameraAudioStoragePermissionRational(value: String) {
-            cameraAudioStoragePermissionRational = value
-        }
-        fun setCameraStoragePermissionRational(value: String) {
-            cameraStoragePermissionRational = value
-        }
-        fun setCameraAudioPermissionRational(value: String) {
-            cameraAudioPermissionRational = value
-        }
-        fun setCameraPermissionRational(value: String) {
-            cameraPermissionRational = value
-        }
-        fun setStoragePermissionRational(value: String) {
-            storagePermissionRational = value
-        }
-        fun setReadMediaImagesVideoPermissionRational(value: String) {
-            readMediaImagesVideoPermissionRational = value
-        }
-        fun setReadMediaAudioPermissionRational(value: String) {
-            readMediaAudioPermissionRational = value
-        }
     }
     object ErrorOrAlertMessage {
         var alreadySelectedMaxItems: String = ""
         var errorExceedMsg: String = ""
         var defaultExceedErrorMsg: String = ""
         var noDataFound: String = ""
-
-        fun setAlreadySelectedMaxItems(value: String) {
-            alreadySelectedMaxItems = value
-        }
-        fun setErrorExceedMsg(value: String) {
-            errorExceedMsg = value
-        }
-        fun setDefaultExceedErrorMsg(value: String) {
-            defaultExceedErrorMsg = value
-        }
-        fun setNoDataFound(value: String) {
-            noDataFound = value
-        }
     }
     object Sorting {
         var sortByDate: String = ""
         var sortAscending: String = ""
         var sortDescending: String = ""
-
-        fun setSortByDate(value: String) {
-            sortByDate = value
-        }
-        fun setSortAscending(value: String) {
-            sortAscending = value
-        }
-        fun setSortDescending(value: String) {
-            sortDescending = value
-        }
     }
     object ImageActions {
         var icRotateLeft24: String = ""
@@ -184,44 +95,10 @@ object MultiLangModel {
         var pickImageGallery: String = ""
         var mainActionRotate: String = ""
         var mainActionCrop: String = ""
-
-        fun setIcRotateLeft24(value: String) {
-            icRotateLeft24 = value
-        }
-        fun setIcRotateRight24(value: String) {
-            icRotateRight24 = value
-        }
-        fun setCropImageMenuCrop(value: String) {
-            cropImageMenuCrop = value
-        }
-        fun setIcFlip24(value: String) {
-            icFlip24 = value
-        }
-        fun setIcFlip24Horizontally(value: String) {
-            icFlip24Horizontally = value
-        }
-        fun setIcFlip24Vertically(value: String) {
-            icFlip24Vertically = value
-        }
-        fun setPickImageChooserTitle(value: String) {
-            pickImageChooserTitle = value
-        }
-        fun setPickImageCamera(value: String) {
-            pickImageCamera = value
-        }
-        fun setPickImageGallery(value: String) {
-            pickImageGallery = value
-        }
-        fun setMainActionRotate(value: String) {
-            mainActionRotate = value
-        }
-        fun setMainActionCrop(value: String) {
-            mainActionCrop = value
-        }
     }
 
     //Setting data initially
-    fun initializeDefaultValues(context: Context) {
+    /*fun initializeDefaultValues(context: Context) {
         ok = context.getString(R.string.ok)
         cancel = context.getString(R.string.cancel)
         lassiAll = context.getString(R.string.lassi_all)
@@ -267,7 +144,7 @@ object MultiLangModel {
         pickImageGallery = context.getString(R.string.pick_image_gallery)
         mainActionRotate = context.getString(R.string.main_action_rotate)
         mainActionCrop = context.getString(R.string.main_action_crop)
-    }
+    }*/
 }
 
 
