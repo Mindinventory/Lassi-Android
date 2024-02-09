@@ -1,6 +1,5 @@
 package com.lassi.domain.media
 
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
@@ -41,7 +40,7 @@ data class LassiConfig(
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: String = MultiLangModel.ErrorOrAlertMessage.defaultExceedErrorMsg
+    var customLimitExceedingErrorMessage: String = MultiLangConfig.getConfig().defaultExceedErrorMsg
 ) : Parcelable {
     companion object {
 
@@ -57,7 +56,7 @@ data class LassiConfig(
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount
-                ascFlag= lassiConfig.ascFlag
+                ascFlag = lassiConfig.ascFlag
                 gridSize = lassiConfig.gridSize
                 lassiOption = lassiConfig.lassiOption
                 minTime = lassiConfig.minTime

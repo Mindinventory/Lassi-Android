@@ -27,7 +27,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.databinding.CropImageActivityBinding
-import com.lassi.domain.media.MultiLangModel
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.cropper.utils.getUriForFile
 import java.io.File
 
@@ -177,11 +177,11 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 }
                 true
             }
-            .setTitle(MultiLangModel.ImageActions.pickImageChooserTitle)
+            .setTitle(MultiLangConfig.getConfig().pickImageChooserTitle)
             .setItems(
                 arrayOf(
-                    MultiLangModel.ImageActions.pickImageCamera,
-                    MultiLangModel.ImageActions.pickImageGallery
+                    MultiLangConfig.getConfig().pickImageCamera,
+                    MultiLangConfig.getConfig().pickImageGallery
                 ),
             ) { _, position -> openSource(if (position == 0) Source.CAMERA else Source.GALLERY) }
             .show()

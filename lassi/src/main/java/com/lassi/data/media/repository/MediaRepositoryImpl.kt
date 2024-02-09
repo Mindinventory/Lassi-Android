@@ -7,7 +7,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import android.webkit.MimeTypeMap
-import com.lassi.R
 import com.lassi.common.extenstions.catch
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
@@ -21,7 +20,7 @@ import com.lassi.data.media.entity.MediaFileEntity
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MediaRepository
 import com.lassi.domain.media.MediaType
-import com.lassi.domain.media.MultiLangModel
+import com.lassi.domain.media.MultiLangConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
@@ -225,7 +224,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         dateAdded: Long,
         mediaType: MediaType,
     ) {
-        val bucketName = bucket ?: MultiLangModel.Common.lassiAll
+        val bucketName = bucket ?: MultiLangConfig.getConfig().lassiAll
         if (isFileTypeSupported(miMedia.path)) {
             CoroutineScope(IO).launch {
                 miMedia.path?.let { path ->

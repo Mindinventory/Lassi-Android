@@ -30,7 +30,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.domain.media.MultiLangModel
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageContract
@@ -279,8 +279,8 @@ class MediaFragment :
         )*/
 
         val currentSortingOption = viewModel.currentSortingOption.value
-        val ascendingLabel = MultiLangModel.Sorting.sortAscending
-        val descendingLabel = MultiLangModel.Sorting.sortDescending
+        val ascendingLabel = MultiLangConfig.getConfig().sortAscending
+        val descendingLabel = MultiLangConfig.getConfig().sortDescending
 
         val checkedId = when (currentSortingOption) {
             ASCENDING_ORDER -> {
@@ -306,9 +306,9 @@ class MediaFragment :
 
         //Set up the alert builder with the custom layout..
         AlertDialog.Builder(requireContext()).apply {
-            setTitle(MultiLangModel.Sorting.sortByDate)
+            setTitle(MultiLangConfig.getConfig().sortByDate)
             setView(customDialogView)
-            setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
+            setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
                 val checkedRadioButtonId = sortingRadioGroup.checkedRadioButtonId
                 val selectedOption =
                     if (checkedRadioButtonId == R.id.radioAscending) ASCENDING_ORDER else DESCENDING_ORDER
@@ -343,7 +343,7 @@ class MediaFragment :
                     }
                 }
             }
-            setNegativeButton(MultiLangModel.Common.cancel, null)
+            setNegativeButton(MultiLangConfig.getConfig().cancel, null)
             create().show()
         }
     }

@@ -31,7 +31,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.domain.media.MultiLangModel
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.cameraview.audio.Audio
 import com.lassi.presentation.cameraview.audio.Flash
 import com.lassi.presentation.cameraview.audio.Mode
@@ -327,24 +327,23 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
             ) {
-                MultiLangModel.MediaPermission.cameraAudioStoragePermissionRational
+                MultiLangConfig.getConfig().cameraAudioStoragePermissionRational
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) {
-                MultiLangModel.MediaPermission.cameraAudioPermissionRational
+                MultiLangConfig.getConfig().cameraAudioPermissionRational
             } else if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             ) {
-                MultiLangModel.MediaPermission.cameraPermissionRational
+                MultiLangConfig.getConfig().cameraPermissionRational
             } else {
-                MultiLangModel.MediaPermission.cameraStoragePermissionRational
+                MultiLangConfig.getConfig().cameraStoragePermissionRational
             }
-        Log.d("TAG", "!@# LASSI:: CAMERA: MultiLangModel.Common.ok: ${MultiLangModel.Common.ok}")
 
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
             .setMessage(alertMessage)
             .setCancelable(false)
-            .setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
+            .setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
 
                 val intent = Intent().apply {
                     action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
@@ -352,7 +351,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                 }
                 permissionSettingResult.launch(intent)
             }
-            .setNegativeButton(MultiLangModel.Common.cancel) { _, _ ->
+            .setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
                 activity?.onBackPressed()
             }
         val permissionDialog = alertDialog.create()

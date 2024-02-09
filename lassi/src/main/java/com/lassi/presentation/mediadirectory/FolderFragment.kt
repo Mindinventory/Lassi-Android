@@ -29,7 +29,7 @@ import com.lassi.databinding.FragmentMediaPickerBinding
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.domain.media.MultiLangModel
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.media.MediaFragment
@@ -127,7 +127,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
         viewModel.emptyList.observe(viewLifecycleOwner) {
             binding.tvNoDataFound.visibility = if (it) View.VISIBLE else View.GONE
-            binding.tvNoDataFound.text = MultiLangModel.ErrorOrAlertMessage.noDataFound
+            binding.tvNoDataFound.text = MultiLangConfig.getConfig().noDataFound
         }
 
         viewModel.fileRemovalCheck.observe(viewLifecycleOwner) { isTrue ->
@@ -185,15 +185,15 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     private fun showPermissionDisableAlert() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            MultiLangModel.MediaPermission.storagePermissionRational
+            MultiLangConfig.getConfig().storagePermissionRational
         } else {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                MultiLangModel.MediaPermission.readMediaImagesVideoPermissionRational
+                MultiLangConfig.getConfig().readMediaImagesVideoPermissionRational
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                showPermissionAlert(msg = MultiLangModel.MediaPermission.readMediaImagesVideoPermissionRational)
+                showPermissionAlert(msg = MultiLangConfig.getConfig().readMediaImagesVideoPermissionRational)
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
-                    showPermissionAlert(msg = MultiLangModel.MediaPermission.readMediaAudioPermissionRational)
+                    showPermissionAlert(msg = MultiLangConfig.getConfig().readMediaAudioPermissionRational)
                 }
             }
         }
@@ -203,7 +203,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
         alertDialog.setMessage(msg)
         alertDialog.setCancelable(false)
-        alertDialog.setPositiveButton(MultiLangModel.Common.ok) { _, _ ->
+        alertDialog.setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
             val intent = Intent().apply {
                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                 data = Uri.fromParts("package", activity?.packageName, null)
@@ -211,7 +211,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
             permissionSettingResult.launch(intent)
         }
 
-        alertDialog.setNegativeButton(MultiLangModel.Common.cancel) { _, _ ->
+        alertDialog.setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
             activity?.onBackPressed()
         }
         val permissionDialog = alertDialog.create()
