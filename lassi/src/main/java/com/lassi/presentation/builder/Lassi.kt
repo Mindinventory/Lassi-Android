@@ -1,5 +1,6 @@
 package com.lassi.presentation.builder
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -297,6 +298,42 @@ class Lassi(private val context: Context) {
      */
     fun setGalleryBackgroundColor(@ColorRes color: Int): Lassi {
         lassiConfig.galleryBackgroundColor = ContextCompat.getColor(context, color)
+        return this
+    }
+
+    /**
+     * Set sorting checked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingCheckedRadioButtonColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingCheckedRadioButtonColor = color
+        return this
+    }
+
+    /**
+     * Set sorting unchecked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingUncheckedRadioButtonColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingUncheckedRadioButtonColor = color
+        return this
+    }
+
+    /**
+     * Set sorting checked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingCheckedTextColor(@ColorRes color: Int): Lassi {
+        lassiConfig.setSortingCheckedTextColor = color
+        return this
+    }
+
+    /**
+     * Set sorting unchecked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingUncheckedTextColor(@ColorRes color: Int): Lassi {
+        lassiConfig.setSortingUncheckedTextColor = color
         return this
     }
 

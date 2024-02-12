@@ -2,6 +2,7 @@ package com.lassi.domain.media
 
 import android.graphics.Color
 import android.os.Parcelable
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.lassi.R
 import com.lassi.common.utils.KeyUtils
@@ -17,6 +18,10 @@ data class LassiConfig(
     var toolbarResourceColor: Int = Color.WHITE,
     var progressBarColor: Int = Color.BLACK,
     var galleryBackgroundColor: Int = Color.WHITE,
+    @ColorRes var sortingCheckedRadioButtonColor: Int = R.color.darkYellow,
+    @ColorRes var sortingUncheckedRadioButtonColor: Int = R.color.blackTrans50,
+    @ColorRes var setSortingCheckedTextColor: Int = R.color.darkYellow,
+    @ColorRes var setSortingUncheckedTextColor: Int = R.color.blackTrans50,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var selectionDrawable: Int = R.drawable.ic_checked_media,
@@ -53,6 +58,10 @@ data class LassiConfig(
                 toolbarResourceColor = lassiConfig.toolbarResourceColor
                 progressBarColor = lassiConfig.progressBarColor
                 galleryBackgroundColor = lassiConfig.galleryBackgroundColor
+                sortingCheckedRadioButtonColor = lassiConfig.sortingCheckedRadioButtonColor
+                sortingUncheckedRadioButtonColor = lassiConfig.sortingUncheckedRadioButtonColor
+                setSortingCheckedTextColor = lassiConfig.setSortingCheckedTextColor
+                setSortingUncheckedTextColor = lassiConfig.setSortingUncheckedTextColor
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount

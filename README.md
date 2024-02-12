@@ -60,7 +60,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 
 * Step 1. 
-  To open a app color theme view then add Lassi in to your activity class:
+  To open an app color theme view then add Lassi in to your activity class:
     
     ```kotlin
             val intent = Lassi(this)
@@ -73,7 +73,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setMaxTime(30) // for MediaType.VIDEO only
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
                 .setMinFileSize(100) // Restrict by minimum file size 
-                .setMaxFileSize(1024) //  Restrict by maximum file size
+                .setMaxFileSize(1024) // Restrict by maximum file size
                 .disableCrop() // to remove crop from the single image selection (crop is enabled by default for single image)
                 /*
                  * Configuration for  UI
@@ -81,6 +81,10 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                 .setStatusBarColor(R.color.colorPrimaryDark)
                 .setToolbarResourceColor(R.color.colorPrimary)
                 .setProgressBarColor(R.color.colorAccent)
+                .setSortingCheckedRadioButtonColor(R.color.darkBlue)    // To set color of the checked state radio button resource within sorting dialog
+                .setSortingUncheckedRadioButtonColor(R.color.regentStBlue)  // To set color of the unchecked state radio button resource within sorting dialog
+                .setSortingCheckedTextColor(R.color.regentStBlue)   // To set color of the checked state radio button resource within sorting dialog
+                .setSortingUncheckedTextColor(R.color.darkBlue) // To set color of the unchecked state radio button resource within sorting dialog
                 .setPlaceHolder(R.drawable.ic_image_placeholder)
                 .setErrorDrawable(R.drawable.ic_image_placeholder)
                 .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -122,6 +126,18 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                         }
                     }
                 }
+    ```
+
+* To enable multi-language capabilities, define the required text variations using the parameters accessible within the builder.  
+
+    ```kotlin
+        Lassi(this).getMultiLngBuilder(
+            setOkLbl = "d'accord",
+            setCancelLbl = "Annuler",
+            setSortAscendingLbl = "Ascendant",
+            setSortDescendingLbl = "Descendant",
+            setSortByDateLbl = "Trier par date"
+        )
     ```
 
 ### Document access permission note
