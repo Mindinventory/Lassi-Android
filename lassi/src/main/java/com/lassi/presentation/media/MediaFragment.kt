@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -55,8 +54,6 @@ class MediaFragment :
     private var mediaPickerConfig = LassiConfig.getConfig()
     private var uri: Uri? = null
     private var menu: Menu? = null
-    var customDialogView: View? = null
-    var sortingRadioGroup: RadioGroup? = null
 
     companion object {
         fun getInstance(bucket: MiItemMedia): MediaFragment {
@@ -108,57 +105,6 @@ class MediaFragment :
 
     override fun initViews() {
         super.initViews()
-
-        customDialogView =
-            LayoutInflater.from(requireContext()).inflate(R.layout.sorting_option, null)
-        sortingRadioGroup = customDialogView?.findViewById<RadioGroup>(R.id.sortingRadioGroup)
-
-        val rbColorStateList = ColorStateList(
-            arrayOf(
-                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
-            ), intArrayOf(
-                ResourcesCompat.getColor(
-                    resources,
-                    LassiConfig.getConfig().sortingCheckedRadioButtonColor,
-                    null
-                ),  //Checked color
-                ResourcesCompat.getColor(
-                    resources,
-                    LassiConfig.getConfig().sortingUncheckedRadioButtonColor,
-                    null
-                )   // Unchecked color
-            )
-        )
-
-        val rbTextColorStateList = ColorStateList(
-            arrayOf(
-                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
-            ), intArrayOf(
-                ResourcesCompat.getColor(
-                    resources,
-                    LassiConfig.getConfig().setSortingCheckedTextColor,
-                    null
-                ),  //Checked text color
-                ResourcesCompat.getColor(
-                    resources,
-                    LassiConfig.getConfig().setSortingUncheckedTextColor,
-                    null
-                )   // Unchecked text color
-            )
-        )
-
-        //Radio button color
-        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)?.buttonTintList =
-            rbColorStateList
-        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)?.buttonTintList =
-            rbColorStateList
-
-        //Radio button text color
-        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)
-            ?.setTextColor(rbTextColorStateList)
-        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)
-            ?.setTextColor(rbTextColorStateList)
-
         bucket?.let {
             it.bucketName?.let { bucketName ->
                 when (viewModel.currentSortingOption.value) {
@@ -322,6 +268,56 @@ class MediaFragment :
     }
 
     private fun handleSorting() {
+        val customDialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.sorting_option, null)
+        val sortingRadioGroup = customDialogView?.findViewById<RadioGroup>(R.id.sortingRadioGroup)
+
+        val rbColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
+            ), intArrayOf(
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingCheckedRadioButtonColor,
+                    null
+                ),  //Checked color
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingUncheckedRadioButtonColor,
+                    null
+                )   // Unchecked color
+            )
+        )
+
+        val rbTextColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
+            ), intArrayOf(
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().setSortingCheckedTextColor,
+                    null
+                ),  //Checked text color
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().setSortingUncheckedTextColor,
+                    null
+                )   // Unchecked text color
+            )
+        )
+
+        //Radio button color
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)?.buttonTintList =
+            rbColorStateList
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)?.buttonTintList =
+            rbColorStateList
+
+        //Radio button text color
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)
+            ?.setTextColor(rbTextColorStateList)
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)
+            ?.setTextColor(rbTextColorStateList)
+
         val currentSortingOption = viewModel.currentSortingOption.value
         val ascendingLabel = MultiLangConfig.getConfig().sortAscending
         val descendingLabel = MultiLangConfig.getConfig().sortDescending

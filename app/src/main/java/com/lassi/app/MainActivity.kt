@@ -31,15 +31,12 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
     protected val binding get() = _binding!!
-
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
-
     lateinit var lassi: Lassi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
-//        Lassi(this).getMultiLngBuilder()    //Initially set it
         binding.also {
             setContentView(it.root)
             it.btnImagePicker.setOnClickListener(this)
@@ -55,20 +52,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         lassi = Lassi(this)
 
         // Use getMultiLngBuilder in onCreate to set your desired language
-        lassi.getMultiLngBuilder(
-            setOkLbl = "d'accord",
-            setCancelLbl = "Annuler",
-            setCameraAudioStoragePermissionRationalLbl = "Les autorisations de caméra, de microphone et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
-            setCameraStoragePermissionRationalLbl = "Les autorisations de caméra et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
-            setCameraAudioPermissionRationalLbl = "Les autorisations de caméra et/ou de microphone ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
-            setCameraPermissionRationalLbl = "L'autorisation de la caméra n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
-            setStoragePermissionRationalLbl = "L'autorisation de stockage n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
-            setReadMediaImagesVideoPermissionRationalLbl = "Les autorisations relatives aux photos et vidéos ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
-            setReadMediaAudioPermissionRationalLbl = "Les autorisations relatives à la musique et à l'audio ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
-            setSortAscendingLbl = "Ascendant",
-            setSortDescendingLbl = "Descendant",
-            setSortByDateLbl = "Trier par date"
-        )
+        // For the demonstration purpose Spanish(es) is set for localization
+        val currentLang = Locale.getDefault().language.toString()
+        if (currentLang == "es") {
+            lassi.getMultiLngBuilder(
+                setOkLbl = "d'accord",
+                setCancelLbl = "Annuler",
+                setCameraAudioStoragePermissionRationalLbl = "Les autorisations de caméra, de microphone et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraStoragePermissionRationalLbl = "Les autorisations de caméra et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraAudioPermissionRationalLbl = "Les autorisations de caméra et/ou de microphone ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraPermissionRationalLbl = "L'autorisation de la caméra n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+                setStoragePermissionRationalLbl = "L'autorisation de stockage n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+                setReadMediaImagesVideoPermissionRationalLbl = "Les autorisations relatives aux photos et vidéos ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setReadMediaAudioPermissionRationalLbl = "Les autorisations relatives à la musique et à l'audio ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setSortAscendingLbl = "Ascendant",
+                setSortDescendingLbl = "Descendant",
+                setSortByDateLbl = "Trier par date"
+            )
+        }
     }
 
     override fun onClick(v: View?) {
@@ -132,29 +133,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnDocumentSystemIntent -> {
                 val intent =
                     lassi.setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW).setSupportedFileTypes(
-                            "jpg",
-                            "jpeg",
-                            "png",
-                            "webp",
-                            "gif",
-                            "mp4",
-                            "mkv",
-                            "webm",
-                            "avi",
-                            "flv",
-                            "3gp",
-                            "pdf",
-                            "odt",
-                            "doc",
-                            "docs",
-                            "docx",
-                            "txt",
-                            "ppt",
-                            "pptx",
-                            "rtf",
-                            "xlsx",
-                            "xls"
-                        ).setMaxCount(3)
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "webp",
+                        "gif",
+                        "mp4",
+                        "mkv",
+                        "webm",
+                        "avi",
+                        "flv",
+                        "3gp",
+                        "pdf",
+                        "odt",
+                        "doc",
+                        "docs",
+                        "docx",
+                        "txt",
+                        "ppt",
+                        "pptx",
+                        "rtf",
+                        "xlsx",
+                        "xls"
+                    ).setMaxCount(3)
                         .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                         .build()
                 receiveData.launch(intent)

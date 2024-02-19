@@ -127,18 +127,26 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
                     }
                 }
     ```
-
-* To enable multi-language capabilities, define the required text variations using the parameters accessible within the builder.  
-
+  
+* Option - 1. To set language's text programmatically based on the current language set on the device follow below mentioned approach of setting strings in your desired language. 
+* getMultiLngBuilder()  exposes params which you can use to set texts.
+* By default english (en) language is set so no need to follow this step.
     ```kotlin
-        Lassi(this).getMultiLngBuilder(
-            setOkLbl = "d'accord",
-            setCancelLbl = "Annuler",
-            setSortAscendingLbl = "Ascendant",
-            setSortDescendingLbl = "Descendant",
-            setSortByDateLbl = "Trier par date"
-        )
+        val currentLang = Locale.getDefault().language.toString()
+        if (currentLang == "es") {
+            lassi.getMultiLngBuilder(
+                setOkLbl = "d'accord",
+                setCancelLbl = "Annuler",
+                setSortAscendingLbl = "Ascendant",
+                setSortDescendingLbl = "Descendant",
+                setSortByDateLbl = "Trier par date"
+            )
+        }
     ```
+* Option - 2. To localize text content of Lassi picker with multiple language options, define language-specific string resource file in your project and update values of string resource keys mentioned in below link with your desired language.
+  ```
+  https://github.com/Mindinventory/Lassi-Android/blob/931e147ebe6282bd1629858b5a9f29fe5a0b8b32/lassi/src/main/res/values/strings.xml
+  ```
 
 ### Document access permission note
 If Android device SDK is >= 30 and wants to access document (only for choose the non media file) then add ```android.permission.MANAGE_EXTERNAL_STORAGE``` permission in your app otherwise library won't allow to access documents. Kindly check sample app for more detail.
