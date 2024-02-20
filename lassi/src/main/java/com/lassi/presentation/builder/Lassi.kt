@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -72,7 +71,6 @@ class Lassi(private val context: Context) {
         setMainActionRotateLbl: String? = null,
         setMainActionCropLbl: String? = null,
     ): Lassi {
-        Log.d("TAG", "!@# setOkLbl:: LASSI: $setOkLbl ")
         multiLangConfig.ok = setOkLbl ?: context.getString(R.string.ok)
         multiLangConfig.cancel = setCancelLbl ?: context.getString(R.string.cancel)
         multiLangConfig.lassiAll = setLassiAllLbl ?: context.getString(R.string.lassi_all)
@@ -324,7 +322,7 @@ class Lassi(private val context: Context) {
      */
     @SuppressLint("ResourceAsColor")
     fun setSortingCheckedTextColor(@ColorRes color: Int): Lassi {
-        lassiConfig.setSortingCheckedTextColor = color
+        lassiConfig.sortingCheckedTextColor = color
         return this
     }
 
@@ -333,7 +331,7 @@ class Lassi(private val context: Context) {
      */
     @SuppressLint("ResourceAsColor")
     fun setSortingUncheckedTextColor(@ColorRes color: Int): Lassi {
-        lassiConfig.setSortingUncheckedTextColor = color
+        lassiConfig.sortingUncheckedTextColor = color
         return this
     }
 
@@ -483,7 +481,6 @@ class Lassi(private val context: Context) {
      */
     fun build(): Intent {
         LassiConfig.setConfig(lassiConfig)
-//        MultiLangConfig.setMultiLangConfig(multiLangConfig)
         return Intent(context, LassiMediaPickerActivity::class.java)
     }
 }

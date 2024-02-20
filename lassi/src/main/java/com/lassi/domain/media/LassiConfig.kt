@@ -20,8 +20,8 @@ data class LassiConfig(
     var galleryBackgroundColor: Int = Color.WHITE,
     @ColorRes var sortingCheckedRadioButtonColor: Int = R.color.darkYellow,
     @ColorRes var sortingUncheckedRadioButtonColor: Int = R.color.blackTrans50,
-    @ColorRes var setSortingCheckedTextColor: Int = R.color.darkYellow,
-    @ColorRes var setSortingUncheckedTextColor: Int = R.color.blackTrans50,
+    @ColorRes var sortingCheckedTextColor: Int = R.color.darkYellow,
+    @ColorRes var sortingUncheckedTextColor: Int = R.color.blackTrans50,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var selectionDrawable: Int = R.drawable.ic_checked_media,
@@ -60,8 +60,8 @@ data class LassiConfig(
                 galleryBackgroundColor = lassiConfig.galleryBackgroundColor
                 sortingCheckedRadioButtonColor = lassiConfig.sortingCheckedRadioButtonColor
                 sortingUncheckedRadioButtonColor = lassiConfig.sortingUncheckedRadioButtonColor
-                setSortingCheckedTextColor = lassiConfig.setSortingCheckedTextColor
-                setSortingUncheckedTextColor = lassiConfig.setSortingUncheckedTextColor
+                sortingCheckedTextColor = lassiConfig.sortingCheckedTextColor
+                sortingUncheckedTextColor = lassiConfig.sortingUncheckedTextColor
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount

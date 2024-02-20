@@ -295,12 +295,12 @@ class MediaFragment :
             ), intArrayOf(
                 ResourcesCompat.getColor(
                     resources,
-                    LassiConfig.getConfig().setSortingCheckedTextColor,
+                    LassiConfig.getConfig().sortingCheckedTextColor,
                     null
                 ),  //Checked text color
                 ResourcesCompat.getColor(
                     resources,
-                    LassiConfig.getConfig().setSortingUncheckedTextColor,
+                    LassiConfig.getConfig().sortingUncheckedTextColor,
                     null
                 )   // Unchecked text color
             )
