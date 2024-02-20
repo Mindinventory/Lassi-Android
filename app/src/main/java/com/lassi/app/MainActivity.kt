@@ -20,6 +20,7 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
@@ -30,8 +31,8 @@ import java.util.Locale
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
     protected val binding get() = _binding!!
-
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
+    lateinit var lassi: Lassi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,16 +49,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             it.rvSelectedMedia.adapter = selectedMediaAdapter
             it.rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
         }
+        lassi = Lassi(this)
+
+        // Use getMultiLngBuilder in onCreate to set your desired language
+        // For the demonstration purpose Spanish(es) is set for localization
+        val currentLang = Locale.getDefault().language.toString()
+        if (currentLang == "es") {
+            lassi.getMultiLngBuilder(
+                setOkLbl = "d'accord",
+                setCancelLbl = "Annuler",
+                setCameraAudioStoragePermissionRationalLbl = "Les autorisations de caméra, de microphone et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraStoragePermissionRationalLbl = "Les autorisations de caméra et/ou de stockage ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraAudioPermissionRationalLbl = "Les autorisations de caméra et/ou de microphone ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setCameraPermissionRationalLbl = "L'autorisation de la caméra n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+                setStoragePermissionRationalLbl = "L'autorisation de stockage n'est pas accordée. Veuillez l'autoriser depuis les paramètres.",
+                setReadMediaImagesVideoPermissionRationalLbl = "Les autorisations relatives aux photos et vidéos ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setReadMediaAudioPermissionRationalLbl = "Les autorisations relatives à la musique et à l'audio ne sont pas accordées. Veuillez les autoriser depuis les paramètres.",
+                setSortAscendingLbl = "Ascendant",
+                setSortDescendingLbl = "Descendant",
+                setSortByDateLbl = "Trier par date"
+            )
+        }
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnImagePicker -> {
-                val intent = Lassi(this)
-                    .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(1)
-                    .setAscSort(SortingOption.ASCENDING)
-                    .setGridSize(2)
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(1)
+                    .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -68,50 +87,34 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
-                    .setCropType(CropImageView.CropShape.OVAL)
-                    .setCropAspectRatio(1, 1)
-                    .setCompressionRatio(10)
-                    .setMinFileSize(0)
-                    .setMaxFileSize(10000)
+                    .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
+                    .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
                     .enableActualCircleCrop()
-                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
-                    .enableFlip()
-                    .enableRotate()
-                    .build()
+                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
+                    .enableRotate().build()
                 receiveData.launch(intent)
-
             }
 
             R.id.btnVideoPicker -> {
-                val intent = Lassi(this)
-                    .with(LassiOption.CAMERA_AND_GALLERY)
-                    .setMaxCount(4)
-                    .setGridSize(3)
-                    .setMinTime(5)
-                    .setMaxTime(30)
-                    .setMinFileSize(0)
-                    .setMaxFileSize(20000)
-                    .setMediaType(MediaType.VIDEO)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
-                    .setToolbarColor(R.color.colorPrimary)
-                    .setToolbarResourceColor(android.R.color.white)
-                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
-                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
-                    .setProgressBarColor(R.color.colorAccent)
-                    .setGalleryBackgroundColor(R.color.colorGrey)
-                    .setPlaceHolder(R.drawable.ic_video_placeholder)
-                    .setErrorDrawable(R.drawable.ic_video_placeholder)
-                    .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp")
-                    .build()
+                val intent =
+                    lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4).setGridSize(3)
+                        .setMinTime(5).setMaxTime(30).setMinFileSize(0).setMaxFileSize(20000)
+                        .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
+                        .setToolbarColor(R.color.colorPrimary)
+                        .setToolbarResourceColor(android.R.color.white)
+                        .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                        .setAlertDialogPositiveButtonColor(R.color.emerald_green)
+                        .setProgressBarColor(R.color.colorAccent)
+                        .setGalleryBackgroundColor(R.color.colorGrey)
+                        .setPlaceHolder(R.drawable.ic_video_placeholder)
+                        .setErrorDrawable(R.drawable.ic_video_placeholder)
+                        .setSelectionDrawable(R.drawable.ic_checked_media)
+                        .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp").build()
                 receiveData.launch(intent)
             }
 
             R.id.btnAudioPicker -> {
-                val intent = Lassi(this)
-                    .setMediaType(MediaType.AUDIO)
-                    .setMaxCount(4)
-                    .setGridSize(2)
+                val intent = lassi.setMediaType(MediaType.AUDIO).setMaxCount(4).setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_audio_placeholder)
                     .setErrorDrawable(R.drawable.ic_audio_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -119,8 +122,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
-                    .setGalleryBackgroundColor(R.color.colorGrey)
-                    .build()
+                    .setGalleryBackgroundColor(R.color.colorGrey).build()
                 receiveData.launch(intent)
             }
 
@@ -129,9 +131,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnDocumentSystemIntent -> {
-                val intent = Lassi(this)
-                    .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW)
-                    .setSupportedFileTypes(
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY)
+                    .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW).setSupportedFileTypes(
                         "jpg",
                         "jpeg",
                         "png",
@@ -154,18 +155,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "rtf",
                         "xlsx",
                         "xls"
-                    )
-                    .setMaxCount(3)
-                    .setCustomLimitExceedingErrorMessage(R.string.error_exceed_msg)
+                    ).setMaxCount(3)
+                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                     .build()
                 receiveData.launch(intent)
             }
 
             R.id.btnImageCapture -> {
-                val intent = Lassi(this)
-                    .with(LassiOption.CAMERA)
-                    .setMaxCount(1)
-                    .setGridSize(2)
+                val intent = lassi.with(LassiOption.CAMERA).setMaxCount(1).setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -176,82 +173,49 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setGalleryBackgroundColor(R.color.colorGrey)
                     .setAlertDialogNegativeButtonColor(R.color.cherry_red)
                     .setAlertDialogPositiveButtonColor(R.color.emerald_green)
-                    .setMediaType(MediaType.IMAGE)
-                    .setCropType(CropImageView.CropShape.OVAL)
-                    .setCropAspectRatio(1, 1)
-                    .setCompressionRatio(0)
-                    .setMinFileSize(0)
-                    .setMaxFileSize(1000000)
-                    .enableActualCircleCrop()
-                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
-                    .enableFlip()
-                    .enableRotate()
-                    .build()
+                    .setMediaType(MediaType.IMAGE).setCropType(CropImageView.CropShape.OVAL)
+                    .setCropAspectRatio(1, 1).setCompressionRatio(0).setMinFileSize(0)
+                    .setMaxFileSize(1000000).enableActualCircleCrop()
+                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
+                    .enableRotate().build()
                 receiveData.launch(intent)
             }
 
             R.id.btnVideoCapture -> {
-                val intent = Lassi(this)
-                    .with(LassiOption.CAMERA)
-                    .setMaxCount(1)
-                    .setGridSize(3)
-                    .setMinTime(5)
-                    .setMaxTime(30)
-                    .setPlaceHolder(R.drawable.ic_image_placeholder)
-                    .setErrorDrawable(R.drawable.ic_image_placeholder)
-                    .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
-                    .setToolbarColor(R.color.colorPrimary)
-                    .setMediaType(MediaType.VIDEO)
-                    .setToolbarResourceColor(android.R.color.white)
-                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
-                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
-                    .setProgressBarColor(R.color.colorAccent)
-                    .setGalleryBackgroundColor(R.color.colorGrey)
-                    .setCropType(CropImageView.CropShape.OVAL)
-                    .setCropAspectRatio(1, 1)
-                    .setCompressionRatio(0)
-                    .setMinFileSize(0)
-                    .setMaxFileSize(10000)
-                    .enableActualCircleCrop()
-                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif")
-                    .enableFlip()
-                    .enableRotate()
-                    .build()
+                val intent =
+                    lassi.with(LassiOption.CAMERA).setMaxCount(1).setGridSize(3).setMinTime(5)
+                        .setMaxTime(30).setPlaceHolder(R.drawable.ic_image_placeholder)
+                        .setErrorDrawable(R.drawable.ic_image_placeholder)
+                        .setSelectionDrawable(R.drawable.ic_checked_media)
+                        .setStatusBarColor(R.color.colorPrimaryDark)
+                        .setToolbarColor(R.color.colorPrimary).setMediaType(MediaType.VIDEO)
+                        .setToolbarResourceColor(android.R.color.white)
+                        .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                        .setAlertDialogPositiveButtonColor(R.color.emerald_green)
+                        .setProgressBarColor(R.color.colorAccent)
+                        .setGalleryBackgroundColor(R.color.colorGrey)
+                        .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
+                        .setCompressionRatio(0).setMinFileSize(0).setMaxFileSize(10000)
+                        .enableActualCircleCrop()
+                        .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
+                        .enableRotate().build()
                 receiveData.launch(intent)
             }
         }
     }
 
     private fun launchDocPicker() {
-        val intent = Lassi(this)
-            .setMediaType(MediaType.DOC)
-            .setMaxCount(4)
-            .setGridSize(2)
+        val intent = lassi.setMediaType(MediaType.DOC).setMaxCount(4).setGridSize(2)
             .setPlaceHolder(R.drawable.ic_document_placeholder)
             .setErrorDrawable(R.drawable.ic_document_placeholder)
             .setSelectionDrawable(R.drawable.ic_checked_media)
-            .setStatusBarColor(R.color.colorPrimaryDark)
-            .setToolbarColor(R.color.colorPrimary)
+            .setStatusBarColor(R.color.colorPrimaryDark).setToolbarColor(R.color.colorPrimary)
             .setToolbarResourceColor(android.R.color.white)
             .setAlertDialogNegativeButtonColor(R.color.cherry_red)
             .setAlertDialogPositiveButtonColor(R.color.emerald_green)
-            .setGalleryBackgroundColor(R.color.colorGrey)
-            .setSupportedFileTypes(
-                "pdf",
-                "odt",
-                "doc",
-                "docs",
-                "docx",
-                "txt",
-                "ppt",
-                "pptx",
-                "rtf",
-                "xlsx",
-                "xls"
-            )
-            .setProgressBarColor(R.color.colorAccent)
-            .build()
+            .setGalleryBackgroundColor(R.color.colorGrey).setSupportedFileTypes(
+                "pdf", "odt", "doc", "docs", "docx", "txt", "ppt", "pptx", "rtf", "xlsx", "xls"
+            ).setProgressBarColor(R.color.colorAccent).build()
         receiveData.launch(intent)
     }
 
@@ -287,8 +251,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             } else {
                 val file = File(it)
                 val fileUri = FileProvider.getUriForFile(
-                    this,
-                    applicationContext.packageName + ".fileprovider", file
+                    this, applicationContext.packageName + ".fileprovider", file
                 )
                 intent.setDataAndType(fileUri, getMimeType(fileUri))
             }

@@ -3,13 +3,16 @@ package com.lassi.presentation.media
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +32,7 @@ import com.lassi.domain.common.SafeObserver
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageContract
@@ -40,6 +44,7 @@ import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import java.io.File
+
 
 class MediaFragment :
     LassiBaseViewModelFragment<SelectedMediaViewModel, FragmentMediaPickerBinding>(),
@@ -265,23 +270,88 @@ class MediaFragment :
     private fun handleSorting() {
         val customDialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.sorting_option, null)
-        val sortingRadioGroup = customDialogView.findViewById<RadioGroup>(R.id.sortingRadioGroup)
+        val sortingRadioGroup = customDialogView?.findViewById<RadioGroup>(R.id.sortingRadioGroup)
 
-        //To set the previously selected option as checked.
-        sortingRadioGroup.check(
-            when (viewModel.currentSortingOption.value) {
-                ASCENDING_ORDER -> R.id.radioAscending
-                DESCENDING_ORDER -> R.id.radioDescending
-                else -> R.id.radioAscending
-            }
+        val rbColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
+            ), intArrayOf(
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingCheckedRadioButtonColor,
+                    null
+                ),  //Checked color
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingUncheckedRadioButtonColor,
+                    null
+                )   // Unchecked color
+            )
         )
+
+        val rbTextColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)
+            ), intArrayOf(
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingCheckedTextColor,
+                    null
+                ),  //Checked text color
+                ResourcesCompat.getColor(
+                    resources,
+                    LassiConfig.getConfig().sortingUncheckedTextColor,
+                    null
+                )   // Unchecked text color
+            )
+        )
+
+        //Radio button color
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)?.buttonTintList =
+            rbColorStateList
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)?.buttonTintList =
+            rbColorStateList
+
+        //Radio button text color
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)
+            ?.setTextColor(rbTextColorStateList)
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)
+            ?.setTextColor(rbTextColorStateList)
+
+        val currentSortingOption = viewModel.currentSortingOption.value
+        val ascendingLabel = MultiLangConfig.getConfig().sortAscending
+        val descendingLabel = MultiLangConfig.getConfig().sortDescending
+
+        val checkedId = when (currentSortingOption) {
+            ASCENDING_ORDER -> {
+                sortingRadioGroup?.check(R.id.radioAscending)
+                R.id.radioAscending
+            }
+
+            DESCENDING_ORDER -> {
+                sortingRadioGroup?.check(R.id.radioDescending)
+                R.id.radioDescending
+            }
+
+            else -> {
+                sortingRadioGroup?.check(R.id.radioAscending)
+                R.id.radioAscending
+            }
+        }
+
+        // Set the labels for the radio buttons
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioAscending)?.text = ascendingLabel
+        sortingRadioGroup?.findViewById<RadioButton>(R.id.radioDescending)?.text = descendingLabel
+
+        // Set the checked radio button in the RadioGroup
+        sortingRadioGroup?.check(checkedId)
 
         //Set up the alert builder with the custom layout..
         AlertDialog.Builder(requireContext()).apply {
-            setTitle(R.string.sort_by_date)
+            setTitle(MultiLangConfig.getConfig().sortByDate)
             setView(customDialogView)
-            setPositiveButton(android.R.string.ok) { _, _ ->
-                val checkedRadioButtonId = sortingRadioGroup.checkedRadioButtonId
+            setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
+                val checkedRadioButtonId = sortingRadioGroup?.checkedRadioButtonId
                 val selectedOption =
                     if (checkedRadioButtonId == R.id.radioAscending) ASCENDING_ORDER else DESCENDING_ORDER
 
@@ -315,7 +385,7 @@ class MediaFragment :
                     }
                 }
             }
-            setNegativeButton(android.R.string.cancel, null)
+            setNegativeButton(MultiLangConfig.getConfig().cancel, null)
             create().show()
         }
     }

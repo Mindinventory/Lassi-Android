@@ -1,8 +1,8 @@
 package com.lassi.domain.media
 
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Parcelable
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.lassi.R
 import com.lassi.common.utils.KeyUtils
@@ -18,6 +18,10 @@ data class LassiConfig(
     var toolbarResourceColor: Int = Color.WHITE,
     var progressBarColor: Int = Color.BLACK,
     var galleryBackgroundColor: Int = Color.WHITE,
+    @ColorRes var sortingCheckedRadioButtonColor: Int = R.color.darkYellow,
+    @ColorRes var sortingUncheckedRadioButtonColor: Int = R.color.blackTrans50,
+    @ColorRes var sortingCheckedTextColor: Int = R.color.darkYellow,
+    @ColorRes var sortingUncheckedTextColor: Int = R.color.blackTrans50,
     @DrawableRes var placeHolder: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var errorDrawable: Int = R.drawable.ic_image_placeholder,
     @DrawableRes var selectionDrawable: Int = R.drawable.ic_checked_media,
@@ -41,7 +45,7 @@ data class LassiConfig(
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: Int = R.string.default_exceed_error_msg
+    var customLimitExceedingErrorMessage: String = MultiLangConfig.getConfig().defaultExceedErrorMsg
 ) : Parcelable {
     companion object {
 
@@ -54,10 +58,14 @@ data class LassiConfig(
                 toolbarResourceColor = lassiConfig.toolbarResourceColor
                 progressBarColor = lassiConfig.progressBarColor
                 galleryBackgroundColor = lassiConfig.galleryBackgroundColor
+                sortingCheckedRadioButtonColor = lassiConfig.sortingCheckedRadioButtonColor
+                sortingUncheckedRadioButtonColor = lassiConfig.sortingUncheckedRadioButtonColor
+                sortingCheckedTextColor = lassiConfig.sortingCheckedTextColor
+                sortingUncheckedTextColor = lassiConfig.sortingUncheckedTextColor
                 selectedMedias = lassiConfig.selectedMedias
                 mediaType = lassiConfig.mediaType
                 maxCount = lassiConfig.maxCount
-                ascFlag= lassiConfig.ascFlag
+                ascFlag = lassiConfig.ascFlag
                 gridSize = lassiConfig.gridSize
                 lassiOption = lassiConfig.lassiOption
                 minTime = lassiConfig.minTime

@@ -1,15 +1,18 @@
 package com.lassi.presentation.builder
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import com.lassi.R
 import com.lassi.common.utils.KeyUtils
 import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
+import com.lassi.domain.media.MultiLangConfig
 import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
@@ -18,6 +21,131 @@ import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 class Lassi(private val context: Context) {
 
     private var lassiConfig = LassiConfig()
+    private var multiLangConfig = MultiLangConfig()
+
+    init {
+        getMultiLngBuilder()
+    }
+
+    /**
+     * Multi-language support
+     */
+    fun getMultiLngBuilder(
+        setOkLbl: String? = null,
+        setCancelLbl: String? = null,
+        setLassiAllLbl: String? = null,
+        setCropImageMenuRotateLeftLbl: String? = null,
+        setCropImageMenuRotateRightLbl: String? = null,
+        setCropImageMenuFlipLbl: String? = null,
+        setCropImageMenuFlipHorizontallyLbl: String? = null,
+        setCropImageMenuFlipVerticallyLbl: String? = null,
+        setPickImageIntentChooserTitleLbl: String? = null,
+        setCropImageActivityNoPermissionsLbl: String? = null,
+        setCropImageActivityTitleLbl: String? = null,
+        setCameraLbl: String? = null,
+        setSortLbl: String? = null,
+        setDoneLbl: String? = null,
+        setCameraAudioStoragePermissionRationalLbl: String? = null,
+        setCameraStoragePermissionRationalLbl: String? = null,
+        setCameraAudioPermissionRationalLbl: String? = null,
+        setCameraPermissionRationalLbl: String? = null,
+        setStoragePermissionRationalLbl: String? = null,
+        setReadMediaImagesVideoPermissionRationalLbl: String? = null,
+        setReadMediaAudioPermissionRationalLbl: String? = null,
+        setAlreadySelectedMaxItemsLbl: String? = null,
+        setErrorExceedMsgLbl: String? = null,
+        setDefaultExceedErrorMsgLbl: String? = null,
+        setNoDataFoundLbl: String? = null,
+        setSortByDateLbl: String? = null,
+        setSortAscendingLbl: String? = null,
+        setSortDescendingLbl: String? = null,
+        setIcRotateLeft24Lbl: String? = null,
+        setIcRotateRight24Lbl: String? = null,
+        setCropImageMenuCropLbl: String? = null,
+        setIcFlip24Lbl: String? = null,
+        setIcFlip24HorizontallyLbl: String? = null,
+        setIcFlip24VerticallyLbl: String? = null,
+        setPickImageChooserTitleLbl: String? = null,
+        setPickImageCameraLbl: String? = null,
+        setPickImageGalleryLbl: String? = null,
+        setMainActionRotateLbl: String? = null,
+        setMainActionCropLbl: String? = null,
+    ): Lassi {
+        multiLangConfig.ok = setOkLbl ?: context.getString(R.string.ok)
+        multiLangConfig.cancel = setCancelLbl ?: context.getString(R.string.cancel)
+        multiLangConfig.lassiAll = setLassiAllLbl ?: context.getString(R.string.lassi_all)
+        multiLangConfig.cropImageMenuRotateLeft =
+            setCropImageMenuRotateLeftLbl ?: context.getString(R.string.crop_image_menu_rotate_left)
+        multiLangConfig.cropImageMenuRotateRight = setCropImageMenuRotateRightLbl
+            ?: context.getString(R.string.crop_image_menu_rotate_right)
+        multiLangConfig.cropImageMenuFlip =
+            setCropImageMenuFlipLbl ?: context.getString(R.string.crop_image_menu_flip)
+        multiLangConfig.cropImageMenuFlipHorizontally = setCropImageMenuFlipHorizontallyLbl
+            ?: context.getString(R.string.crop_image_menu_flip_horizontally)
+        multiLangConfig.cropImageMenuFlipVertically = setCropImageMenuFlipVerticallyLbl
+            ?: context.getString(R.string.crop_image_menu_flip_vertically)
+        multiLangConfig.pickImageIntentChooserTitle = setPickImageIntentChooserTitleLbl
+            ?: context.getString(R.string.pick_image_intent_chooser_title)
+        multiLangConfig.cropImageActivityNoPermissions = setCropImageActivityNoPermissionsLbl
+            ?: context.getString(R.string.crop_image_activity_no_permissions)
+        multiLangConfig.cropImageActivityTitle =
+            setCropImageActivityTitleLbl ?: context.getString(R.string.crop_image_activity_title)
+        multiLangConfig.camera = setCameraLbl ?: context.getString(R.string.camera)
+        multiLangConfig.sort = setSortLbl ?: context.getString(R.string.sort)
+        multiLangConfig.done = setDoneLbl ?: context.getString(R.string.done)
+        multiLangConfig.cameraAudioStoragePermissionRational =
+            setCameraAudioStoragePermissionRationalLbl
+                ?: context.getString(R.string.camera_audio_storage_permission_rational)
+        multiLangConfig.cameraStoragePermissionRational = setCameraStoragePermissionRationalLbl
+            ?: context.getString(R.string.camera_storage_permission_rational)
+        multiLangConfig.cameraAudioPermissionRational = setCameraAudioPermissionRationalLbl
+            ?: context.getString(R.string.camera_audio_permission_rational)
+        multiLangConfig.cameraPermissionRational =
+            setCameraPermissionRationalLbl ?: context.getString(R.string.camera_permission_rational)
+        multiLangConfig.storagePermissionRational = setStoragePermissionRationalLbl
+            ?: context.getString(R.string.storage_permission_rational)
+        multiLangConfig.readMediaImagesVideoPermissionRational =
+            setReadMediaImagesVideoPermissionRationalLbl
+                ?: context.getString(R.string.read_media_images_video_permission_rational)
+        multiLangConfig.readMediaAudioPermissionRational = setReadMediaAudioPermissionRationalLbl
+            ?: context.getString(R.string.read_media_audio_permission_rational)
+        multiLangConfig.alreadySelectedMaxItems =
+            setAlreadySelectedMaxItemsLbl ?: context.getString(R.string.already_selected_max_items)
+        multiLangConfig.errorExceedMsg =
+            setErrorExceedMsgLbl ?: context.getString(R.string.error_exceed_msg)
+        multiLangConfig.defaultExceedErrorMsg =
+            setDefaultExceedErrorMsgLbl ?: context.getString(R.string.default_exceed_error_msg)
+        multiLangConfig.noDataFound = setNoDataFoundLbl ?: context.getString(R.string.no_data_found)
+        multiLangConfig.sortByDate = setSortByDateLbl ?: context.getString(R.string.sort_by_date)
+        multiLangConfig.sortAscending =
+            setSortAscendingLbl ?: context.getString(R.string.sort_ascending)
+        multiLangConfig.sortDescending =
+            setSortDescendingLbl ?: context.getString(R.string.sort_descending)
+        multiLangConfig.icRotateLeft24 =
+            setIcRotateLeft24Lbl ?: context.getString(R.string.ic_rotate_left_24)
+        multiLangConfig.icRotateRight24 =
+            setIcRotateRight24Lbl ?: context.getString(R.string.ic_rotate_right_24)
+        multiLangConfig.cropImageMenuCrop =
+            setCropImageMenuCropLbl ?: context.getString(R.string.crop_image_menu_crop)
+        multiLangConfig.icFlip24 = setIcFlip24Lbl ?: context.getString(R.string.ic_flip_24)
+        multiLangConfig.icFlip24Horizontally =
+            setIcFlip24HorizontallyLbl ?: context.getString(R.string.ic_flip_24_horizontally)
+        multiLangConfig.icFlip24Vertically =
+            setIcFlip24VerticallyLbl ?: context.getString(R.string.ic_flip_24_vertically)
+        multiLangConfig.pickImageChooserTitle =
+            setPickImageChooserTitleLbl ?: context.getString(R.string.pick_image_chooser_title)
+        multiLangConfig.pickImageCamera =
+            setPickImageCameraLbl ?: context.getString(R.string.pick_image_camera)
+        multiLangConfig.pickImageGallery =
+            setPickImageGalleryLbl ?: context.getString(R.string.pick_image_gallery)
+        multiLangConfig.mainActionRotate =
+            setMainActionRotateLbl ?: context.getString(R.string.main_action_rotate)
+        multiLangConfig.mainActionCrop =
+            setMainActionCropLbl ?: context.getString(R.string.main_action_crop)
+
+        MultiLangConfig.setMultiLangConfig(multiLangConfig)
+        return this
+    }
 
     /**
      * Limit max item selection
@@ -172,6 +300,42 @@ class Lassi(private val context: Context) {
     }
 
     /**
+     * Set sorting checked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingCheckedRadioButtonColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingCheckedRadioButtonColor = color
+        return this
+    }
+
+    /**
+     * Set sorting unchecked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingUncheckedRadioButtonColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingUncheckedRadioButtonColor = color
+        return this
+    }
+
+    /**
+     * Set sorting checked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingCheckedTextColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingCheckedTextColor = color
+        return this
+    }
+
+    /**
+     * Set sorting unchecked state radio button color resource
+     */
+    @SuppressLint("ResourceAsColor")
+    fun setSortingUncheckedTextColor(@ColorRes color: Int): Lassi {
+        lassiConfig.sortingUncheckedTextColor = color
+        return this
+    }
+
+    /**
      * Set progressbar color hex
      */
     fun setProgressBarColor(progressBarColor: String): Lassi {
@@ -307,7 +471,7 @@ class Lassi(private val context: Context) {
     /**
      * To set custom error message when picked items exceeds the defined maxCount
      */
-    fun setCustomLimitExceedingErrorMessage(errorMessage: Int): Lassi {
+    fun setCustomLimitExceedingErrorMessage(errorMessage: String): Lassi {
         lassiConfig.customLimitExceedingErrorMessage = errorMessage
         return this
     }
