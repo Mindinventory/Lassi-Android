@@ -131,8 +131,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnDocumentSystemIntent -> {
-                val intent =
-                    lassi.setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW).setSupportedFileTypes(
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY)
+                    .setMediaType(MediaType.FILE_TYPE_WITH_SYSTEM_VIEW).setSupportedFileTypes(
                         "jpg",
                         "jpeg",
                         "png",
@@ -156,8 +156,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     ).setMaxCount(3)
-                        .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
-                        .build()
+                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
+                    .build()
                 receiveData.launch(intent)
             }
 
