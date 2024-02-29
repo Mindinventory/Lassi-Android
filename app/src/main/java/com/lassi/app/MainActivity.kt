@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -98,7 +99,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent =
                     lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4).setGridSize(3)
-                        .setMinTime(5).setMaxTime(30).setMinFileSize(0).setMaxFileSize(20000)
+                        .setMinTime(5).setMaxTime(3000) // Set time larger to let file be visible
+                        .setMinFileSize(0)
+                        .setMaxFileSize(Integer.MAX_VALUE.toLong()) // For setting file size
                         .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
                         .setToolbarColor(R.color.colorPrimary)
                         .setToolbarResourceColor(android.R.color.white)
@@ -224,6 +227,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
+                Log.d("TAG", "!@# it.data: $selectedMedia")
+                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: picked: selectedMedia: $selectedMedia")
 
                 if (selectedMedia.isNotEmpty()) {
                     binding.ivEmpty.isVisible = selectedMedia.isEmpty()
