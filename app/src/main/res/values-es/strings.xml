@@ -9,6 +9,7 @@
     <string name="document">Documento</string>
     <string name="audio">Audio</string>
     <string name="open_system_view">"Abrir vista del sistema "</string>
+    <string name="photo_picker">Selector de fotos</string>
 
     <string name="sort_by_date">Ordenar por fecha</string>
     <string name="sort_ascending">Ascendente</string>

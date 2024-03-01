@@ -43,16 +43,6 @@ class FolderViewModel(
             }
         }
     }
-
-    fun addPhotoPickerDataInDatabase() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                this@FolderViewModel._fetchMediaFolderLiveData.setLoading()
-                insertDataInDatabase()
-            }
-        }
-    }
-
     fun checkRemoval() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
