@@ -8,6 +8,7 @@
     <string name="document">Document</string>
     <string name="audio">Audio</string>
     <string name="open_system_view">Open System View</string>
+    <string name="photo_picker">Photo Picker</string>
 
     <string name="sort_by_date">Sort by Date</string>
     <string name="sort_ascending">Ascending</string>

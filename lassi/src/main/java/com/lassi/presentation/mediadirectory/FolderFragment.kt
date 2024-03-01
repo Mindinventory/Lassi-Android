@@ -31,6 +31,7 @@ import com.lassi.common.extenstions.hide
 import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.ToastUtils
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
@@ -106,26 +107,34 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     /**
      * Video picker in case of Android 14 will be handled here
-     * Need to modifty
+     * Need to modifty for handling multp
      */
-    private val photoPickerLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-        if (uris.isNotEmpty()) {
-            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: URIs: ${uris.toString()}")
-//            val realPath = context?.let { getRealPathFromURI(it, uris.first()) }
-            val realPath = context?.let { copyFileFromUri(it, uris.first()) }
-            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: picked: URIs realPath: $realPath")
-            setResultOk(arrayListOf(MiMedia(path = realPath)))
-        } else {
-            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+    private val mediaPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+            if (uris.isNotEmpty()) {
+                val mediaPaths = ArrayList(uris.mapNotNull { uri ->
+                    MiMedia(path = context?.let { getMediaPathFromURI(it, uri) })
+                })
+                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
+                setResultOk(mediaPaths)
+            } else {
+                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+            }
         }
-    }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
-        val intent = Intent().apply {
-            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+        if (selectedMedia?.size!! > LassiConfig.getConfig().maxCount) {
+            ToastUtils.showToast(
+                requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
+            )
+            activity?.finish()
+        } else {
+            val intent = Intent().apply {
+                putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+            }
+            activity?.setResult(Activity.RESULT_OK, intent)
+            activity?.finish()
         }
-        activity?.setResult(Activity.RESULT_OK, intent)
-        activity?.finish()
     }
 
     private val folderAdapter by lazy { FolderAdapter(this::onItemClick) }
@@ -197,10 +206,18 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.READ_MEDIA_IMAGES
-                ) != PackageManager.PERMISSION_GRANTED
-                requestPermission.launch(photoPermission.toTypedArray())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                    ) != PackageManager.PERMISSION_GRANTED
+                    Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.ImageOnly")
+                    mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } else {
+                    needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.READ_MEDIA_IMAGES
+                    ) != PackageManager.PERMISSION_GRANTED
+                    requestPermission.launch(photoPermission.toTypedArray())
+                }
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.VIDEO")
 
@@ -209,14 +226,21 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                         requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                     ) != PackageManager.PERMISSION_GRANTED
 //                    requestAnd14Permission.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
-//                    requestPhotoPickerPermission.launch(vidPermissionAnd14.toTypedArray())
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+                    requestPhotoPickerPermission.launch(vidPermissionAnd14.toTypedArray())
+//                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
                 } else {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VIDEO
                     ) != PackageManager.PERMISSION_GRANTED
                     requestPermission.launch(vidPermission.toTypedArray())
                 }
+            }  else if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+                Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) != PackageManager.PERMISSION_GRANTED
+                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
@@ -226,21 +250,67 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 }
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            requestPermission.launch(
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-            )
-        } else {
-            requestPermission.launch(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) != PackageManager.PERMISSION_GRANTED
+                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+            } else {
+                requestPermission.launch(
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 )
-            )
+            }
+        } else {
+            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+                needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                ) != PackageManager.PERMISSION_GRANTED
+                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+            } else {
+                requestPermission.launch(
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                )
+            }
         }
     }
 
+    private fun getMediaPathFromURI(context: Context, uri: Uri): String? {
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        val fileName = getFileName(context.contentResolver, uri)
+        inputStream?.use { input ->
+            val outputFile =
+                File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), fileName)
+            FileOutputStream(outputFile).use { output ->
+                val buffer = ByteArray(4 * 1024) // buffer size
+                var read: Int
+                while (input.read(buffer).also { read = it } != -1) {
+                    output.write(buffer, 0, read)
+                }
+                output.flush()
+                return outputFile.absolutePath
+            }
+        }
+        return null
+    }
 
-    fun copyFileFromUri(context: Context, uri: Uri): String? {
+    private fun getFileName(contentResolver: ContentResolver, uri: Uri): String {
+        var fileName = "temp_media"
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val displayNameIndex =
+                    cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+                fileName = cursor.getString(displayNameIndex)
+            }
+        }
+        return fileName
+    }
+
+    /*fun copyFileFromUri(context: Context, uri: Uri): String? {
         val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
         val fileName = getFileName(context.contentResolver, uri)
         inputStream?.use { input ->
@@ -267,7 +337,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
             }
         }
         return fileName
-    }
+    }*/
 
 
     /**

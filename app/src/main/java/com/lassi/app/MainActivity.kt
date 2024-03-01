@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             it.btnImageCapture.setOnClickListener(this)
             it.btnVideoCapture.setOnClickListener(this)
             it.btnDocumentSystemIntent.setOnClickListener(this)
+            it.btnPhotoPicker.setOnClickListener(this)
             it.rvSelectedMedia.adapter = selectedMediaAdapter
             it.rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
         }
@@ -71,6 +72,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 setSortByDateLbl = "Trier par date"
             )
         }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        binding.btnPhotoPicker.visibility = View.VISIBLE
+//        }
     }
 
     override fun onClick(v: View?) {
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnImagePicker -> {
                 val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(1)
                     .setAscSort(SortingOption.ASCENDING).setGridSize(2)
+                    .setMediaType(MediaType.IMAGE)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -91,6 +96,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
                     .enableActualCircleCrop()
+                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -99,7 +105,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent =
                     lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4).setGridSize(3)
-                        .setMinTime(5).setMaxTime(3000) // Set time larger to let file be visible
+                        .setMinTime(5).setMaxTime(30000000) // Set time larger to let file be visible
                         .setMinFileSize(0)
                         .setMaxFileSize(Integer.MAX_VALUE.toLong()) // For setting file size
                         .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
@@ -112,6 +118,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .setPlaceHolder(R.drawable.ic_video_placeholder)
                         .setErrorDrawable(R.drawable.ic_video_placeholder)
                         .setSelectionDrawable(R.drawable.ic_checked_media)
+                        .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                         .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp").build()
                 receiveData.launch(intent)
             }
@@ -202,6 +209,29 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .enableActualCircleCrop()
                         .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                         .enableRotate().build()
+                receiveData.launch(intent)
+            }
+
+            R.id.btnPhotoPicker -> {
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                    .setAscSort(SortingOption.ASCENDING).setGridSize(2)
+                    .setMediaType(MediaType.PHOTO_PICKER)
+                    .setPlaceHolder(R.drawable.ic_image_placeholder)
+                    .setErrorDrawable(R.drawable.ic_image_placeholder)
+                    .setSelectionDrawable(R.drawable.ic_checked_media)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
+                    .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
+                    .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
+                    .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
+                    .enableActualCircleCrop()
+                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
+                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif", "mp4", "mkv", "webm", "avi", "flv", "3gp").enableFlip()
+                    .enableRotate().build()
                 receiveData.launch(intent)
             }
         }
