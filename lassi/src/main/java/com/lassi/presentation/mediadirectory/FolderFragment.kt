@@ -62,6 +62,11 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         Manifest.permission.READ_MEDIA_IMAGES
     )
 
+    private val photoPermissionAnd14 = mutableListOf(
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+    )
+
     private val vidPermission = mutableListOf(
         Manifest.permission.READ_MEDIA_VIDEO
     )
@@ -95,13 +100,11 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
      */
     private val requestPhotoPickerPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
-            Log.d("TAG", "!@# MAP:: map: $map")
-
-            if (map.entries.all { it.value }) {
+            // Specifically check for android.permission.READ_MEDIA_VISUAL_USER_SELECTED permission for Android 14 case
+            if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
                 viewModel.addPhotoPickerDataInDatabase()
             } else {
-//                showPermissionDisableAlert()
-                viewModel.addPhotoPickerDataInDatabase()
+                 showPermissionDisableAlert()
             }
         }
 
@@ -210,8 +213,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                     ) != PackageManager.PERMISSION_GRANTED
-                    Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.ImageOnly")
-                    mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    requestPhotoPickerPermission.launch(photoPermissionAnd14.toTypedArray())
                 } else {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_IMAGES
@@ -225,9 +227,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                     ) != PackageManager.PERMISSION_GRANTED
-//                    requestAnd14Permission.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
                     requestPhotoPickerPermission.launch(vidPermissionAnd14.toTypedArray())
-//                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
                 } else {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VIDEO
@@ -310,97 +310,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         return fileName
     }
 
-    /*fun copyFileFromUri(context: Context, uri: Uri): String? {
-        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        val fileName = getFileName(context.contentResolver, uri)
-        inputStream?.use { input ->
-            val outputFile = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), fileName)
-            FileOutputStream(outputFile).use { output ->
-                val buffer = ByteArray(4 * 1024) // buffer size
-                var read: Int
-                while (input.read(buffer).also { read = it } != -1) {
-                    output.write(buffer, 0, read)
-                }
-                output.flush()
-                return outputFile.absolutePath
-            }
-        }
-        return null
-    }
-
-    private fun getFileName(contentResolver: ContentResolver, uri: Uri): String {
-        var fileName = "temp_media"
-        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                val displayNameIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
-                fileName = cursor.getString(displayNameIndex)
-            }
-        }
-        return fileName
-    }*/
-
-
-    /**
-     * Working properly and file is opening from sample as well, but file name is static
-     */
-    /*fun copyFileFromUri(context: Context, uri: Uri): String? {
-        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-        inputStream?.use { input ->
-            val outputFile = File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), "copied_media.mp4")
-            FileOutputStream(outputFile).use { output ->
-                val buffer = ByteArray(4 * 1024) // buffer size
-                var read: Int
-                while (input.read(buffer).also { read = it } != -1) {
-                    output.write(buffer, 0, read)
-                }
-                output.flush()
-                return outputFile.absolutePath
-            }
-        }
-        return null
-    }*/
-
-    /**
-     * Working but getting improper path
-     */
-    fun getRealPathFromURI(context: Context, uri: Uri): String? {
-        var cursor: Cursor? = null
-        try {
-            val projection = arrayOf(
-                MediaStore.Images.Media.DATA,
-                MediaStore.Video.Media.DATA
-            )
-            cursor = context.contentResolver.query(uri, projection, null, null, null)
-            if (cursor != null && cursor.moveToFirst()) {
-                val columnIndexImage = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                val columnIndexVideo = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
-                return if (columnIndexImage != -1) {
-                    cursor.getString(columnIndexImage)
-                } else {
-                    cursor.getString(columnIndexVideo)
-                }
-            }
-        } finally {
-            cursor?.close()
-        }
-        return null
-    }
-
-    /*fun getRealPathFromURI(context: Context, uri: Uri): String? {
-        var cursor: Cursor? = null
-        try {
-            val projection = arrayOf(MediaStore.Images.Media.DATA)
-            cursor = context.contentResolver.query(uri, projection, null, null, null)
-            if (cursor != null && cursor.moveToFirst()) {
-                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
-                return cursor.getString(columnIndex)
-            }
-        } finally {
-            cursor?.close()
-        }
-        return null
-    }*/
-
     override fun onResume() {
         super.onResume()
         viewModel.checkRemoval()
@@ -415,10 +324,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     private fun showPermissionDisableAlert() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            MultiLangConfig.getConfig().storagePermissionRational
+            showPermissionAlert(msg = MultiLangConfig.getConfig().storagePermissionRational)
         } else {
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE) {
-                MultiLangConfig.getConfig().readMediaImagesVideoPermissionRational
+                showPermissionAlert(msg = MultiLangConfig.getConfig().readMediaImagesVideoPermissionRational)
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
                 showPermissionAlert(msg = MultiLangConfig.getConfig().readMediaImagesVideoPermissionRational)
             } else {
