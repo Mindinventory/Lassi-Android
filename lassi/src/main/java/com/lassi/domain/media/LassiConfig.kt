@@ -6,6 +6,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.lassi.R
 import com.lassi.common.utils.KeyUtils
+import com.lassi.common.utils.KeyUtils.ERROR_EXCEEDING_MSG
 import com.lassi.data.media.MiMedia
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
@@ -45,7 +46,7 @@ data class LassiConfig(
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: String = MultiLangConfig.getConfig().defaultExceedErrorMsg
+    var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG
 ) : Parcelable {
     companion object {
 

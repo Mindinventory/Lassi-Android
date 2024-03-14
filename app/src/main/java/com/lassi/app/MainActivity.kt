@@ -72,9 +72,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 setSortByDateLbl = "Trier par date"
             )
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         binding.btnPhotoPicker.visibility = View.VISIBLE
-//        }
     }
 
     override fun onClick(v: View?) {
@@ -96,7 +94,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
                     .enableActualCircleCrop()
-                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -105,7 +102,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent =
                     lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4).setGridSize(3)
-                        .setMinTime(5).setMaxTime(30000000) // Set time larger to let file be visible
+                        .setMinTime(5).setMaxTime(Int.MAX_VALUE.toLong()) // Set time larger to let file be visible
                         .setMinFileSize(0)
                         .setMaxFileSize(Integer.MAX_VALUE.toLong()) // For setting file size
                         .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
@@ -118,7 +115,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .setPlaceHolder(R.drawable.ic_video_placeholder)
                         .setErrorDrawable(R.drawable.ic_video_placeholder)
                         .setSelectionDrawable(R.drawable.ic_checked_media)
-                        .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
                         .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp").build()
                 receiveData.launch(intent)
             }
@@ -166,7 +162,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     ).setMaxCount(3)
-                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
+                    .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!!!")
                     .build()
                 receiveData.launch(intent)
             }
@@ -229,7 +225,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
                     .enableActualCircleCrop()
-                    .setCustomLimitExceedingErrorMessage(MultiLangConfig.getConfig().errorExceedMsg)
+                    .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif", "mp4", "mkv", "webm", "avi", "flv", "3gp").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -257,9 +253,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia =
                     it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                Log.d("TAG", "!@# it.data: $selectedMedia")
-                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: picked: selectedMedia: $selectedMedia")
-
                 if (selectedMedia.isNotEmpty()) {
                     binding.ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)

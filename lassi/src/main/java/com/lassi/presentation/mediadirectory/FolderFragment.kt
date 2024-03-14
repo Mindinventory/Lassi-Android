@@ -104,7 +104,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
             if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
                 viewModel.addPhotoPickerDataInDatabase()
             } else {
-                 showPermissionDisableAlert()
+                showPermissionDisableAlert()
             }
         }
 
@@ -234,7 +234,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     ) != PackageManager.PERMISSION_GRANTED
                     requestPermission.launch(vidPermission.toTypedArray())
                 }
-            }  else if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            } else if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
