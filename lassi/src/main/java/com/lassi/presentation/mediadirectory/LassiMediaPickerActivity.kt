@@ -5,16 +5,21 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.lassi.R
 import com.lassi.common.extenstions.getFileName
 import com.lassi.common.extenstions.getFileSize
+import com.lassi.common.extenstions.show
 import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
@@ -35,6 +40,9 @@ import com.livefront.bridge.Bridge
 import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
 import io.reactivex.annotations.Nullable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LassiMediaPickerActivity :
     LassiBaseViewModelActivity<SelectedMediaViewModel, ActivityMediaPickerBinding>() {
@@ -44,27 +52,42 @@ class LassiMediaPickerActivity :
     private val getContent =
         registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uri ->
             uri?.let { uris ->
-                val list = ArrayList<MiMedia>()
-                uris.map { uri ->
-                    val miMedia = MiMedia()
-                    miMedia.name = getFileName(uri)
-                    miMedia.doesUri = false
-                    miMedia.fileSize = getFileSize(uri)
-                    miMedia.path = getFilePathFromUri(this, uri, true)
-                    list.add(miMedia)
-                }
-                if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW) {
-                    if (list.size > LassiConfig.getConfig().maxCount) {
-                        ToastUtils.showToast(
-                            this,
-                            LassiConfig.getConfig().customLimitExceedingErrorMessage
-                        )
-                        finish()
-                    }else{
-                        setResultOk(list)
+                binding.progressBar.indeterminateDrawable.colorFilter =
+                    BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        LassiConfig.getConfig().progressBarColor, BlendModeCompat.SRC_ATOP
+                    )
+                binding.progressBar.show()
+
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        val resultList: ArrayList<MiMedia> = uris.map { uri ->
+                            val miMedia = MiMedia()
+                            miMedia.name = getFileName(uri)
+                            miMedia.doesUri = false
+                            miMedia.fileSize = getFileSize(uri)
+                            miMedia.path =
+                                getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
+                            Log.d("TAG", "!@# SLOWER MEDIA ITEM: ${miMedia.name}")
+                            miMedia
+                        } as ArrayList<MiMedia>
+                        resultList
+                    }.let { resultList ->
+                        withContext(Dispatchers.Main) {
+                            if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW) {
+                                if (resultList.size > LassiConfig.getConfig().maxCount) {
+                                    ToastUtils.showToast(
+                                        this@LassiMediaPickerActivity,
+                                        LassiConfig.getConfig().customLimitExceedingErrorMessage
+                                    )
+                                    finish()
+                                } else {
+                                    setResultOk(resultList)
+                                }
+                            } else {
+                                setResultOk(resultList)
+                            }
+                        }
                     }
-                } else {
-                    setResultOk(list)
                 }
             }
         }
@@ -152,17 +175,21 @@ class LassiMediaPickerActivity :
     }
 
     private fun browseFile() {
-        val mimeTypesList = ArrayList<String>()
-        LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
-            MimeTypeMap
-                .getSingleton()
-                .getMimeTypeFromExtension(mimeType)?.let {
-                    mimeTypesList.add(it)
+        lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Default) {
+                val mimeTypesList = ArrayList<String>()
+                LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
+                    MimeTypeMap
+                        .getSingleton()
+                        .getMimeTypeFromExtension(mimeType)?.let {
+                            mimeTypesList.add(it)
+                        }
                 }
+                var mMimeTypeArray = arrayOf<String>()
+                mMimeTypeArray = mimeTypesList.toArray(mMimeTypeArray)
+                getContent.launch(mMimeTypeArray)
+            }
         }
-        var mMimeTypeArray = arrayOf<String>()
-        mMimeTypeArray = mimeTypesList.toArray(mMimeTypeArray)
-        getContent.launch(mMimeTypeArray)
     }
 
     private fun setThemeAttributes() {

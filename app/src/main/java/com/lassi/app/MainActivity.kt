@@ -102,7 +102,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btnVideoPicker -> {
                 val intent =
                     lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4).setGridSize(3)
-                        .setMinTime(5).setMaxTime(Int.MAX_VALUE.toLong()) // Set time larger to let file be visible
+                        .setMinTime(5)
+                        .setMaxTime(Int.MAX_VALUE.toLong()) // Set time larger to let file be visible
                         .setMinFileSize(0)
                         .setMaxFileSize(Integer.MAX_VALUE.toLong()) // For setting file size
                         .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
@@ -162,6 +163,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     ).setMaxCount(3)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
                     .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!!!")
                     .build()
                 receiveData.launch(intent)
@@ -226,7 +232,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(10000)
                     .enableActualCircleCrop()
                     .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
-                    .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif", "mp4", "mkv", "webm", "avi", "flv", "3gp").enableFlip()
+                    .setSupportedFileTypes(
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "webp",
+                        "gif",
+                        "mp4",
+                        "mkv",
+                        "webm",
+                        "avi",
+                        "flv",
+                        "3gp"
+                    ).enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
             }

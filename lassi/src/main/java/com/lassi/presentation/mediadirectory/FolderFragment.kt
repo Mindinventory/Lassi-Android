@@ -240,6 +240,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                binding.progressBar.show()
                 mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
@@ -255,6 +256,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                binding.progressBar.show()
                 mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
             } else {
                 requestPermission.launch(
@@ -267,6 +269,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
+                binding.progressBar.show()
                 mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
             } else {
                 requestPermission.launch(
