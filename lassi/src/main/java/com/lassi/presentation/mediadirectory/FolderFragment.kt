@@ -135,8 +135,10 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
             val intent = Intent().apply {
                 putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
             }
-            activity?.setResult(Activity.RESULT_OK, intent)
-            activity?.finish()
+            activity?.let {
+                it.setResult(Activity.RESULT_OK, intent)
+                it.finish()
+            }
         }
     }
 
@@ -342,28 +344,26 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     }
 
     private fun showPermissionAlert(msg: String) {
-        val alertDialog = AlertDialog.Builder(requireContext(), R.style.dialogTheme)
-        alertDialog.setMessage(msg)
-        alertDialog.setCancelable(false)
-        alertDialog.setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
-            val intent = Intent().apply {
-                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                data = Uri.fromParts("package", activity?.packageName, null)
+        AlertDialog.Builder(requireContext(), R.style.dialogTheme).apply {
+            setMessage(msg)
+            setCancelable(false)
+            setPositiveButton(MultiLangConfig.getConfig().ok) { _, _ ->
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", activity?.packageName, null)
+                }
+                permissionSettingResult.launch(intent)
             }
-            permissionSettingResult.launch(intent)
-        }
-
-        alertDialog.setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
-            activity?.onBackPressed()
-        }
-        val permissionDialog = alertDialog.create()
-        permissionDialog.setCancelable(false)
-        permissionDialog.show()
-        with(LassiConfig.getConfig()) {
-            permissionDialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-                .setTextColor(alertDialogNegativeButtonColor)
-            permissionDialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                .setTextColor(alertDialogPositiveButtonColor)
+            setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
+                activity?.onBackPressed()
+            }
+        }.create().apply {
+            setCancelable(false)
+            show()
+            LassiConfig.getConfig().let {
+                getButton(DialogInterface.BUTTON_NEGATIVE)?.setTextColor(it.alertDialogNegativeButtonColor)
+                getButton(DialogInterface.BUTTON_POSITIVE)?.setTextColor(it.alertDialogPositiveButtonColor)
+            }
         }
     }
 
