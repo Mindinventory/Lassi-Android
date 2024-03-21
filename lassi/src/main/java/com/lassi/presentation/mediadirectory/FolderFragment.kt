@@ -114,31 +114,31 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
      */
     private val mediaPickerLauncher =
         registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-            if (uris.isNotEmpty()) {
-                val mediaPaths = ArrayList(uris.mapNotNull { uri ->
-                    MiMedia(path = context?.let { getMediaPathFromURI(it, uri) })
-                })
-                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
-                setResultOk(mediaPaths)
+            if (uris.size > LassiConfig.getConfig().maxCount) {
+                ToastUtils.showToast(
+                    requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
+                )
+                activity?.finish()
             } else {
-                Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+                if (uris.isNotEmpty()) {
+                    val mediaPaths = ArrayList(uris.mapNotNull { uri ->
+                        MiMedia(path = context?.let { getMediaPathFromURI(it, uri) })
+                    })
+                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
+                    setResultOk(mediaPaths)
+                } else {
+                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+                }
             }
         }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
-        if (selectedMedia?.size!! > LassiConfig.getConfig().maxCount) {
-            ToastUtils.showToast(
-                requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
-            )
-            activity?.finish()
-        } else {
-            val intent = Intent().apply {
-                putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
-            }
-            activity?.let {
-                it.setResult(Activity.RESULT_OK, intent)
-                it.finish()
-            }
+        val intent = Intent().apply {
+            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+        }
+        activity?.let {
+            it.setResult(Activity.RESULT_OK, intent)
+            it.finish()
         }
     }
 
