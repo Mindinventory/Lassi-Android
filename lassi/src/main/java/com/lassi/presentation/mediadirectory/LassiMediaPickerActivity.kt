@@ -69,14 +69,13 @@ class LassiMediaPickerActivity :
                     lifecycleScope.launch {
                         val resultList: ArrayList<MiMedia> = withContext(Dispatchers.IO) {
                             uris.map { uri ->
-                                val miMedia = MiMedia()
-                                miMedia.name = getFileName(uri)
-                                miMedia.doesUri = false
-                                miMedia.fileSize = getFileSize(uri)
-                                miMedia.path =
-                                    getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
-                                Log.d("TAG", "!@# SLOWER MEDIA ITEM: ${miMedia.name}")
-                                miMedia
+                                MiMedia().apply {
+                                    name = getFileName(uri)
+                                    doesUri = false
+                                    fileSize = getFileSize(uri)
+                                    path = getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
+                                    Log.d("TAG", "!@# SLOWER MEDIA ITEM: $name")
+                                }
                             } as ArrayList<MiMedia>
                         }
 
