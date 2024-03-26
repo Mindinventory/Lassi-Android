@@ -118,7 +118,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 ToastUtils.showToast(
                     requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
                 )
-                activity?.finish()
             } else {
                 if (uris.isNotEmpty()) {
                     val mediaPaths = ArrayList(uris.mapNotNull { uri ->
@@ -130,6 +129,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
                 }
             }
+            activity?.finish()  // To finish host activity when user closes photo picker dialog
         }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {

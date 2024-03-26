@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnAudioPicker -> {
-                val intent = lassi.setMediaType(MediaType.AUDIO).setMaxCount(4).setGridSize(2)
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.AUDIO).setMaxCount(4).setGridSize(2)
                     .setPlaceHolder(R.drawable.ic_audio_placeholder)
                     .setErrorDrawable(R.drawable.ic_audio_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
@@ -252,7 +252,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun launchDocPicker() {
-        val intent = lassi.setMediaType(MediaType.DOC).setMaxCount(4).setGridSize(2)
+        val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.DOC).setMaxCount(4).setGridSize(2)
             .setPlaceHolder(R.drawable.ic_document_placeholder)
             .setErrorDrawable(R.drawable.ic_document_placeholder)
             .setSelectionDrawable(R.drawable.ic_checked_media)
