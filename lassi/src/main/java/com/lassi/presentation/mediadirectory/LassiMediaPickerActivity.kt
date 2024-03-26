@@ -5,16 +5,21 @@ import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.lassi.R
 import com.lassi.common.extenstions.getFileName
 import com.lassi.common.extenstions.getFileSize
+import com.lassi.common.extenstions.show
 import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
@@ -35,36 +40,49 @@ import com.livefront.bridge.Bridge
 import com.livefront.bridge.SavedStateHandler
 import io.reactivex.annotations.NonNull
 import io.reactivex.annotations.Nullable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LassiMediaPickerActivity :
     LassiBaseViewModelActivity<SelectedMediaViewModel, ActivityMediaPickerBinding>() {
     private var menuDone: MenuItem? = null
     private var menuCamera: MenuItem? = null
     private var menuSort: MenuItem? = null
+
     private val getContent =
         registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uri ->
             uri?.let { uris ->
-                val list = ArrayList<MiMedia>()
-                uris.map { uri ->
-                    val miMedia = MiMedia()
-                    miMedia.name = getFileName(uri)
-                    miMedia.doesUri = false
-                    miMedia.fileSize = getFileSize(uri)
-                    miMedia.path = getFilePathFromUri(this, uri, true)
-                    list.add(miMedia)
-                }
-                if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW) {
-                    if (list.size > LassiConfig.getConfig().maxCount) {
-                        ToastUtils.showToast(
-                            this,
-                            LassiConfig.getConfig().customLimitExceedingErrorMessage
-                        )
-                        finish()
-                    }else{
-                        setResultOk(list)
-                    }
+                if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW && uris.size > LassiConfig.getConfig().maxCount) {
+                    ToastUtils.showToast(
+                        this@LassiMediaPickerActivity,
+                        LassiConfig.getConfig().customLimitExceedingErrorMessage
+                    )
+                    finish()
                 } else {
-                    setResultOk(list)
+                    binding.progressBar.indeterminateDrawable.colorFilter =
+                        BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                            LassiConfig.getConfig().progressBarColor, BlendModeCompat.SRC_ATOP
+                        )
+                    binding.progressBar.show()
+
+                    lifecycleScope.launch {
+                        val resultList: ArrayList<MiMedia> = withContext(Dispatchers.IO) {
+                            uris.map { uri ->
+                                MiMedia().apply {
+                                    name = getFileName(uri)
+                                    doesUri = false
+                                    fileSize = getFileSize(uri)
+                                    path = getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
+                                    Log.d("TAG", "!@# SLOWER MEDIA ITEM: $name")
+                                }
+                            } as ArrayList<MiMedia>
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            setResultOk(resultList)
+                        }
+                    }
                 }
             }
         }

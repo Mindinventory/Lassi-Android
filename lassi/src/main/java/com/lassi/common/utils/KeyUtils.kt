@@ -18,4 +18,5 @@ object KeyUtils {
     const val DESCENDING_ORDER = 0
     const val ASCENDING_ORDER = 1
     const val DEFAULT_ORDER = 2
+    const val ERROR_EXCEEDING_MSG = "You are exceeding the defined Max limit."
 }

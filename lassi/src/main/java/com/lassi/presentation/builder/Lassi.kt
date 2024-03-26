@@ -20,8 +20,8 @@ import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 
 class Lassi(private val context: Context) {
 
-    private var lassiConfig = LassiConfig()
     private var multiLangConfig = MultiLangConfig()
+    private var lassiConfig = LassiConfig()
 
     init {
         getMultiLngBuilder()
