@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lassi sample</string>
+    <string name="selected_media">Medios seleccionados</string>
+    <string name="open_video_picker">Abrir selector de vídeos</string>
+    <string name="open_image_picker">Abrir selector de imágenes</string>
+    <string name="image">Imagen</string>
+    <string name="video">Video</string>
+    <string name="document">Documento</string>
+    <string name="audio">Audio</string>
+    <string name="open_system_view">"Abrir vista del sistema "</string>
+    <string name="photo_picker">Selector de fotos</string>
+
+    <string name="sort_by_date">Ordenar por fecha</string>
+    <string name="sort_ascending">Ascendente</string>
+    <string name="sort_descending">Descendente</string>
+    <string name="camera_permission_rational">No se concede el permiso de la cámara. Por favor, permita que se configure.</string>
+    <string name="crop_image_menu_crop">Cultivo</string>
+</resources>
