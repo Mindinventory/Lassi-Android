@@ -11,13 +11,14 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Key features
 
-* Android 13 support
+* Android 14 support
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
 * Filter videos by min and max time
 * Enable/disable camera from LassiOption
 * You can open System Default view for file selection by using MediaType.FILE_TYPE_WITH_SYSTEM_VIEW
+* Photo Picker feature integration
 
 # Usage
 
