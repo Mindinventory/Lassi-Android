@@ -147,6 +147,15 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * Option - 2. To localize text content of Lassi picker with multiple language options, define language-specific string resource file in your project and update values of string resource keys mentioned in below link with your desired language.
   * [Lassi String Resources](https://github.com/Mindinventory/Lassi-Android/blob/931e147ebe6282bd1629858b5a9f29fe5a0b8b32/lassi/src/main/res/values/strings.xml)
 
+### Way of utilizing Photo Picker
+    ```kotlin
+        val intent = val intent = Lassi(this)
+                .with(LassiOption.CAMERA_AND_GALLERY)
+                .setMediaType(MediaType.PHOTO_PICKER)
+    ```
+
+
+
 ### Document access permission note
 If Android device SDK is >= 30 and wants to access document (only for choose the non media file) then add ```android.permission.MANAGE_EXTERNAL_STORAGE``` permission in your app otherwise library won't allow to access documents. Kindly check sample app for more detail.
 If you don't want to give Manage External Storage permission and wants to get files with system default view then You can use `OR` option from Step 1 and give required file type of document.
