@@ -216,36 +216,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.btnPhotoPicker -> {
                 val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
-                    .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.PHOTO_PICKER)
-                    .setPlaceHolder(R.drawable.ic_image_placeholder)
-                    .setErrorDrawable(R.drawable.ic_image_placeholder)
-                    .setSelectionDrawable(R.drawable.ic_checked_media)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
-                    .setAlertDialogNegativeButtonColor(R.color.cherry_red)
-                    .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
-                    .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
-                    .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
-                    .enableActualCircleCrop()
                     .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
-                    .setSupportedFileTypes(
-                        "jpg",
-                        "jpeg",
-                        "png",
-                        "webp",
-                        "gif",
-                        "mp4",
-                        "mkv",
-                        "webm",
-                        "avi",
-                        "flv",
-                        "3gp"
-                    ).enableFlip()
-                    .enableRotate().build()
+                    .build()
                 receiveData.launch(intent)
             }
         }
