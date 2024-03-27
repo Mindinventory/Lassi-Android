@@ -152,6 +152,14 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
         val intent = Lassi(this)
                 .with(LassiOption.CAMERA_AND_GALLERY)
                 .setMediaType(MediaType.PHOTO_PICKER)
+                .setMaxCount(4)
+                .setStatusBarColor(R.color.colorPrimaryDark)
+                .setToolbarColor(R.color.colorPrimary)
+                .setToolbarResourceColor(android.R.color.white)
+                .setProgressBarColor(R.color.colorAccent)
+                .setGalleryBackgroundColor(R.color.colorGrey)
+                .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
+                .build()
 ```
 
 ### Document access permission note

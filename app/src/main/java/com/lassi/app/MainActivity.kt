@@ -216,15 +216,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.btnPhotoPicker -> {
                 val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
-                    .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.PHOTO_PICKER)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
-                    .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
-                    .setCompressionRatio(10)
                     .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
                     .build()
                 receiveData.launch(intent)
