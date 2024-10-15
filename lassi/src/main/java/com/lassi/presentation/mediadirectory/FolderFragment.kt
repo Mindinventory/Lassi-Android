@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -56,6 +57,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         }
     }
 
+    val pickerTypes = setOf(MediaType.PHOTO_PICKER, MediaType.VIDEO_PICKER, MediaType.PHOTO_VIDEO_PICKER)
     var needsStorage = true
 
     private val photoPermission = mutableListOf(
@@ -236,14 +238,14 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     ) != PackageManager.PERMISSION_GRANTED
                     requestPermission.launch(vidPermission.toTypedArray())
                 }
-            } else if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            } else if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType,mediaPickerLauncher)
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
@@ -253,26 +255,26 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 }
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType,mediaPickerLauncher)
             } else {
                 requestPermission.launch(
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 )
             }
         } else {
-            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType,mediaPickerLauncher)
             } else {
                 requestPermission.launch(
                     arrayOf(
@@ -281,6 +283,22 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     )
                 )
             }
+        }
+    }
+
+    private fun pickMedia(
+        mediaType: MediaType,
+        launcher: ActivityResultLauncher<PickVisualMediaRequest>
+    ) {
+        val mediaTypeToPick = when (mediaType) {
+            MediaType.PHOTO_PICKER -> ActivityResultContracts.PickVisualMedia.ImageOnly
+            MediaType.VIDEO_PICKER -> ActivityResultContracts.PickVisualMedia.VideoOnly
+            MediaType.PHOTO_VIDEO_PICKER -> ActivityResultContracts.PickVisualMedia.ImageAndVideo
+            else -> null
+        }
+
+        if (mediaTypeToPick != null){
+            launcher.launch(PickVisualMediaRequest(mediaTypeToPick))
         }
     }
 
