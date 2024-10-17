@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -18,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +33,7 @@ import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.isVideo
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
@@ -43,13 +44,18 @@ import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.MediaFragment
 import com.lassi.presentation.mediadirectory.adapter.FolderAdapter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMediaPickerBinding>() {
+class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMediaPickerBinding>(),
+    CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
 
     companion object {
         fun newInstance(): FolderFragment {
@@ -63,6 +69,11 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     private val photoPermission = mutableListOf(
         Manifest.permission.READ_MEDIA_IMAGES
     )
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+        miMedia?.let { setResultOk(arrayListOf(it)) }
+        activity?.finish()
+    }
 
     private val photoPermissionAnd14 = mutableListOf(
         Manifest.permission.READ_MEDIA_IMAGES,
@@ -114,25 +125,53 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
      * Video picker in case of Android 14 will be handled here
      * Need to modifty for handling multp
      */
-    private val mediaPickerLauncher =
-        registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-            if (uris.size > LassiConfig.getConfig().maxCount) {
-                ToastUtils.showToast(
-                    requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
-                )
-            } else {
-                if (uris.isNotEmpty()) {
-                    val mediaPaths = ArrayList(uris.mapNotNull { uri ->
-                        MiMedia(path = context?.let { getMediaPathFromURI(it, uri) })
-                    })
-                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
-                    setResultOk(mediaPaths)
-                } else {
-                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+
+    private val multiPicker = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+        handleMediaPickerResult(uris)
+    }
+
+    private val singlePicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        handleMediaPickerResult(if (uri != null) listOf(uri) else emptyList())
+    }
+
+    private fun handleMediaPickerResult(uris: List<Uri>) {
+        val config = LassiConfig.getConfig()
+        val mediaType = config.mediaType
+
+        if (uris.isNullOrEmpty()) {
+            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+            activity?.finish() // Finish activity if user closes the picker without selection
+            return
+        }
+
+        // Show custom error message if media count exceeds limit
+        if (uris.size > config.maxCount) {
+            ToastUtils.showToast(requireContext(), config.customLimitExceedingErrorMessage)
+            activity?.finish()
+            return
+        }
+
+        val isPhoto = mediaType != MediaType.VIDEO_PICKER &&
+                (mediaType != MediaType.PHOTO_VIDEO_PICKER || !isVideo(uris[0], requireContext().contentResolver))
+
+        val mediaPaths = ArrayList(uris.mapNotNull { uri ->
+            getMediaPathFromURI(requireContext(), uri)?.let { MiMedia(path = it) }
+        })
+
+        if (config.isCrop && uris.size == 1 && isPhoto && !config.isMultiPicker) {
+            mediaPaths.firstOrNull()?.path?.let { path ->
+                Uri.fromFile(File(path))?.let { uri ->
+                    croppingOptions(uri)
                 }
             }
-            activity?.finish()  // To finish host activity when user closes photo picker dialog
+        } else {
+            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
+            setResultOk(mediaPaths)
         }
+    }
+
+    private val mediaPickerLauncher =
+        if (LassiConfig.getConfig().isMultiPicker) multiPicker else singlePicker
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
         val intent = Intent().apply {
@@ -400,5 +439,49 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     }
 
     override fun hasOptionMenu(): Boolean = true
+
+    private fun croppingOptions(
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false
+    ) {
+        // Start picker to get image for cropping and then use the image in cropping activity.
+        cropImage.launch(includeCamera?.let { includeCamera ->
+            includeGallery?.let { includeGallery ->
+                LassiConfig.getConfig().cropAspectRatio?.x?.let { x ->
+                    LassiConfig.getConfig().cropAspectRatio?.y?.let { y ->
+                        CropImageOptions(
+                            imageSourceIncludeCamera = includeCamera,
+                            imageSourceIncludeGallery = includeGallery,
+                            cropShape = LassiConfig.getConfig().cropType,
+                            showCropOverlay = true,
+                            guidelines = CropImageView.Guidelines.ON,
+                            multiTouchEnabled = false,
+                            aspectRatioX = x,
+                            aspectRatioY = y,
+                            fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
+                        )
+                    }
+                }
+            }
+        }?.let {
+            CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = it,
+            )
+        })
+    }
+
+    override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
+        if (error != null) {
+            Toast.makeText(activity, "Image load failed: " + error.message, Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
+    override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
+        if (result.error != null) {
+            Toast.makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
 }
 

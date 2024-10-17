@@ -46,7 +46,8 @@ data class LassiConfig(
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG
+    var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG,
+    var isMultiPicker : Boolean = false
 ) : Parcelable {
     companion object {
 
@@ -87,6 +88,7 @@ data class LassiConfig(
                 alertDialogNegativeButtonColor = lassiConfig.alertDialogNegativeButtonColor
                 alertDialogPositiveButtonColor = lassiConfig.alertDialogPositiveButtonColor
                 customLimitExceedingErrorMessage = lassiConfig.customLimitExceedingErrorMessage
+                isMultiPicker = lassiConfig.isMultiPicker
             }
         }
 

@@ -235,6 +235,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
+                    .enableMultiSelection()
                     .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
                     .build()
                 receiveData.launch(intent)
