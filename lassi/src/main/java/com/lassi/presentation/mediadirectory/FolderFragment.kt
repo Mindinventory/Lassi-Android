@@ -34,6 +34,8 @@ import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
+import com.lassi.common.utils.UriHelper.isPhoto
 import com.lassi.common.utils.UriHelper.isVideo
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
@@ -45,6 +47,8 @@ import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
 import com.lassi.presentation.cropper.CropImageContract
 import com.lassi.presentation.cropper.CropImageContractOptions
 import com.lassi.presentation.cropper.CropImageOptions
@@ -184,68 +188,98 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     private val multiPicker =
         registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-
-            list.clear()
-            croppedImages.clear()
-            list.addAll(uris)
-            handleMediaPickerResult(uris)
+            updateMediaList(uris)
         }
 
     private val singlePicker =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            handleMediaPickerResult(
-                if (uri != null) {
-                    list.clear()
-                    croppedImages.clear()
-                    list.add(uri)
-                    listOf(uri)
-                } else emptyList()
-            )
+            uri?.let { updateMediaList(listOf(it)) } ?: handleEmptySelection()
         }
+
+    private fun updateMediaList(uris: List<Uri>) {
+        list.clear()
+        croppedImages.clear()
+        list.addAll(uris)
+        handleMediaPickerResult(uris)
+    }
+
+    private fun handleEmptySelection() {
+        Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+        activity?.finish()
+    }
 
     private fun handleMediaPickerResult(uris: List<Uri>) {
         val config = LassiConfig.getConfig()
-        val mediaType = config.mediaType
+        if (uris.isEmpty()) return handleEmptySelection()
 
-        if (uris.isEmpty()) {
-            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
-            activity?.finish() // Finish activity if user closes the picker without selection
-            return
-        }
-
-        // Show custom error message if media count exceeds limit
         if (uris.size > config.maxCount) {
             ToastUtils.showToast(requireContext(), config.customLimitExceedingErrorMessage)
             activity?.finish()
             return
         }
 
-        val mediaPaths = ArrayList<MiMedia>()
-        uris.mapNotNull { uri ->
-            getMediaPathFromURI(requireContext(), uri)?.let {
-                mediaPaths.add(MiMedia(path = it))
-            }
+        val mediaPaths = uris.mapNotNull { uri ->
+            getMediaPathFromURI(requireContext(), uri)?.let { MiMedia(path = it) }
         }
 
-        val isPhoto = mediaType != MediaType.VIDEO_PICKER &&
-                (mediaType != MediaType.PHOTO_VIDEO_PICKER || uris.any { uri ->
-                    val result = !isVideo(uri, requireContext().contentResolver)
-                    if (!result) {
-                        croppedImages.add(mediaPaths[count++]) // Perform the cropping action
-                    }
-                    result // Return true as soon as a true condition is met
-                })
+        val isPhoto = determineIfPhoto(uris, mediaPaths, config)
 
         if (config.isCrop && isPhoto) {
-            mediaPaths[count].path?.let { path ->
-                Uri.fromFile(File(path))?.let { uri ->
-                    croppingOptions(uri)
-                }
+            cropMedia(mediaPaths)
+        } else {
+            handleCompressionAndResult(ArrayList(mediaPaths), config)
+        }
+    }
+
+    private fun determineIfPhoto(
+        uris: List<Uri>,
+        mediaPaths: List<MiMedia>,
+        config: LassiConfig
+    ): Boolean {
+        val mediaType = config.mediaType
+        return mediaType != MediaType.VIDEO_PICKER && (mediaType != MediaType.PHOTO_VIDEO_PICKER || uris.any { uri ->
+            val isPhoto = !isVideo(uri, requireContext().contentResolver)
+            if (!isPhoto) croppedImages.add(mediaPaths[count++])
+            isPhoto
+        })
+    }
+
+    private fun cropMedia(mediaPaths: List<MiMedia>) {
+        mediaPaths[count].path?.let { path ->
+            Uri.fromFile(File(path))?.let { uri ->
+                croppingOptions(uri)
             }
+        }
+    }
+
+    private fun handleCompressionAndResult(mediaPaths: ArrayList<MiMedia>, config: LassiConfig) {
+        if (config.compressionRation != 0) {
+            compressMedia(mediaPaths, config)
         } else {
             Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
             setResultOk(mediaPaths)
         }
+    }
+
+    private fun compressMedia(mediaPaths: ArrayList<MiMedia>, config: LassiConfig) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                // Check if the media is a photo before compression
+                if (isPhoto(uri, requireContext().contentResolver)) {
+                    val compressFormat = getCompressFormatForUri(uri, requireContext())
+                    val newUri = writeBitmapToUri(
+                        requireContext(),
+                        decodeUriToBitmap(requireContext(), uri),
+                        compressQuality = config.compressionRation,
+                        customOutputUri = null,
+                        compressFormat = compressFormat
+                    )
+                    mediaPaths[index] = miMedia.copy(path = newUri.path)
+                }
+            }
+        }
+        setResultOk(mediaPaths)
     }
 
     private val mediaPickerLauncher =
@@ -536,6 +570,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                             aspectRatioX = x,
                             aspectRatioY = y,
                             fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
+                            outputCompressQuality = LassiConfig.getConfig().compressionRation
                         )
                     }
                 }

@@ -26,6 +26,7 @@ import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
 import com.lassi.data.media.MiMedia
 import com.lassi.databinding.ActivityMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
@@ -35,6 +36,8 @@ import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
 import com.lassi.presentation.cropper.CropImageContract
 import com.lassi.presentation.cropper.CropImageContractOptions
 import com.lassi.presentation.cropper.CropImageOptions
@@ -277,7 +280,13 @@ class LassiMediaPickerActivity :
                             croppingOptions(uri = uri)
                         }
                     } else {
-                        setResultOk(viewModel.selectedMediaLiveData.value)
+                        viewModel.selectedMediaLiveData.value?.let {
+                            if (MediaType.IMAGE == config.mediaType && config.compressionRation != 0) {
+                                compressMedia(it)
+                            } else {
+                                setResultOk(it)
+                            }
+                        }
                     }
                 }
 
@@ -286,6 +295,25 @@ class LassiMediaPickerActivity :
             }
         }
     }
+
+    fun compressMedia(mediaPaths: ArrayList<MiMedia>) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                val compressFormat = getCompressFormatForUri(uri, this)
+                val newUri = writeBitmapToUri(
+                    this,
+                    decodeUriToBitmap(this, uri),
+                    compressQuality = config.compressionRation,
+                    customOutputUri = null,
+                    compressFormat = compressFormat
+                )
+                mediaPaths[index] = miMedia.copy(path = newUri.path)
+            }
+        }
+        setResultOk(mediaPaths)
+    }
+
 
     private fun initCamera() {
         if (viewModel.selectedMediaLiveData.value?.size == config.maxCount) {
@@ -333,6 +361,7 @@ class LassiMediaPickerActivity :
                             aspectRatioX = x,
                             aspectRatioY = y,
                             fixAspectRatio = config.enableActualCircleCrop,
+                            outputCompressQuality = LassiConfig.getConfig().compressionRation
                         )
                     }
                 }

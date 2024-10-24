@@ -1,8 +1,13 @@
 package com.lassi.common.utils
 
 import android.content.ContentResolver
+import android.content.Context
+import android.graphics.Bitmap.CompressFormat
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
+import android.webkit.MimeTypeMap
 
 object UriHelper {
     private fun getMediaType(uri: Uri, contentResolver: ContentResolver): String? {
@@ -24,5 +29,28 @@ object UriHelper {
     fun isVideo(uri: Uri, contentResolver: ContentResolver): Boolean {
         val mimeType = getMediaType(uri, contentResolver)
         return mimeType?.startsWith("video/") == true
+    }
+
+    fun isPhoto(uri: Uri, contentResolver: ContentResolver): Boolean {
+        val mimeType: String? = if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            contentResolver.getType(uri)
+        } else {
+            // For file:// URIs, manually get the MIME type based on the file extension
+            val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+        }
+        val t = mimeType?.startsWith("image/") == true
+        Log.e("TAG", "isPhoto: $t", )
+        return t
+    }
+
+    fun getCompressFormatForUri(uri: Uri, context: Context): CompressFormat {
+        val mimeType = context.contentResolver?.getType(uri)
+        return when (mimeType) {
+            "image/png" -> CompressFormat.PNG
+            "image/jpeg" -> CompressFormat.JPEG
+            "image/webp" -> if (Build.VERSION.SDK_INT >= 30) CompressFormat.WEBP_LOSSLESS else CompressFormat.WEBP
+            else -> CompressFormat.JPEG
+        }
     }
 }

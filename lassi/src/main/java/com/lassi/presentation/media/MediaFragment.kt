@@ -42,6 +42,7 @@ import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.adapter.MediaAdapter
 import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
+import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import java.io.File
 
@@ -174,7 +175,8 @@ class MediaFragment :
                             multiTouchEnabled = false,
                             aspectRatioX = x,
                             aspectRatioY = y,
-                            fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop
+                            fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
+                            outputCompressQuality = LassiConfig.getConfig().compressionRation
                         )
                     }
                 }
@@ -227,8 +229,14 @@ class MediaFragment :
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
                 } else {
-                    viewModel.addAllSelectedMedia(selectedMedias)
-                    setResultOk(selectedMedias)
+                    if (LassiConfig.getConfig().compressionRation > 0) {
+                        (context as LassiMediaPickerActivity).compressMedia(
+                            selectedMedias,
+                        )
+                    }else{
+                        viewModel.addAllSelectedMedia(selectedMedias)
+                        setResultOk(selectedMedias)
+                    }
                 }
             }
 
