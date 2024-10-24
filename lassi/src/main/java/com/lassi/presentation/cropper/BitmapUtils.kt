@@ -467,6 +467,13 @@ internal object BitmapUtils {
         }
     }
 
+    fun decodeUriToBitmap(context: Context, uri: Uri): Bitmap {
+        // Decode the Uri into a Bitmap
+        return context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        } ?: throw FileNotFoundException("Unable to decode bitmap from URI")
+    }
+
     private fun buildUri(
         context: Context,
         compressFormat: CompressFormat,

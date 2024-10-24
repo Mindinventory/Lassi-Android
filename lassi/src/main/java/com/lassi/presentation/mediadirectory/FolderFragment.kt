@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -18,6 +17,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.lassi.R
 import com.lassi.common.extenstions.hide
@@ -32,6 +34,9 @@ import com.lassi.common.extenstions.safeObserve
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
+import com.lassi.common.utils.UriHelper.isPhoto
+import com.lassi.common.utils.UriHelper.isVideo
 import com.lassi.data.common.Response
 import com.lassi.data.media.MiItemMedia
 import com.lassi.data.media.MiMedia
@@ -42,13 +47,23 @@ import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.common.LassiBaseViewModelFragment
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.media.MediaFragment
 import com.lassi.presentation.mediadirectory.adapter.FolderAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 
-class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMediaPickerBinding>() {
+class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMediaPickerBinding>(),
+    CropImageView.OnSetImageUriCompleteListener, CropImageView.OnCropImageCompleteListener {
 
     companion object {
         fun newInstance(): FolderFragment {
@@ -56,11 +71,69 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         }
     }
 
-    var needsStorage = true
+    private val pickerTypes =
+        setOf(MediaType.PHOTO_PICKER, MediaType.VIDEO_PICKER, MediaType.PHOTO_VIDEO_PICKER)
+    private var needsStorage = true
 
     private val photoPermission = mutableListOf(
         Manifest.permission.READ_MEDIA_IMAGES
     )
+
+    private val list = ArrayList<Uri>()
+    private var count = 0
+    private val croppedImages = ArrayList<MiMedia>()
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+
+        val mediaType = LassiConfig.getConfig().mediaType
+        if (miMedia != null) {
+            croppedImages.add(miMedia)
+            if (++count == list.size) {
+                /// called when all the cropping was done.
+                setResultOk(croppedImages)
+            } else {
+                lifecycleScope.launch {
+                    val isPhoto =
+                        withContext(Dispatchers.IO) {
+                            mediaType !=
+                                    MediaType.VIDEO_PICKER &&
+                                    (mediaType != MediaType.PHOTO_VIDEO_PICKER || list.subList(
+                                        count,
+                                        list.size
+                                    ).any { uri ->
+                                        val result = !isVideo(uri, requireContext().contentResolver)
+                                        if (!result) {
+                                            getMediaPathFromURI(requireContext(), uri)?.let {
+                                                croppedImages.add(MiMedia(path = it))
+                                            }
+                                            count++
+                                        }
+                                        result
+                                    })
+                        }
+
+                    if (isPhoto) {
+                        withContext(Dispatchers.IO) {
+                            getMediaPathFromURI(requireContext(), list[count])?.let { path ->
+                                Uri.fromFile(File(path))?.let { uri ->
+                                    withContext(Dispatchers.Main) {
+                                        croppingOptions(uri)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // all the cropping was done
+                        setResultOk(croppedImages)
+                    }
+                }
+            }
+        } else {
+
+            /// when user back from the cropping.
+            pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
+        }
+    }
 
     private val photoPermissionAnd14 = mutableListOf(
         Manifest.permission.READ_MEDIA_IMAGES,
@@ -112,25 +185,105 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
      * Video picker in case of Android 14 will be handled here
      * Need to modifty for handling multp
      */
-    private val mediaPickerLauncher =
+
+    private val multiPicker =
         registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
-            if (uris.size > LassiConfig.getConfig().maxCount) {
-                ToastUtils.showToast(
-                    requireContext(), LassiConfig.getConfig().customLimitExceedingErrorMessage
-                )
-            } else {
-                if (uris.isNotEmpty()) {
-                    val mediaPaths = ArrayList(uris.mapNotNull { uri ->
-                        MiMedia(path = context?.let { getMediaPathFromURI(it, uri) })
-                    })
-                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
-                    setResultOk(mediaPaths)
-                } else {
-                    Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+            updateMediaList(uris)
+        }
+
+    private val singlePicker =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            uri?.let { updateMediaList(listOf(it)) } ?: handleEmptySelection()
+        }
+
+    private fun updateMediaList(uris: List<Uri>) {
+        list.clear()
+        croppedImages.clear()
+        list.addAll(uris)
+        handleMediaPickerResult(uris)
+    }
+
+    private fun handleEmptySelection() {
+        Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
+        activity?.finish()
+    }
+
+    private fun handleMediaPickerResult(uris: List<Uri>) {
+        val config = LassiConfig.getConfig()
+        if (uris.isEmpty()) return handleEmptySelection()
+
+        if (uris.size > config.maxCount) {
+            ToastUtils.showToast(requireContext(), config.customLimitExceedingErrorMessage)
+            activity?.finish()
+            return
+        }
+
+        val mediaPaths = uris.mapNotNull { uri ->
+            getMediaPathFromURI(requireContext(), uri)?.let { MiMedia(path = it) }
+        }
+
+        val isPhoto = determineIfPhoto(uris, mediaPaths, config)
+
+        if (config.isCrop && isPhoto) {
+            cropMedia(mediaPaths)
+        } else {
+            handleCompressionAndResult(ArrayList(mediaPaths), config)
+        }
+    }
+
+    private fun determineIfPhoto(
+        uris: List<Uri>,
+        mediaPaths: List<MiMedia>,
+        config: LassiConfig
+    ): Boolean {
+        val mediaType = config.mediaType
+        return mediaType != MediaType.VIDEO_PICKER && (mediaType != MediaType.PHOTO_VIDEO_PICKER || uris.any { uri ->
+            val isPhoto = !isVideo(uri, requireContext().contentResolver)
+            if (!isPhoto) croppedImages.add(mediaPaths[count++])
+            isPhoto
+        })
+    }
+
+    private fun cropMedia(mediaPaths: List<MiMedia>) {
+        mediaPaths[count].path?.let { path ->
+            Uri.fromFile(File(path))?.let { uri ->
+                croppingOptions(uri)
+            }
+        }
+    }
+
+    private fun handleCompressionAndResult(mediaPaths: ArrayList<MiMedia>, config: LassiConfig) {
+        if (config.compressionRation != 0) {
+            compressMedia(mediaPaths, config)
+        } else {
+            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
+            setResultOk(mediaPaths)
+        }
+    }
+
+    private fun compressMedia(mediaPaths: ArrayList<MiMedia>, config: LassiConfig) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                // Check if the media is a photo before compression
+                if (isPhoto(uri, requireContext().contentResolver)) {
+                    val compressFormat = getCompressFormatForUri(uri, requireContext())
+                    val newUri = writeBitmapToUri(
+                        requireContext(),
+                        decodeUriToBitmap(requireContext(), uri),
+                        compressQuality = config.compressionRation,
+                        customOutputUri = null,
+                        compressFormat = compressFormat
+                    )
+                    mediaPaths[index] = miMedia.copy(path = newUri.path)
                 }
             }
-            activity?.finish()  // To finish host activity when user closes photo picker dialog
         }
+        setResultOk(mediaPaths)
+    }
+
+    private val mediaPickerLauncher =
+        if (LassiConfig.getConfig().isMultiPicker) multiPicker else singlePicker
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
         val intent = Intent().apply {
@@ -236,14 +389,14 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     ) != PackageManager.PERMISSION_GRANTED
                     requestPermission.launch(vidPermission.toTypedArray())
                 }
-            } else if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            } else if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 if (LassiConfig.getConfig().mediaType == MediaType.AUDIO) {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
@@ -253,26 +406,26 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 }
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 requestPermission.launch(
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 )
             }
         } else {
-            if (LassiConfig.getConfig().mediaType == MediaType.PHOTO_PICKER) {
+            if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
                 Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
-                mediaPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 requestPermission.launch(
                     arrayOf(
@@ -281,6 +434,22 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     )
                 )
             }
+        }
+    }
+
+    private fun pickMedia(
+        mediaType: MediaType,
+        launcher: ActivityResultLauncher<PickVisualMediaRequest>
+    ) {
+        val mediaTypeToPick = when (mediaType) {
+            MediaType.PHOTO_PICKER -> ActivityResultContracts.PickVisualMedia.ImageOnly
+            MediaType.VIDEO_PICKER -> ActivityResultContracts.PickVisualMedia.VideoOnly
+            MediaType.PHOTO_VIDEO_PICKER -> ActivityResultContracts.PickVisualMedia.ImageAndVideo
+            else -> null
+        }
+
+        if (mediaTypeToPick != null) {
+            launcher.launch(PickVisualMediaRequest(mediaTypeToPick))
         }
     }
 
@@ -382,5 +551,50 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     }
 
     override fun hasOptionMenu(): Boolean = true
+
+    private fun croppingOptions(
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false
+    ) {
+        // Start picker to get image for cropping and then use the image in cropping activity.
+        cropImage.launch(includeCamera?.let { includeCamera ->
+            includeGallery?.let { includeGallery ->
+                LassiConfig.getConfig().cropAspectRatio?.x?.let { x ->
+                    LassiConfig.getConfig().cropAspectRatio?.y?.let { y ->
+                        CropImageOptions(
+                            imageSourceIncludeCamera = includeCamera,
+                            imageSourceIncludeGallery = includeGallery,
+                            cropShape = LassiConfig.getConfig().cropType,
+                            showCropOverlay = true,
+                            guidelines = CropImageView.Guidelines.ON,
+                            multiTouchEnabled = false,
+                            aspectRatioX = x,
+                            aspectRatioY = y,
+                            fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
+                            outputCompressQuality = LassiConfig.getConfig().compressionRation
+                        )
+                    }
+                }
+            }
+        }?.let {
+            CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = it,
+            )
+        })
+    }
+
+    override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
+        if (error != null) {
+            Toast.makeText(activity, "Image load failed: " + error.message, Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
+    override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
+        if (result.error != null) {
+            Toast.makeText(activity, "Crop failed: ${result.error.message}", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
 }
 

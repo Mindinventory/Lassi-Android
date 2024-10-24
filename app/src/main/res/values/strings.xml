@@ -15,4 +15,5 @@
     <string name="sort_descending">Descending</string>
     <string name="camera_permission_rational">Camera permission is not granted. Please allow it from setting.</string>
     <string name="crop_image_menu_crop">Crop</string>
+    <string name="photo_video_picker">Photo &amp; Video Picker</string>
 </resources>

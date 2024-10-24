@@ -383,6 +383,11 @@ class Lassi(private val context: Context) {
         return this
     }
 
+    fun enableMultiSelection(): Lassi {
+        lassiConfig.isMultiPicker = true
+        return this
+    }
+
     /**
      * Set crop Aspect ratio
      */

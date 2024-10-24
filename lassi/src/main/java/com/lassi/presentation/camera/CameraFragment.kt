@@ -23,6 +23,7 @@ import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
 import com.lassi.data.common.StartVideoContract
 import com.lassi.data.common.VideoRecord
 import com.lassi.data.media.MiMedia
@@ -40,6 +41,8 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
 import com.lassi.presentation.cropper.CropImageContract
 import com.lassi.presentation.cropper.CropImageContractOptions
 import com.lassi.presentation.cropper.CropImageOptions
@@ -167,18 +170,41 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         super.initLiveDataObservers()
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
-            if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
-                croppingOptions(uri = uri)
+            val config = LassiConfig.getConfig()
+            if (config.isCrop && config.maxCount <= 1) {
+                croppingOptions(uri)
             } else {
-                ArrayList<MiMedia>().also {
-                    MiMedia().apply {
-                        this.path = uri.path
-                        it.add(this)
-                    }
-                    setResultOk(it)
+                val mediaList = arrayListOf(createMiMedia(uri.path))
+                if (config.compressionRation > 0) {
+                    compressMedia(mediaList)
+                } else {
+                    setResultOk(mediaList)
                 }
             }
         })
+    }
+
+    // Helper function to create MiMedia object
+    private fun createMiMedia(path: String?): MiMedia {
+        return MiMedia().apply { this.path = path }
+    }
+
+    private fun compressMedia(mediaPaths: ArrayList<MiMedia>) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                val compressFormat = getCompressFormatForUri(uri, requireContext())
+                val newUri = writeBitmapToUri(
+                    requireContext(),
+                    decodeUriToBitmap(requireContext(), uri),
+                    compressQuality = LassiConfig.getConfig().compressionRation,
+                    customOutputUri = null,
+                    compressFormat = compressFormat
+                )
+                mediaPaths[index] = miMedia.copy(path = newUri.path)
+            }
+        }
+        setResultOk(mediaPaths)
     }
 
     private fun croppingOptions(
@@ -199,6 +225,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                         showCropOverlay = true,
                         guidelines = CropImageView.Guidelines.ON,
                         multiTouchEnabled = false,
+                        outputCompressQuality = LassiConfig.getConfig().compressionRation
                     )
                 }
             }?.let {

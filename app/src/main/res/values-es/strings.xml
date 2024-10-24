@@ -16,4 +16,5 @@
     <string name="sort_descending">Descendente</string>
     <string name="camera_permission_rational">No se concede el permiso de la cámara. Por favor, permita que se configure.</string>
     <string name="crop_image_menu_crop">Cultivo</string>
+    <string name="photo_video_picker">Fotos y videos</string>
 </resources>
