@@ -57,19 +57,17 @@ class LassiMediaPickerActivity :
     private var menuCamera: MenuItem? = null
     private var menuSort: MenuItem? = null
     private var croppedMediaList: ArrayList<MiMedia> = ArrayList()
-    private var count = 0
     private val config = LassiConfig.getConfig()
 
     private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
         miMedia?.let {
             croppedMediaList.add(miMedia)
-            if (++count == config.selectedMedias.size) {
+            if (croppedMediaList.size == config.selectedMedias.size) {
                 setResultOk(croppedMediaList)
             } else {
-                val uri = Uri.fromFile(config.selectedMedias[count].path?.let { File(it) })
-                uri?.let {
-                    croppingOptions(uri = uri)
-                }
+                val nextMediaIndex = croppedMediaList.size
+                val uri = Uri.fromFile(config.selectedMedias[nextMediaIndex].path?.let { File(it) })
+                uri?.let { croppingOptions(uri = uri) }
             }
         }
     }
@@ -275,13 +273,13 @@ class LassiMediaPickerActivity :
             when (mediaType) {
                 MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
                     if (mediaType == MediaType.IMAGE && isCrop) {
-                        val uri = Uri.fromFile(config.selectedMedias.first().path?.let { File(it) })
+                        val uri = Uri.fromFile(selectedMedias.first().path?.let { File(it) })
                         uri?.let {
                             croppingOptions(uri = uri)
                         }
                     } else {
                         viewModel.selectedMediaLiveData.value?.let {
-                            if (MediaType.IMAGE == config.mediaType && config.compressionRation != 0) {
+                            if (MediaType.IMAGE == mediaType && compressionRation != 0) {
                                 compressMedia(it)
                             } else {
                                 setResultOk(it)
