@@ -29,9 +29,9 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
-    protected val binding get() = _binding!!
+    private val binding get() = _binding!!
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
-    lateinit var lassi: Lassi
+    private lateinit var lassi: Lassi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnImagePicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(1)
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
                     .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.IMAGE)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
                     .enableActualCircleCrop()
+                    .disableCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -274,9 +275,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val receiveData =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val selectedMedia =
-                    it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                if (selectedMedia.isNotEmpty()) {
+                val selectedMedia = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA, MiMedia::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA)
+                }
+
+                if (!selectedMedia.isNullOrEmpty()) {
                     binding.ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)
                 }

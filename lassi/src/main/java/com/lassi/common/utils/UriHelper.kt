@@ -6,7 +6,6 @@ import android.graphics.Bitmap.CompressFormat
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import android.webkit.MimeTypeMap
 
 object UriHelper {
@@ -40,7 +39,6 @@ object UriHelper {
             MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
         }
         val t = mimeType?.startsWith("image/") == true
-        Log.e("TAG", "isPhoto: $t", )
         return t
     }
 

@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -78,7 +77,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             cameraViewModel.addSelectedMedia(miMedia)
             folderViewModel.checkInsert()
             if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                miMedia?.let { setResultOk(arrayListOf(it)) }
+                setResultOk(arrayListOf(miMedia))
             }
         }
     }
@@ -216,10 +215,10 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
          * Start picker to get image for cropping and then use the image in cropping activity.
          */
         cropImage.launch(
-            includeCamera?.let { includeCamera ->
+            includeCamera?.let {
                 includeGallery?.let { includeGallery ->
                     CropImageOptions(
-                        imageSourceIncludeCamera = includeCamera,
+                        imageSourceIncludeCamera = it,
                         imageSourceIncludeGallery = includeGallery,
                         cropShape = CropImageView.CropShape.RECTANGLE,
                         showCropOverlay = true,
@@ -379,7 +378,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                 permissionSettingResult.launch(intent)
             }
             .setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
-                activity?.onBackPressed()
+                activity?.onBackPressedDispatcher?.onBackPressed()
             }
         val permissionDialog = alertDialog.create()
         permissionDialog.setCancelable(false)
@@ -411,20 +410,18 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
 
             needsStorage =
-                needsStorage && ActivityCompat.checkSelfPermission(
+                ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            //Storage permission is not required for Tiramisu
-        }
+        } else
 
-        if (needsAudio)
-            needsAudio =
-                needsAudio && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
+            if (needsAudio)
+                needsAudio =
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.RECORD_AUDIO
+                    ) != PackageManager.PERMISSION_GRANTED
 
         return !needsCamera && !needsAudio && !needsStorage
     }
