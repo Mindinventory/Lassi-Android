@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -218,10 +217,8 @@ class LassiMediaPickerActivity :
                     toolbarResourceColor
                 )
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor = statusBarColor
-            }
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = statusBarColor
         }
     }
 
@@ -262,7 +259,7 @@ class LassiMediaPickerActivity :
         when (item.itemId) {
             R.id.menuCamera -> initCamera()
             R.id.menuDone -> setSelectedMediaResult()
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> onBackPressedDispatcher.onBackPressed()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -337,6 +334,7 @@ class LassiMediaPickerActivity :
             "LASSI",
             "!@# LassiMediaPickerActivity selectedMedia size 417 => ${selectedMedia?.size}"
         )
+        config.selectedMedias.clear()
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
