@@ -75,10 +75,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         setOf(MediaType.PHOTO_PICKER, MediaType.VIDEO_PICKER, MediaType.PHOTO_VIDEO_PICKER)
     private var needsStorage = true
 
-    private val photoPermission = mutableListOf(
-        Manifest.permission.READ_MEDIA_IMAGES
-    )
-
     private val list = ArrayList<Uri>()
     private var count = 0
     private val croppedImages = ArrayList<MiMedia>()
@@ -93,24 +89,20 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 setResultOk(croppedImages)
             } else {
                 lifecycleScope.launch {
-                    val isPhoto =
-                        withContext(Dispatchers.IO) {
-                            mediaType !=
-                                    MediaType.VIDEO_PICKER &&
-                                    (mediaType != MediaType.PHOTO_VIDEO_PICKER || list.subList(
-                                        count,
-                                        list.size
-                                    ).any { uri ->
-                                        val result = !isVideo(uri, requireContext().contentResolver)
-                                        if (!result) {
-                                            getMediaPathFromURI(requireContext(), uri)?.let {
-                                                croppedImages.add(MiMedia(path = it))
-                                            }
-                                            count++
-                                        }
-                                        result
-                                    })
-                        }
+                    val isPhoto = withContext(Dispatchers.IO) {
+                        mediaType != MediaType.VIDEO_PICKER && (mediaType != MediaType.PHOTO_VIDEO_PICKER || list.subList(
+                            count, list.size
+                        ).any { uri ->
+                            val result = !isVideo(uri, requireContext().contentResolver)
+                            if (!result) {
+                                getMediaPathFromURI(requireContext(), uri)?.let {
+                                    croppedImages.add(MiMedia(path = it))
+                                }
+                                count++
+                            }
+                            result
+                        })
+                    }
 
                     if (isPhoto) {
                         withContext(Dispatchers.IO) {
@@ -135,23 +127,36 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         }
     }
 
-    private val photoPermissionAnd14 = mutableListOf(
-        Manifest.permission.READ_MEDIA_IMAGES,
-        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-    )
+    private val photoPermissionAnd14 = buildList {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_IMAGES)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            }
+            // You don't need to add READ_MEDIA_VISUAL_USER_SELECTED as it doesn't exist
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE) // For Android 12 and lower
+        }
+    }
 
-    private val vidPermission = mutableListOf(
-        Manifest.permission.READ_MEDIA_VIDEO
-    )
+    private val vidPermissionAnd14 = buildList {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_VIDEO)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            }
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE) // For older versions
+        }
+    }
 
-    private val vidPermissionAnd14 = mutableListOf(
-        Manifest.permission.READ_MEDIA_VIDEO,
-        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-    )
-
-    private val audioPermission = mutableListOf(
-        Manifest.permission.READ_MEDIA_AUDIO
-    )
+    private val audioPermission = buildList {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_AUDIO)
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
 
     private val permissionSettingResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -174,8 +179,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     private val requestPhotoPickerPermission =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { map ->
             // Specifically check for android.permission.READ_MEDIA_VISUAL_USER_SELECTED permission for Android 14 case
-            if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
+            if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_IMAGES] == true) {
                 viewModel.addPhotoPickerDataInDatabase()
+            } else if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_IMAGES] == false) {
+                viewModel.deleteMediaFilesFromDB()
+                viewModel.addPhotoPickerDataInDatabase()
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 showPermissionDisableAlert()
             }
@@ -234,7 +243,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     private fun determineIfPhoto(
         uris: List<Uri>,
         mediaPaths: List<MiMedia>,
-        config: LassiConfig
+        config: LassiConfig,
     ): Boolean {
         val mediaType = config.mediaType
         return mediaType != MediaType.VIDEO_PICKER && (mediaType != MediaType.PHOTO_VIDEO_PICKER || uris.any { uri ->
@@ -373,7 +382,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_IMAGES
                     ) != PackageManager.PERMISSION_GRANTED
-                    requestPermission.launch(photoPermission.toTypedArray())
+                    requestPermission.launch(photoPermissionAnd14.toTypedArray())
                 }
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.VIDEO")
@@ -387,7 +396,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VIDEO
                     ) != PackageManager.PERMISSION_GRANTED
-                    requestPermission.launch(vidPermission.toTypedArray())
+                    requestPermission.launch(vidPermissionAnd14.toTypedArray())
                 }
             } else if (LassiConfig.getConfig().mediaType in pickerTypes) {
                 Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
@@ -439,7 +448,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     private fun pickMedia(
         mediaType: MediaType,
-        launcher: ActivityResultLauncher<PickVisualMediaRequest>
+        launcher: ActivityResultLauncher<PickVisualMediaRequest>,
     ) {
         val mediaTypeToPick = when (mediaType) {
             MediaType.PHOTO_PICKER -> ActivityResultContracts.PickVisualMedia.ImageOnly
@@ -538,11 +547,8 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menuCamera)?.isVisible =
-            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE
-                || LassiConfig.getConfig().mediaType == MediaType.VIDEO
-            ) {
-                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY
-                        || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
+            if (LassiConfig.getConfig().mediaType == MediaType.IMAGE || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
             } else {
                 false
             }
@@ -553,7 +559,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     override fun hasOptionMenu(): Boolean = true
 
     private fun croppingOptions(
-        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false,
     ) {
         // Start picker to get image for cropping and then use the image in cropping activity.
         cropImage.launch(includeCamera?.let { includeCamera ->
