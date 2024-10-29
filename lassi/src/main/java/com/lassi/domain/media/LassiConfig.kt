@@ -40,13 +40,14 @@ data class LassiConfig(
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false,
     var enableActualCircleCrop: Boolean = false,
-    var compressionRation: Int = 0,
+    var compressionRatio: Int = 0,
     var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var isCrop: Boolean = true,
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
-    var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG
+    var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG,
+    var isMultiPicker : Boolean = false
 ) : Parcelable {
     companion object {
 
@@ -80,13 +81,14 @@ data class LassiConfig(
                 enableFlipImage = lassiConfig.enableFlipImage
                 enableRotateImage = lassiConfig.enableRotateImage
                 enableActualCircleCrop = lassiConfig.enableActualCircleCrop
-                compressionRation = lassiConfig.compressionRation
+                compressionRatio = lassiConfig.compressionRatio
                 minFileSize = lassiConfig.minFileSize
                 maxFileSize = lassiConfig.maxFileSize
                 isCrop = lassiConfig.isCrop
                 alertDialogNegativeButtonColor = lassiConfig.alertDialogNegativeButtonColor
                 alertDialogPositiveButtonColor = lassiConfig.alertDialogPositiveButtonColor
                 customLimitExceedingErrorMessage = lassiConfig.customLimitExceedingErrorMessage
+                isMultiPicker = lassiConfig.isMultiPicker
             }
         }
 

@@ -383,6 +383,11 @@ class Lassi(private val context: Context) {
         return this
     }
 
+    fun enableMultiSelection(): Lassi {
+        lassiConfig.isMultiPicker = true
+        return this
+    }
+
     /**
      * Set crop Aspect ratio
      */
@@ -426,7 +431,7 @@ class Lassi(private val context: Context) {
         } else {
             compressionRation
         }
-        lassiConfig.compressionRation = compression
+        lassiConfig.compressionRatio = compression
         return this
     }
 
