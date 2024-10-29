@@ -127,6 +127,7 @@ class LassiMediaPickerActivity :
 
     override fun initViews() {
         super.initViews()
+        config.selectedMedias.clear()
         Bridge.initialize(applicationContext, object : SavedStateHandler {
             override fun saveInstanceState(target: Any, state: Bundle) {
             }
@@ -340,7 +341,7 @@ class LassiMediaPickerActivity :
     }
 
     private fun croppingOptions(
-        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false,
     ) {
         // Start picker to get image for cropping and then use the image in cropping activity.
         cropImage.launch(includeCamera?.let {
