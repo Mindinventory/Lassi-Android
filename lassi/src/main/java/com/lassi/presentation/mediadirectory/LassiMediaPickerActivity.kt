@@ -276,7 +276,7 @@ class LassiMediaPickerActivity :
                         }
                     } else {
                         viewModel.selectedMediaLiveData.value?.let {
-                            if (MediaType.IMAGE == mediaType && compressionRation != 0) {
+                            if (MediaType.IMAGE == mediaType && compressionRatio != 0) {
                                 compressMedia(it)
                             } else {
                                 setResultOk(it)
@@ -299,7 +299,7 @@ class LassiMediaPickerActivity :
                 val newUri = writeBitmapToUri(
                     this,
                     decodeUriToBitmap(this, uri),
-                    compressQuality = config.compressionRation,
+                    compressQuality = config.compressionRatio,
                     customOutputUri = null,
                     compressFormat = compressFormat
                 )
@@ -357,7 +357,7 @@ class LassiMediaPickerActivity :
                             aspectRatioX = x,
                             aspectRatioY = y,
                             fixAspectRatio = config.enableActualCircleCrop,
-                            outputCompressQuality = LassiConfig.getConfig().compressionRation
+                            outputCompressQuality = LassiConfig.getConfig().compressionRatio
                         )
                     }
                 }

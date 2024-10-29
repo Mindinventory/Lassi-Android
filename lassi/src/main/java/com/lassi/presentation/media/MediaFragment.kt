@@ -176,7 +176,7 @@ class MediaFragment :
                             aspectRatioX = x,
                             aspectRatioY = y,
                             fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
-                            outputCompressQuality = LassiConfig.getConfig().compressionRation
+                            outputCompressQuality = LassiConfig.getConfig().compressionRatio
                         )
                     }
                 }
@@ -229,7 +229,7 @@ class MediaFragment :
                 } else if (LassiConfig.getConfig().maxCount > 1) {
                     viewModel.addAllSelectedMedia(selectedMedias)
                 } else {
-                    if (LassiConfig.getConfig().compressionRation > 0) {
+                    if (LassiConfig.getConfig().compressionRatio > 0) {
                         (context as LassiMediaPickerActivity).compressMedia(
                             selectedMedias,
                         )

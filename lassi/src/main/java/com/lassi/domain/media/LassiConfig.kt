@@ -40,7 +40,7 @@ data class LassiConfig(
     var enableFlipImage: Boolean = false,
     var enableRotateImage: Boolean = false,
     var enableActualCircleCrop: Boolean = false,
-    var compressionRation: Int = 0,
+    var compressionRatio: Int = 0,
     var minFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var maxFileSize: Long = KeyUtils.DEFAULT_FILE_SIZE,
     var isCrop: Boolean = true,
@@ -81,7 +81,7 @@ data class LassiConfig(
                 enableFlipImage = lassiConfig.enableFlipImage
                 enableRotateImage = lassiConfig.enableRotateImage
                 enableActualCircleCrop = lassiConfig.enableActualCircleCrop
-                compressionRation = lassiConfig.compressionRation
+                compressionRatio = lassiConfig.compressionRatio
                 minFileSize = lassiConfig.minFileSize
                 maxFileSize = lassiConfig.maxFileSize
                 isCrop = lassiConfig.isCrop

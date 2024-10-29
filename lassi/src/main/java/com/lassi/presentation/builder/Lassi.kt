@@ -431,7 +431,7 @@ class Lassi(private val context: Context) {
         } else {
             compressionRation
         }
-        lassiConfig.compressionRation = compression
+        lassiConfig.compressionRatio = compression
         return this
     }
 

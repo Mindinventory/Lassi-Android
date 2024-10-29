@@ -262,7 +262,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     }
 
     private fun handleCompressionAndResult(mediaPaths: ArrayList<MiMedia>, config: LassiConfig) {
-        if (config.compressionRation != 0) {
+        if (config.compressionRatio != 0) {
             compressMedia(mediaPaths, config)
         } else {
             Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
@@ -280,7 +280,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     val newUri = writeBitmapToUri(
                         requireContext(),
                         decodeUriToBitmap(requireContext(), uri),
-                        compressQuality = config.compressionRation,
+                        compressQuality = config.compressionRatio,
                         customOutputUri = null,
                         compressFormat = compressFormat
                     )
@@ -576,7 +576,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                             aspectRatioX = x,
                             aspectRatioY = y,
                             fixAspectRatio = LassiConfig.getConfig().enableActualCircleCrop,
-                            outputCompressQuality = LassiConfig.getConfig().compressionRation
+                            outputCompressQuality = LassiConfig.getConfig().compressionRatio
                         )
                     }
                 }

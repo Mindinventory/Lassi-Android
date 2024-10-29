@@ -174,7 +174,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                 croppingOptions(uri)
             } else {
                 val mediaList = arrayListOf(createMiMedia(uri.path))
-                if (config.compressionRation > 0) {
+                if (config.compressionRatio > 0) {
                     compressMedia(mediaList)
                 } else {
                     setResultOk(mediaList)
@@ -196,7 +196,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                 val newUri = writeBitmapToUri(
                     requireContext(),
                     decodeUriToBitmap(requireContext(), uri),
-                    compressQuality = LassiConfig.getConfig().compressionRation,
+                    compressQuality = LassiConfig.getConfig().compressionRatio,
                     customOutputUri = null,
                     compressFormat = compressFormat
                 )
@@ -224,7 +224,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                         showCropOverlay = true,
                         guidelines = CropImageView.Guidelines.ON,
                         multiTouchEnabled = false,
-                        outputCompressQuality = LassiConfig.getConfig().compressionRation
+                        outputCompressQuality = LassiConfig.getConfig().compressionRatio
                     )
                 }
             }?.let {
