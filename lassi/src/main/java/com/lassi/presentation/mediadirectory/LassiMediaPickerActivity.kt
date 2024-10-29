@@ -3,7 +3,7 @@ package com.lassi.presentation.mediadirectory
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,6 +25,7 @@ import com.lassi.common.utils.FilePickerUtils.getFilePathFromUri
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
 import com.lassi.data.media.MiMedia
 import com.lassi.databinding.ActivityMediaPickerBinding
 import com.lassi.domain.common.SafeObserver
@@ -34,35 +35,55 @@ import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.camera.CameraFragment
 import com.lassi.presentation.common.LassiBaseViewModelActivity
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
+import com.lassi.presentation.cropper.CropImageContract
+import com.lassi.presentation.cropper.CropImageContractOptions
+import com.lassi.presentation.cropper.CropImageOptions
+import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.docs.DocsFragment
 import com.lassi.presentation.media.SelectedMediaViewModel
 import com.livefront.bridge.Bridge
 import com.livefront.bridge.SavedStateHandler
-import io.reactivex.annotations.NonNull
-import io.reactivex.annotations.Nullable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class LassiMediaPickerActivity :
     LassiBaseViewModelActivity<SelectedMediaViewModel, ActivityMediaPickerBinding>() {
     private var menuDone: MenuItem? = null
     private var menuCamera: MenuItem? = null
     private var menuSort: MenuItem? = null
+    private var croppedMediaList: ArrayList<MiMedia> = ArrayList()
+    private val config = LassiConfig.getConfig()
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+        miMedia?.let {
+            croppedMediaList.add(miMedia)
+            if (croppedMediaList.size == config.selectedMedias.size) {
+                setResultOk(croppedMediaList)
+            } else {
+                val nextMediaIndex = croppedMediaList.size
+                val uri = Uri.fromFile(config.selectedMedias[nextMediaIndex].path?.let { File(it) })
+                uri?.let { croppingOptions(uri = uri) }
+            }
+        }
+    }
 
     private val getContent =
         registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uri ->
             uri?.let { uris ->
-                if (LassiConfig.getConfig().mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW && uris.size > LassiConfig.getConfig().maxCount) {
+                if (config.mediaType == MediaType.FILE_TYPE_WITH_SYSTEM_VIEW && uris.size > config.maxCount) {
                     ToastUtils.showToast(
                         this@LassiMediaPickerActivity,
-                        LassiConfig.getConfig().customLimitExceedingErrorMessage
+                        config.customLimitExceedingErrorMessage
                     )
                     finish()
                 } else {
                     binding.progressBar.indeterminateDrawable.colorFilter =
                         BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                            LassiConfig.getConfig().progressBarColor, BlendModeCompat.SRC_ATOP
+                            config.progressBarColor, BlendModeCompat.SRC_ATOP
                         )
                     binding.progressBar.show()
 
@@ -73,7 +94,8 @@ class LassiMediaPickerActivity :
                                     name = getFileName(uri)
                                     doesUri = false
                                     fileSize = getFileSize(uri)
-                                    path = getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
+                                    path =
+                                        getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
                                     Log.d("TAG", "!@# SLOWER MEDIA ITEM: $name")
                                 }
                             } as ArrayList<MiMedia>
@@ -105,14 +127,15 @@ class LassiMediaPickerActivity :
 
     override fun initViews() {
         super.initViews()
+        config.selectedMedias.clear()
         Bridge.initialize(applicationContext, object : SavedStateHandler {
-            override fun saveInstanceState(@NonNull target: Any, @NonNull state: Bundle) {
+            override fun saveInstanceState(target: Any, state: Bundle) {
             }
 
-            override fun restoreInstanceState(@NonNull target: Any, @Nullable state: Bundle?) {
+            override fun restoreInstanceState(target: Any, state: Bundle?) {
             }
         })
-        setToolbarTitle(LassiConfig.getConfig().selectedMedias)
+        setToolbarTitle(config.selectedMedias)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
@@ -120,12 +143,12 @@ class LassiMediaPickerActivity :
     }
 
     private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {
-        val maxCount = LassiConfig.getConfig().maxCount
+        val maxCount = config.maxCount
         if (maxCount > 1) {
             binding.toolbar.title = String.format(
                 getString(R.string.selected_items),
-                selectedMedias.size,
-                maxCount
+                selectedMedias.size.toString(),
+                maxCount.toString()
             )
         } else {
             binding.toolbar.title = ""
@@ -133,7 +156,7 @@ class LassiMediaPickerActivity :
     }
 
     private fun initiateFragment() {
-        if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA) {
+        if (config.lassiOption == LassiOption.CAMERA) {
             supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.ftContainer,
@@ -141,7 +164,7 @@ class LassiMediaPickerActivity :
                 )
                 .commitAllowingStateLoss()
         } else {
-            LassiConfig.getConfig().mediaType.let { mediaType ->
+            config.mediaType.let { mediaType ->
                 when (mediaType) {
                     MediaType.DOC -> {
                         supportFragmentManager.beginTransaction()
@@ -171,7 +194,7 @@ class LassiMediaPickerActivity :
 
     private fun browseFile() {
         val mimeTypesList = ArrayList<String>()
-        LassiConfig.getConfig().supportedFileType.forEach { mimeType ->
+        config.supportedFileType.forEach { mimeType ->
             MimeTypeMap
                 .getSingleton()
                 .getMimeTypeFromExtension(mimeType)?.let {
@@ -184,7 +207,7 @@ class LassiMediaPickerActivity :
     }
 
     private fun setThemeAttributes() {
-        with(LassiConfig.getConfig()) {
+        with(config) {
             binding.toolbar.background =
                 ColorDrawable(toolbarColor)
             binding.toolbar.setTitleTextColor(toolbarResourceColor)
@@ -195,10 +218,8 @@ class LassiMediaPickerActivity :
                     toolbarResourceColor
                 )
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor = statusBarColor
-            }
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = statusBarColor
         }
     }
 
@@ -210,29 +231,27 @@ class LassiMediaPickerActivity :
         menuDone?.isVisible = false
         menuCamera?.isVisible = false
         menuSort?.isVisible = true
-
-        menuDone?.icon = changeIconColor(
-            this@LassiMediaPickerActivity,
-            R.drawable.ic_done_white,
-            LassiConfig.getConfig().toolbarResourceColor
-        )
-        menuCamera?.icon = changeIconColor(
-            this@LassiMediaPickerActivity,
-            R.drawable.ic_camera_white,
-            LassiConfig.getConfig().toolbarResourceColor
-        )
-        menuSort?.icon = changeIconColor(
-            this@LassiMediaPickerActivity,
-            R.drawable.ic_sorting_foreground,
-            LassiConfig.getConfig().toolbarResourceColor
-        )
-        return super.onCreateOptionsMenu(menu)
+        with(config) {
+            menuDone?.icon = changeIconColor(
+                this@LassiMediaPickerActivity,
+                R.drawable.ic_done_white, toolbarResourceColor
+            )
+            menuCamera?.icon = changeIconColor(
+                this@LassiMediaPickerActivity,
+                R.drawable.ic_camera_white, toolbarResourceColor
+            )
+            menuSort?.icon = changeIconColor(
+                this@LassiMediaPickerActivity,
+                R.drawable.ic_sorting_foreground, toolbarResourceColor
+            )
+            return super.onCreateOptionsMenu(menu)
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuCamera?.isVisible =
-            (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA ||
-                    LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY)
+            (config.lassiOption == LassiOption.CAMERA ||
+                    config.lassiOption == LassiOption.CAMERA_AND_GALLERY)
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
@@ -241,25 +260,59 @@ class LassiMediaPickerActivity :
         when (item.itemId) {
             R.id.menuCamera -> initCamera()
             R.id.menuDone -> setSelectedMediaResult()
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> onBackPressedDispatcher.onBackPressed()
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun setSelectedMediaResult() {
         // Allow crop for single image
-        when (LassiConfig.getConfig().mediaType) {
-            MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
-                setResultOk(viewModel.selectedMediaLiveData.value)
-            }
+        config.apply {
+            when (mediaType) {
+                MediaType.IMAGE, MediaType.VIDEO, MediaType.AUDIO, MediaType.DOC -> {
+                    if (mediaType == MediaType.IMAGE && isCrop) {
+                        val uri = Uri.fromFile(selectedMedias.first().path?.let { File(it) })
+                        uri?.let {
+                            croppingOptions(uri = uri)
+                        }
+                    } else {
+                        viewModel.selectedMediaLiveData.value?.let {
+                            if (MediaType.IMAGE == mediaType && compressionRatio != 0) {
+                                compressMedia(it)
+                            } else {
+                                setResultOk(it)
+                            }
+                        }
+                    }
+                }
 
-            else -> {
+                else -> {
+                }
             }
         }
     }
 
+    fun compressMedia(mediaPaths: ArrayList<MiMedia>) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                val compressFormat = getCompressFormatForUri(uri, this)
+                val newUri = writeBitmapToUri(
+                    this,
+                    decodeUriToBitmap(this, uri),
+                    compressQuality = config.compressionRatio,
+                    customOutputUri = null,
+                    compressFormat = compressFormat
+                )
+                mediaPaths[index] = miMedia.copy(path = newUri.path)
+            }
+        }
+        setResultOk(mediaPaths)
+    }
+
+
     private fun initCamera() {
-        if (viewModel.selectedMediaLiveData.value?.size == LassiConfig.getConfig().maxCount) {
+        if (viewModel.selectedMediaLiveData.value?.size == config.maxCount) {
             ToastUtils.showToast(this, MultiLangConfig.getConfig().alreadySelectedMaxItems)
         } else {
             supportFragmentManager.beginTransaction()
@@ -271,7 +324,7 @@ class LassiMediaPickerActivity :
 
     private fun handleSelectedMedia(selectedMedias: ArrayList<MiMedia>) {
         setToolbarTitle(selectedMedias)
-        menuDone?.isVisible = !selectedMedias.isNullOrEmpty()
+        menuDone?.isVisible = selectedMedias.isNotEmpty()
     }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
@@ -282,7 +335,39 @@ class LassiMediaPickerActivity :
             "LASSI",
             "!@# LassiMediaPickerActivity selectedMedia size 417 => ${selectedMedia?.size}"
         )
+        config.selectedMedias.clear()
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    private fun croppingOptions(
+        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false,
+    ) {
+        // Start picker to get image for cropping and then use the image in cropping activity.
+        cropImage.launch(includeCamera?.let {
+            includeGallery?.let { includeGallery ->
+                config.cropAspectRatio?.x?.let { x ->
+                    config.cropAspectRatio?.y?.let { y ->
+                        CropImageOptions(
+                            imageSourceIncludeCamera = includeCamera,
+                            imageSourceIncludeGallery = includeGallery,
+                            cropShape = config.cropType,
+                            showCropOverlay = true,
+                            guidelines = CropImageView.Guidelines.ON,
+                            multiTouchEnabled = false,
+                            aspectRatioX = x,
+                            aspectRatioY = y,
+                            fixAspectRatio = config.enableActualCircleCrop,
+                            outputCompressQuality = LassiConfig.getConfig().compressionRatio
+                        )
+                    }
+                }
+            }
+        }?.let {
+            CropImageContractOptions(
+                uri = uri,
+                cropImageOptions = it,
+            )
+        })
     }
 }

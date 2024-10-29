@@ -14,4 +14,5 @@ interface MediaRepository {
     suspend fun insertMediaData(): Result<Boolean>
     suspend fun insertAllMediaData(): Result<Boolean>
     suspend fun removeMediaData(allDataList: List<MediaFileEntity>?)
+    suspend fun deleteMediaFiles()
 }

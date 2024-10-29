@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,7 +20,6 @@ import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
-import com.lassi.domain.media.MultiLangConfig
 import com.lassi.domain.media.SortingOption
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
@@ -31,9 +29,9 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
-    protected val binding get() = _binding!!
+    private val binding get() = _binding!!
     private val selectedMediaAdapter by lazy { SelectedMediaAdapter(this::onItemClicked) }
-    lateinit var lassi: Lassi
+    private lateinit var lassi: Lassi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +45,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             it.btnImageCapture.setOnClickListener(this)
             it.btnVideoCapture.setOnClickListener(this)
             it.btnDocumentSystemIntent.setOnClickListener(this)
+            it.btnPhotoVideoPicker.setOnClickListener(this)
             it.btnPhotoPicker.setOnClickListener(this)
+            it.btnVideoMediaPicker.setOnClickListener(this)
             it.rvSelectedMedia.adapter = selectedMediaAdapter
             it.rvSelectedMedia.addItemDecoration(GridSpacingItemDecoration(2, 10))
         }
@@ -72,13 +72,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 setSortByDateLbl = "Trier par date"
             )
         }
-        binding.btnPhotoPicker.visibility = View.VISIBLE
+        binding.btnPhotoVideoPicker.visibility = View.VISIBLE
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnImagePicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(1)
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
                     .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.IMAGE)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
                     .enableActualCircleCrop()
+                    .disableCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -214,9 +215,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 receiveData.launch(intent)
             }
 
+            R.id.btnPhotoVideoPicker -> {
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                    .setMediaType(MediaType.PHOTO_VIDEO_PICKER)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
+                    .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
+                    .build()
+                receiveData.launch(intent)
+            }
+
             R.id.btnPhotoPicker -> {
                 val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
                     .setMediaType(MediaType.PHOTO_PICKER)
+                    .setStatusBarColor(R.color.colorPrimaryDark)
+                    .setToolbarColor(R.color.colorPrimary)
+                    .setToolbarResourceColor(android.R.color.white)
+                    .setProgressBarColor(R.color.colorAccent)
+                    .setGalleryBackgroundColor(R.color.colorGrey)
+                    .enableMultiSelection()
+                    .setCustomLimitExceedingErrorMessage("Selected item exceeded the limit!")
+                    .build()
+                receiveData.launch(intent)
+            }
+
+            R.id.btnVideoMediaPicker -> {
+                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                    .setMediaType(MediaType.VIDEO_PICKER)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
@@ -247,9 +275,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private val receiveData =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val selectedMedia =
-                    it.data?.getSerializableExtra(KeyUtils.SELECTED_MEDIA) as ArrayList<MiMedia>
-                if (selectedMedia.isNotEmpty()) {
+                val selectedMedia = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA, MiMedia::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA)
+                }
+
+                if (!selectedMedia.isNullOrEmpty()) {
                     binding.ivEmpty.isVisible = selectedMedia.isEmpty()
                     selectedMediaAdapter.setList(selectedMedia)
                 }

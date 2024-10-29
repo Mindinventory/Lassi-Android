@@ -152,14 +152,14 @@
             app:layout_constraintTop_toBottomOf="@+id/btnDocumentSystemIntent" />
 
         <Button
-            android:id="@+id/btnPhotoPicker"
+            android:id="@+id/btnPhotoVideoPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_rounded_button"
             android:drawableStart="@drawable/ic_document"
             android:padding="10dp"
-            android:text="@string/photo_picker"
+            android:text="@string/photo_video_picker"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="16sp"
@@ -169,6 +169,47 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnVideoCapture" />
+
+        <Button
+            android:id="@+id/btnPhotoPicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_rounded_button"
+            android:drawableStart="@drawable/ic_camera_white"
+            android:padding="10dp"
+            android:text="@string/photo_picker"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btnVideoMediaPicker"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnPhotoVideoPicker" />
+
+        <Button
+            android:id="@+id/btnVideoMediaPicker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/bg_rounded_button"
+            android:drawableStart="@drawable/ic_video_cam_white"
+            android:padding="10dp"
+            android:text="Video Picker"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnPhotoPicker"
+            app:layout_constraintTop_toBottomOf="@+id/btnPhotoVideoPicker" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView

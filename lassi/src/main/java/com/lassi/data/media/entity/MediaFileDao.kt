@@ -72,8 +72,13 @@ interface MediaFileDao {
                 " ON $MEDIA_FILE_ENTITY.$MEDIA_ID = $DURATION_ENTITY.duration_media_id" +
                 " INNER JOIN  $ALBUM_COVER_ENTITY" +
                 " ON $MEDIA_FILE_ENTITY.$MEDIA_ID = $ALBUM_COVER_ENTITY.$ALBUM_COVER_MEDIA_ID" +
-                " WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType ORDER BY CASE WHEN :isAsc = 1 THEN $MEDIA_DATE_ADDED END ASC, CASE WHEN :isAsc = 0 THEN $MEDIA_DATE_ADDED END DESC")
-    fun getSelectedSortedMediaFile(bucket: String, isAsc: Int, mediaType: Int): List<SelectedMediaModel>
+                " WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType ORDER BY CASE WHEN :isAsc = 1 THEN $MEDIA_DATE_ADDED END ASC, CASE WHEN :isAsc = 0 THEN $MEDIA_DATE_ADDED END DESC"
+    )
+    fun getSelectedSortedMediaFile(
+        bucket: String,
+        isAsc: Int,
+        mediaType: Int,
+    ): List<SelectedMediaModel>
 
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_BUCKET = :bucket AND $MEDIA_TYPE = :mediaType")
     fun getSelectedImageMediaFile(bucket: String, mediaType: Int): List<MediaFileEntity>
@@ -82,7 +87,7 @@ interface MediaFileDao {
     fun getSelectedSortedImageMediaFile(
         bucket: String,
         isAsc: Int,
-        mediaType: Int
+        mediaType: Int,
     ): List<MediaFileEntity>
 
     @Query("SELECT * FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_TYPE = 1 OR $MEDIA_TYPE = 2 OR $MEDIA_TYPE = 3")
@@ -90,4 +95,7 @@ interface MediaFileDao {
 
     @Query("DELETE FROM $MEDIA_FILE_ENTITY WHERE $MEDIA_PATH = :mediaPath")
     fun deleteByMediaPath(mediaPath: String)
+
+    @Query("DELETE FROM $MEDIA_FILE_ENTITY")
+    fun deleteMediaFiles()
 }

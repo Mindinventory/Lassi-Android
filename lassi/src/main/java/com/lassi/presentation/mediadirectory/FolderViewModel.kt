@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class FolderViewModel(
-    private val mediaRepository: MediaRepository
+    private val mediaRepository: MediaRepository,
 ) : LassiBaseViewModel() {
     private var _fetchMediaFolderLiveData = SingleLiveEvent<Response<ArrayList<MiItemMedia>>>()
     var fetchMediaFolderLiveData: LiveData<Response<ArrayList<MiItemMedia>>> =
@@ -74,9 +74,11 @@ class FolderViewModel(
             is Result.Loading -> {
                 this._fetchMediaFolderLiveData.setLoading()
             }
+
             is Result.Success -> {
                 getDataFromDatabase()
             }
+
             is Result.Error -> {
                 this._fetchMediaFolderLiveData.setError(result.throwable)
             }
@@ -88,10 +90,12 @@ class FolderViewModel(
             is Result.Loading -> {
                 this._fetchMediaFolderLiveData.setLoading()
             }
+
             is Result.Success -> {
-                Logger.d("FolderViewModel", "Insert completed")
+                Logger.d("FolderViewModel", "Insert completed-->>>${result.data}")
                 getDataFromDatabase()
             }
+
             is Result.Error -> {
                 this._fetchMediaFolderLiveData.setError(result.throwable)
             }
@@ -111,11 +115,17 @@ class FolderViewModel(
                 val mediaItemList = (result as Result.Success).data.filter {
                     !it.bucketName.isNullOrEmpty()
                 } as ArrayList<MiItemMedia>
-                list.postValue(mediaItemList as ArrayList<MiItemMedia>)
+                list.postValue(mediaItemList)
                 if (mediaItemList.isEmpty()) {
                     emptyList.postValue(true)
                 }
             }
+    }
+
+    fun deleteMediaFilesFromDB() {
+        viewModelScope.launch {
+            mediaRepository.deleteMediaFiles()
+        }
     }
 
     private suspend fun getAllPhotoVidDataFromDatabase() {

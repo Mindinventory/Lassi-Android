@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 class MediaRepositoryImpl(private val context: Context) : MediaRepository {
-    private var mediaPathToRemove: ArrayList<MediaFileEntity>? = null
     val TAG = MediaRepositoryImpl::class.java.simpleName
     private val minTimeInMillis = LassiConfig.getConfig().minTime * 1000L
     private val maxTimeInMillis = LassiConfig.getConfig().maxTime * 1000L
@@ -82,6 +81,12 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
             }
         }
         return resultDeferred.await()
+    }
+
+    override suspend fun deleteMediaFiles() {
+        CoroutineScope(IO).launch {
+            mediaDatabase.mediaFileDao().deleteMediaFiles()
+        }
     }
 
     override suspend fun removeMediaData(allDataList: List<MediaFileEntity>?) {
@@ -164,7 +169,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         }.catch().flowOn(IO)
     }
 
-    private suspend fun checkDurationAndAddFileToDatabase(
+    private fun checkDurationAndAddFileToDatabase(
         bucket: String?,
         id: Long,
         name: String,
@@ -173,7 +178,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
         albumCoverPath: String,
         size: Long,
         dateAdded: Long,
-        mediaType: MediaType
+        mediaType: MediaType,
     ) {
         if (isValidDuration(duration) && isValidFileSize(size)) {
             addFileToDatabase(
@@ -218,7 +223,7 @@ class MediaRepositoryImpl(private val context: Context) : MediaRepository {
     /**
      * Add file to database
      */
-    private suspend fun addFileToDatabase(
+    private fun addFileToDatabase(
         bucket: String?,
         miMedia: MiMedia,
         dateAdded: Long,

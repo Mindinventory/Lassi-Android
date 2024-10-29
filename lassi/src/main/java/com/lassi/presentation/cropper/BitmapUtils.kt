@@ -459,12 +459,22 @@ internal object BitmapUtils {
     ): Uri {
         val newUri = customOutputUri ?: buildUri(context, compressFormat)
 
-        return context.contentResolver.openOutputStream(newUri, WRITE_AND_TRUNCATE).use {
-            it?.let {
-                it1 -> bitmap.compress(compressFormat, compressQuality, it1)
+        context.contentResolver.openOutputStream(newUri, WRITE_AND_TRUNCATE).use { outputStream ->
+            if (compressQuality > 0) {
+                outputStream?.let { bitmap.compress(compressFormat, compressQuality, it) }
+            } else {
+                // Save the bitmap without compression to ensure the URI is populated
+                outputStream?.let { bitmap.compress(compressFormat, 100, it) }
             }
-            newUri
         }
+        return newUri
+    }
+
+    fun decodeUriToBitmap(context: Context, uri: Uri): Bitmap {
+        // Decode the Uri into a Bitmap
+        return context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        } ?: throw FileNotFoundException("Unable to decode bitmap from URI")
     }
 
     private fun buildUri(

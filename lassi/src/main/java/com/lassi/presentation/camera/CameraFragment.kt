@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +22,7 @@ import com.lassi.common.extenstions.invisible
 import com.lassi.common.extenstions.show
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.ToastUtils
+import com.lassi.common.utils.UriHelper.getCompressFormatForUri
 import com.lassi.data.common.StartVideoContract
 import com.lassi.data.common.VideoRecord
 import com.lassi.data.media.MiMedia
@@ -40,6 +40,8 @@ import com.lassi.presentation.cameraview.controls.CameraOptions
 import com.lassi.presentation.cameraview.controls.PictureResult
 import com.lassi.presentation.cameraview.controls.VideoResult
 import com.lassi.presentation.common.LassiBaseViewModelFragment
+import com.lassi.presentation.cropper.BitmapUtils.decodeUriToBitmap
+import com.lassi.presentation.cropper.BitmapUtils.writeBitmapToUri
 import com.lassi.presentation.cropper.CropImageContract
 import com.lassi.presentation.cropper.CropImageContractOptions
 import com.lassi.presentation.cropper.CropImageOptions
@@ -75,7 +77,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             cameraViewModel.addSelectedMedia(miMedia)
             folderViewModel.checkInsert()
             if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                miMedia?.let { setResultOk(arrayListOf(it)) }
+                setResultOk(arrayListOf(miMedia))
             }
         }
     }
@@ -167,18 +169,41 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         super.initLiveDataObservers()
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
-            if (LassiConfig.getConfig().isCrop && LassiConfig.getConfig().maxCount <= 1) {
-                croppingOptions(uri = uri)
+            val config = LassiConfig.getConfig()
+            if (config.isCrop && config.maxCount <= 1) {
+                croppingOptions(uri)
             } else {
-                ArrayList<MiMedia>().also {
-                    MiMedia().apply {
-                        this.path = uri.path
-                        it.add(this)
-                    }
-                    setResultOk(it)
+                val mediaList = arrayListOf(createMiMedia(uri.path))
+                if (config.compressionRatio > 0) {
+                    compressMedia(mediaList)
+                } else {
+                    setResultOk(mediaList)
                 }
             }
         })
+    }
+
+    // Helper function to create MiMedia object
+    private fun createMiMedia(path: String?): MiMedia {
+        return MiMedia().apply { this.path = path }
+    }
+
+    private fun compressMedia(mediaPaths: ArrayList<MiMedia>) {
+        mediaPaths.forEachIndexed { index, miMedia ->
+            miMedia.path?.let { path ->
+                val uri = Uri.fromFile(File(path))
+                val compressFormat = getCompressFormatForUri(uri, requireContext())
+                val newUri = writeBitmapToUri(
+                    requireContext(),
+                    decodeUriToBitmap(requireContext(), uri),
+                    compressQuality = LassiConfig.getConfig().compressionRatio,
+                    customOutputUri = null,
+                    compressFormat = compressFormat
+                )
+                mediaPaths[index] = miMedia.copy(path = newUri.path)
+            }
+        }
+        setResultOk(mediaPaths)
     }
 
     private fun croppingOptions(
@@ -190,15 +215,16 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
          * Start picker to get image for cropping and then use the image in cropping activity.
          */
         cropImage.launch(
-            includeCamera?.let { includeCamera ->
+            includeCamera?.let {
                 includeGallery?.let { includeGallery ->
                     CropImageOptions(
-                        imageSourceIncludeCamera = includeCamera,
+                        imageSourceIncludeCamera = it,
                         imageSourceIncludeGallery = includeGallery,
                         cropShape = CropImageView.CropShape.RECTANGLE,
                         showCropOverlay = true,
                         guidelines = CropImageView.Guidelines.ON,
                         multiTouchEnabled = false,
+                        outputCompressQuality = LassiConfig.getConfig().compressionRatio
                     )
                 }
             }?.let {
@@ -352,7 +378,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                 permissionSettingResult.launch(intent)
             }
             .setNegativeButton(MultiLangConfig.getConfig().cancel) { _, _ ->
-                activity?.onBackPressed()
+                activity?.onBackPressedDispatcher?.onBackPressed()
             }
         val permissionDialog = alertDialog.create()
         permissionDialog.setCancelable(false)
@@ -384,20 +410,18 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
 
             needsStorage =
-                needsStorage && ActivityCompat.checkSelfPermission(
+                ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            //Storage permission is not required for Tiramisu
-        }
+        } else
 
-        if (needsAudio)
-            needsAudio =
-                needsAudio && ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
+            if (needsAudio)
+                needsAudio =
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.RECORD_AUDIO
+                    ) != PackageManager.PERMISSION_GRANTED
 
         return !needsCamera && !needsAudio && !needsStorage
     }
