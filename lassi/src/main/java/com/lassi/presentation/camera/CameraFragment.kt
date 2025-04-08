@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,12 +52,13 @@ import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import java.io.File
+import kotlin.math.log
 
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCameraBinding>(),
     View.OnClickListener {
 
     private lateinit var cameraMode: Mode
-
+    private val config = LassiConfig.getConfig()
     private val cameraViewModel by lazy {
         ViewModelProvider(
             this, SelectedMediaViewModelFactory(requireContext())
@@ -206,6 +208,36 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         setResultOk(mediaPaths)
     }
 
+//    private fun croppingOptions(
+//        uri: Uri? = null,
+//        includeCamera: Boolean? = false,
+//        includeGallery: Boolean? = false
+//    ) {
+//        /**
+//         * Start picker to get image for cropping and then use the image in cropping activity.
+//         */
+//        cropImage.launch(
+//            includeCamera?.let {
+//                includeGallery?.let { includeGallery ->
+//                    CropImageOptions(
+//                        imageSourceIncludeCamera = it,
+//                        imageSourceIncludeGallery = includeGallery,
+//                        cropShape = CropImageView.CropShape.RECTANGLE,
+//                        showCropOverlay = true,
+//                        guidelines = CropImageView.Guidelines.ON,
+//                        multiTouchEnabled = false,
+//                        outputCompressQuality = LassiConfig.getConfig().compressionRatio
+//                    )
+//                }
+//            }?.let {
+//                CropImageContractOptions(
+//                    uri = uri,
+//                    cropImageOptions = it,
+//                )
+//            }
+//        )
+//    }
+
     private fun croppingOptions(
         uri: Uri? = null,
         includeCamera: Boolean? = false,
@@ -217,15 +249,22 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         cropImage.launch(
             includeCamera?.let {
                 includeGallery?.let { includeGallery ->
-                    CropImageOptions(
-                        imageSourceIncludeCamera = it,
-                        imageSourceIncludeGallery = includeGallery,
-                        cropShape = CropImageView.CropShape.RECTANGLE,
-                        showCropOverlay = true,
-                        guidelines = CropImageView.Guidelines.ON,
-                        multiTouchEnabled = false,
-                        outputCompressQuality = LassiConfig.getConfig().compressionRatio
-                    )
+                    config.cropAspectRatio?.x?.let { x ->
+                        config.cropAspectRatio?.y?.let { y ->
+                            CropImageOptions(
+                                imageSourceIncludeCamera = it,
+                                imageSourceIncludeGallery = includeGallery,
+                                cropShape = config.cropType,
+                                showCropOverlay = true,
+                                guidelines = CropImageView.Guidelines.ON,
+                                multiTouchEnabled = false,
+                                aspectRatioX = x,
+                                aspectRatioY = y,
+                                fixAspectRatio = config.enableActualCircleCrop,
+                                outputCompressQuality = config.compressionRatio
+                            )
+                        }
+                    }
                 }
             }?.let {
                 CropImageContractOptions(
@@ -491,5 +530,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
     override fun onStop() {
         super.onStop()
         (activity as AppCompatActivity).supportActionBar?.show()
+        LassiConfig.getConfig().maxCount = 4
     }
 }
