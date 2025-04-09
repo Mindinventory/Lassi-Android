@@ -258,10 +258,7 @@ class LassiMediaPickerActivity :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuCamera -> {
-                config.maxCount = 1
-                initCamera()
-            }
+            R.id.menuCamera -> initCamera()
             R.id.menuDone -> setSelectedMediaResult()
             android.R.id.home -> onBackPressedDispatcher.onBackPressed()
         }

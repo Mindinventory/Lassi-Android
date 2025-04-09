@@ -64,6 +64,8 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             this, SelectedMediaViewModelFactory(requireContext())
         )[SelectedMediaViewModel::class.java]
     }
+//    private var cameraMaxCount = config.maxCount
+    private var cameraMaxCount = 1
 
     private val folderViewModel by lazy {
         ViewModelProvider(
@@ -172,7 +174,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
             val config = LassiConfig.getConfig()
-            if (config.isCrop && config.maxCount <= 1) {
+            if (config.isCrop && cameraMaxCount <= 1) {
                 croppingOptions(uri)
             } else {
                 val mediaList = arrayListOf(createMiMedia(uri.path))
@@ -530,6 +532,5 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
     override fun onStop() {
         super.onStop()
         (activity as AppCompatActivity).supportActionBar?.show()
-        LassiConfig.getConfig().maxCount = 4
     }
 }

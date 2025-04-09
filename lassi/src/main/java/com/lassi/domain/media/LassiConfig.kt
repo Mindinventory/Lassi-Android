@@ -31,7 +31,7 @@ data class LassiConfig(
     var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
     var ascFlag: Int = KeyUtils.DEFAULT_ORDER,
     var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
-    var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
+    var lassiOption: LassiOption = LassiOption.PICKER,
     var minTime: Long = KeyUtils.DEFAULT_DURATION,
     var maxTime: Long = KeyUtils.DEFAULT_DURATION,
     var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
