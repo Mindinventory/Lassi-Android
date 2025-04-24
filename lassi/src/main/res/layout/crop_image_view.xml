@@ -2,20 +2,20 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     >
-  <ImageView
+  <com.lassi.presentation.cropper.TouchImageView
       android:id="@+id/ImageView_image"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:adjustViewBounds="true"
-      android:scaleType="centerInside"
-      tools:ignore="contentDescription"
-      />
+      android:scaleType="matrix" />
+
   <com.lassi.presentation.cropper.CropOverlayView
       android:id="@+id/CropOverlayView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:visibility="invisible"
-      />
+      android:clickable="false"
+      android:focusable="false" />
+
   <ProgressBar
       android:id="@+id/CropProgressBar"
       android:layout_width="wrap_content"

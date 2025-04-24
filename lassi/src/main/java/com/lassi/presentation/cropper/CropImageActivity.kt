@@ -337,6 +337,12 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         if (cropImageOptions.noOutputImage) {
             setResult(null, null, 1)
         } else {
+            /**
+             * This below 2 lines are creating the new bitmap for the manual zoomed/panned image.
+             */
+            val transformedBitmap = cropImageView?.imageView?.getTransformedBitmap()
+            cropImageView?.setImageBitmap(transformedBitmap)
+
             cropImageView?.croppedImageAsync(
                 saveCompressFormat = cropImageOptions.outputCompressFormat,
                 saveCompressQuality = cropImageOptions.outputCompressQuality,

@@ -26,6 +26,7 @@ import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
@@ -1090,28 +1091,42 @@ internal class CropOverlayView @JvmOverloads constructor(
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
     // If this View is not enabled, don't allow for touch interactions.
-    return if (isEnabled) {
-      if (mMultiTouchEnabled) mScaleDetector?.onTouchEvent(event)
 
-      when (event.action) {
-        MotionEvent.ACTION_DOWN -> {
-          onActionDown(event.x, event.y)
-          true
-        }
-        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-          parent.requestDisallowInterceptTouchEvent(false)
-          onActionUp()
-          true
-        }
-        MotionEvent.ACTION_MOVE -> {
-          onActionMove(event.x, event.y)
-          parent.requestDisallowInterceptTouchEvent(true)
-          true
-        }
-        else -> false
-      }
+    // the below code is for manual zooming in the crop-shape area...
+    val cropRect = mCropWindowHandler.getRect()
+    val centerX = cropRect.centerX()
+    val centerY = cropRect.centerY()
+    val radius = cropRect.width().div(2f) // Assuming it's a circle
+    val distance = hypot(event.x - centerX, event.y - centerY)
+
+    if (distance < radius){
+      return false // this thing disables the touch in the specified area.
     } else {
-      false
+      return if (isEnabled) {
+        if (mMultiTouchEnabled) {
+          mScaleDetector?.onTouchEvent(event)
+        }
+
+        when (event.action) {
+          MotionEvent.ACTION_DOWN -> {
+            onActionDown(event.x, event.y)
+            true
+          }
+          MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            parent.requestDisallowInterceptTouchEvent(false)
+            onActionUp()
+            true
+          }
+          MotionEvent.ACTION_MOVE -> {
+            onActionMove(event.x, event.y)
+            parent.requestDisallowInterceptTouchEvent(true)
+            true
+          }
+          else -> false
+        }
+      } else {
+        false
+      }
     }
   }
 

@@ -29,9 +29,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
-import com.lassi.presentation.cropper.CropOverlayView
 import com.lassi.presentation.cropper.CropOverlayView.CropWindowChangeListener
-import com.lassi.presentation.cropper.*
 import com.lassi.presentation.cropper.utils.getFilePathFromUri
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -48,7 +46,13 @@ class CropImageView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs), CropWindowChangeListener {
 
   /** Image view widget used to show the image for cropping. */
-  private val imageView: ImageView
+  private lateinit var _imageView: TouchImageView
+
+  var imageView: TouchImageView
+    get() = _imageView
+    set(value) {
+      _imageView = value
+    }
 
   /** Overlay over the image view to show cropping UI. */
   private val mCropOverlayView: CropOverlayView?
@@ -1728,7 +1732,7 @@ class CropImageView @JvmOverloads constructor(
      * The cropped image bitmap result.<br></br>
      * Null if save cropped image was executed, no output requested or failure.
      */
-    val bitmap: Bitmap?,
+    var bitmap: Bitmap?,
     /**
      * The Android uri of the saved cropped image result.<br></br>
      * Null if get cropped image was executed, no output requested or failure.
