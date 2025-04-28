@@ -69,6 +69,10 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
         }
     }
 
+    fun getScale() : Float{
+        return saveScale
+    }
+
     private fun fixTrans() {
         matrix.getValues(m)
         val transX = m[Matrix.MTRANS_X]

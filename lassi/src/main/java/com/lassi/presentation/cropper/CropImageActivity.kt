@@ -2,6 +2,7 @@ package com.lassi.presentation.cropper
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -34,9 +35,8 @@ import java.io.File
 open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriCompleteListener,
     CropImageView.OnCropImageCompleteListener {
     private val logTag = CropImageActivity::class.java.simpleName
-    /**
-     * The crop image view library widget used in the activity
-     */
+
+    var isAutoZoomed: Boolean = false
 
     /** Persist URI image to crop URI if specific permissions are required. */
     private var cropImageUri: Uri? = null
@@ -78,10 +78,13 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                     cropImageOptions.imageSourceIncludeGallery &&
                             cropImageOptions.imageSourceIncludeCamera ->
                         showImageSourceDialog(::openSource)
+
                     cropImageOptions.imageSourceIncludeGallery ->
                         pickImageGallery.launch("image/*")
+
                     cropImageOptions.imageSourceIncludeCamera ->
                         openCamera()
+
                     else -> finish()
                 }
             } else {
@@ -337,12 +340,15 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         if (cropImageOptions.noOutputImage) {
             setResult(null, null, 1)
         } else {
-            /**
-             * This below 2 lines are creating the new bitmap for the manual zoomed/panned image.
-             */
-            val transformedBitmap = cropImageView?.imageView?.getTransformedBitmap()
-            cropImageView?.setImageBitmap(transformedBitmap)
+            val hasManualZoomOrPan = cropImageView?.imageView?.getScale() != 1f ||
+                    cropImageView?.imageView?.translationX != 0f ||
+                    cropImageView?.imageView?.translationY != 0f
 
+            if (hasManualZoomOrPan) {
+                val transformedBitmap = cropImageView?.imageView?.getTransformedBitmap()
+                cropImageView?.setImageBitmap(transformedBitmap)
+            }
+            // i need to keep here some conditionality before the new bitmap is created and saved.
             cropImageView?.croppedImageAsync(
                 saveCompressFormat = cropImageOptions.outputCompressFormat,
                 saveCompressQuality = cropImageOptions.outputCompressQuality,
