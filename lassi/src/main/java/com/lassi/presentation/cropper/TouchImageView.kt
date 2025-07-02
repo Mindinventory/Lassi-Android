@@ -2,29 +2,32 @@ package com.lassi.presentation.cropper
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.PointF
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.exifinterface.media.ExifInterface
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.graphics.createBitmap
+import kotlin.math.abs
 
 @SuppressLint("ClickableViewAccessibility")
 class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
 
-    private val matrix = Matrix()
+    private val baseMatrix = Matrix() // this is the initial matrix
+    private val gestureMatrix = Matrix() // this is for tracking the movement
+    private val drawMatrix = Matrix() // this is for the drawing of the image
     private var mode = NONE
 
     private val last = PointF()
     private val start = PointF()
     private var minScale = 1f
     private var maxScale = 4f
-    private var m: FloatArray = FloatArray(9)
 
     private var viewWidth = 0
     private var viewHeight = 0
@@ -34,10 +37,25 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
 
     private val mScaleDetector: ScaleGestureDetector
 
+    private var originalBitmap: Bitmap? = null
+    private var originalUri: Uri? = null
+    private var exifAngle: Float = 0f
+    private var rotatedDegrees = 0
+
+    fun setOriginalBitmap(bitmap: Bitmap?) {
+        originalBitmap = bitmap
+    }
+
+    fun setOriginalUri(uri: Uri?) {
+        originalUri = uri
+        uri?.let {
+            exifAngle = extractExifRotation(it)
+        }
+    }
+
     init {
         super.setClickable(true)
         mScaleDetector = ScaleGestureDetector(context, ScaleListener())
-        imageMatrix = matrix
         scaleType = ScaleType.MATRIX
 
         setOnTouchListener { _, event ->
@@ -55,54 +73,114 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
                 MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
                     val dx = curr.x - last.x
                     val dy = curr.y - last.y
-                    matrix.postTranslate(dx, dy)
+                    gestureMatrix.postTranslate(dx, dy)
                     fixTrans()
                     last.set(curr.x, curr.y)
                 }
 
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = NONE
             }
-
-            imageMatrix = matrix
+            updateDrawMatrix()
             invalidate()
             true
         }
     }
 
-    fun getScale() : Float{
-        return saveScale
+    private fun updateDrawMatrix() {
+        drawMatrix.set(baseMatrix)
+        drawMatrix.postConcat(gestureMatrix)
+        imageMatrix = drawMatrix
     }
 
-    private fun fixTrans() {
-        matrix.getValues(m)
-        val transX = m[Matrix.MTRANS_X]
-        val transY = m[Matrix.MTRANS_Y]
-
-        val fixTransX = getFixTrans(transX, viewWidth.toFloat(), origWidth * saveScale)
-        val fixTransY = getFixTrans(transY, viewHeight.toFloat(), origHeight * saveScale)
-
-        if (fixTransX != 0f || fixTransY != 0f) {
-            matrix.postTranslate(fixTransX, fixTransY)
-        }
-    }
-
-    private fun getFixTrans(trans: Float, viewSize: Float, contentSize: Float): Float {
-        val minTrans: Float
-        val maxTrans: Float
-
-        if (contentSize <= viewSize) {
-            minTrans = 0f
-            maxTrans = viewSize - contentSize
-        } else {
-            minTrans = viewSize - contentSize
-            maxTrans = 0f
-        }
-
-        return when {
-            trans < minTrans -> -trans + minTrans
-            trans > maxTrans -> -trans + maxTrans
+    private fun extractExifRotation(uri: Uri): Float {
+        val exif = ExifInterface(context.contentResolver.openInputStream(uri)!!)
+        return when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
             else -> 0f
         }
+    }
+    fun getScale(): Float = saveScale
+
+
+    private fun fixTrans() {
+        val drawable = drawable ?: return
+
+        val matrix = Matrix()
+        matrix.set(baseMatrix)
+        matrix.postConcat(gestureMatrix)
+
+        val drawableWidth = drawable.intrinsicWidth.toFloat()
+        val drawableHeight = drawable.intrinsicHeight.toFloat()
+
+        val points = floatArrayOf(
+            0f, 0f,
+            drawableWidth, 0f,
+            drawableWidth, drawableHeight,
+            0f, drawableHeight
+        )
+        matrix.mapPoints(points)
+
+        val xs = listOf(points[0], points[2], points[4], points[6])
+        val ys = listOf(points[1], points[3], points[5], points[7])
+
+        val minX = xs.minOrNull() ?: 0f
+        val maxX = xs.maxOrNull() ?: 0f
+        val minY = ys.minOrNull() ?: 0f
+        val maxY = ys.maxOrNull() ?: 0f
+
+        val imageWidth = maxX - minX
+        val imageHeight = maxY - minY
+
+        var deltaX = 0f
+        var deltaY = 0f
+
+        // Horizontal bounds
+        if (imageWidth <= viewWidth) {
+            deltaX = (viewWidth - imageWidth) / 2 - minX
+        } else {
+            if (minX > 0) {
+                deltaX = -minX
+            } else if (maxX < viewWidth) {
+                deltaX = viewWidth - maxX
+            }
+        }
+
+        // Vertical bounds
+        if (imageHeight <= viewHeight) {
+            deltaY = (viewHeight - imageHeight) / 2 - minY
+        } else {
+            if (minY > 0) {
+                deltaY = -minY
+            } else if (maxY < viewHeight) {
+                deltaY = viewHeight - maxY
+            }
+        }
+
+        gestureMatrix.postTranslate(deltaX, deltaY)
+    }
+
+
+    private fun getImageDimensionsAfterBaseMatrix(): Pair<Float, Float> {
+        val drawable = drawable ?: return Pair(0f, 0f)
+
+        val points = floatArrayOf(
+            0f, 0f,  // top-left
+            drawable.intrinsicWidth.toFloat(), 0f, // top-right
+            drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat(), // bottom-right
+            0f, drawable.intrinsicHeight.toFloat()  // bottom-left
+        )
+
+        baseMatrix.mapPoints(points)
+
+        val xs = listOf(points[0], points[2], points[4], points[6])
+        val ys = listOf(points[1], points[3], points[5], points[7])
+
+        val width = (xs.maxOrNull() ?: 0f) - (xs.minOrNull() ?: 0f)
+        val height = (ys.maxOrNull() ?: 0f) - (ys.minOrNull() ?: 0f)
+
+        return Pair(width, height)
     }
 
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -119,7 +197,7 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
             val focusX = detector.focusX
             val focusY = detector.focusY
 
-            matrix.postScale(scaleFactor, scaleFactor, focusX, focusY)
+            gestureMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY)
             fixTrans()
             return true
         }
@@ -143,27 +221,50 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
             viewHeight.toFloat() / drawableHeight
         )
 
-        matrix.setScale(scale, scale)
+        baseMatrix.setScale(scale, scale)
+//        gestureMatrix.setScale(scale*2,scale*2)
 
-        val redundantYSpace = (viewHeight.toFloat() - scale * drawableHeight) / 2
-        val redundantXSpace = (viewWidth.toFloat() - scale * drawableWidth) / 2
+        val redundantYSpace = (viewHeight.toFloat() - scale * drawableHeight) / 2 // this is for centering the image
+        val redundantXSpace = (viewWidth.toFloat() - scale * drawableWidth) / 2   // this is for centering the image
 
-        matrix.postTranslate(redundantXSpace, redundantYSpace)
+        baseMatrix.postTranslate(redundantXSpace, redundantYSpace) // this is for centering the image
 
-        origWidth = viewWidth - 2 * redundantXSpace
-        origHeight = viewHeight - 2 * redundantYSpace
+        // Apply EXIF rotation
+        baseMatrix.postRotate(exifAngle, viewWidth / 2f, viewHeight / 2f)
 
-        imageMatrix = matrix
+        // Apply user-triggered rotation
+        baseMatrix.postRotate(rotatedDegrees.toFloat(), viewWidth / 2f, viewHeight / 2f)
+
+//        origWidth = viewWidth - 2 * redundantXSpace
+//        origHeight = viewHeight - 2 * redundantYSpace
+
+        val (transformedWidth, transformedHeight) = getImageDimensionsAfterBaseMatrix()
+        origWidth = transformedWidth
+        origHeight = transformedHeight
+
+        updateDrawMatrix()
     }
 
+    /**
+     * This function generates the new bitmap for the cropped image... the execution comes to here only if the last touch is for the manual zoom.
+     */
     fun getTransformedBitmap(): Bitmap? {
         val drawable = drawable ?: return null
         val originalBitmap = (drawable as? BitmapDrawable)?.bitmap ?: return null
 
-        val resultBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888)
+        val resultBitmap = createBitmap(viewWidth, viewHeight)
         val canvas = Canvas(resultBitmap)
-        canvas.drawBitmap(originalBitmap, matrix, null)
+        canvas.drawBitmap(originalBitmap, drawMatrix, null)
         return resultBitmap
+    }
+
+    /**
+     * This function is essential for handling the manually done rotation in the image cropping.
+     */
+    fun setImageManuallyRotatedDegrees(degrees: Int) {
+        rotatedDegrees = (rotatedDegrees + degrees) % 360
+        if (rotatedDegrees < 0) rotatedDegrees += 360
+        fitImageToView()
     }
 
     companion object {

@@ -39,7 +39,6 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /** Custom view that provides cropping capabilities to an image. */
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class CropImageView @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null,
@@ -195,7 +194,7 @@ class CropImageView @JvmOverloads constructor(
   private var bitmapCroppingWorkerJob: WeakReference<BitmapCroppingWorkerJob>? = null
 
   /** Get / set the scale type of the image in the crop view. */
-  var scaleType: ScaleType
+  private var scaleType: ScaleType
     get() = mScaleType
     set(scaleType) {
       if (scaleType != mScaleType) {
@@ -236,7 +235,7 @@ class CropImageView @JvmOverloads constructor(
     }
 
   /** Set auto-zoom functionality to enabled/disabled. */
-  var isAutoZoomEnabled: Boolean
+  private var isAutoZoomEnabled: Boolean
     get() = mAutoZoomEnabled
     set(autoZoomEnabled) {
       if (mAutoZoomEnabled != autoZoomEnabled) {
@@ -247,7 +246,7 @@ class CropImageView @JvmOverloads constructor(
     }
 
   /** Set multitouch functionality to enabled/disabled. */
-  fun setMultiTouchEnabled(multiTouchEnabled: Boolean) {
+  private fun setMultiTouchEnabled(multiTouchEnabled: Boolean) {
     if (mCropOverlayView!!.setMultiTouchEnabled(multiTouchEnabled)) {
       handleCropWindowChanged(inProgress = false, animate = false)
       mCropOverlayView.invalidate()
@@ -255,7 +254,7 @@ class CropImageView @JvmOverloads constructor(
   }
 
   /** Set moving of the crop window by dragging the center to enabled/disabled. */
-  fun setCenterMoveEnabled(centerMoveEnabled: Boolean) {
+  private fun setCenterMoveEnabled(centerMoveEnabled: Boolean) {
     if (mCropOverlayView!!.setCenterMoveEnabled(centerMoveEnabled)) {
       handleCropWindowChanged(inProgress = false, animate = false)
       mCropOverlayView.invalidate()
@@ -263,7 +262,7 @@ class CropImageView @JvmOverloads constructor(
   }
 
   /** The max zoom allowed during cropping. */
-  var maxZoom: Int
+  private var maxZoom: Int
     get() = mMaxZoom
     set(maxZoom) {
       if (mMaxZoom != maxZoom && maxZoom > 0) {
@@ -311,12 +310,12 @@ class CropImageView @JvmOverloads constructor(
    * Sets whether the aspect ratio is fixed or not; true fixes the aspect ratio, while false allows
    * it to be changed.
    */
-  fun setFixedAspectRatio(fixAspectRatio: Boolean) {
+  private fun setFixedAspectRatio(fixAspectRatio: Boolean) {
     mCropOverlayView!!.setFixedAspectRatio(fixAspectRatio)
   }
 
   /** Sets whether the image should be flipped horizontally  */
-  var isFlippedHorizontally: Boolean
+  private var isFlippedHorizontally: Boolean
     get() = mFlipHorizontally
     set(flipHorizontally) {
       if (mFlipHorizontally != flipHorizontally) {
@@ -331,10 +330,10 @@ class CropImageView @JvmOverloads constructor(
     }
 
   /** The Android Uri to save the cropped image to  */
-  var customOutputUri: Uri? = null
+  private var customOutputUri: Uri? = null
 
   /** Sets whether the image should be flipped vertically  */
-  var isFlippedVertically: Boolean
+  private var isFlippedVertically: Boolean
     get() = mFlipVertically
     set(flipVertically) {
       if (mFlipVertically != flipVertically) {
@@ -413,7 +412,7 @@ class CropImageView @JvmOverloads constructor(
    * if to show progress bar when image async loading/cropping is in progress.<br></br>
    * default: true, disable to provide custom progress bar UI.
    */
-  var isShowProgressBar: Boolean
+  private var isShowProgressBar: Boolean
     get() = mShowProgressBar
     set(showProgressBar) {
       if (mShowProgressBar != showProgressBar) {
@@ -427,7 +426,7 @@ class CropImageView @JvmOverloads constructor(
    * cropping image.<br></br>
    * default: true, may disable for animation or frame transition.
    */
-  var isShowCropOverlay: Boolean
+  private var isShowCropOverlay: Boolean
     get() = mShowCropOverlay
     set(showCropOverlay) {
       if (mShowCropOverlay != showCropOverlay) {
@@ -471,7 +470,7 @@ class CropImageView @JvmOverloads constructor(
    *
    * resId the drawable resource ID to set
    */
-  var imageResource: Int
+  private var imageResource: Int
     get() = mImageResource
     set(resId) {
       if (resId != 0) {
@@ -886,6 +885,7 @@ class CropImageView @JvmOverloads constructor(
       // changes
       mCropOverlayView.fixCurrentCropWindowRect()
     }
+    imageView.setImageManuallyRotatedDegrees(degrees) // ->> this thing was added
   }
 
   /** Flips the image horizontally. */
@@ -897,6 +897,8 @@ class CropImageView @JvmOverloads constructor(
       center = true,
       animate = false,
     )
+    imageView.setImageManuallyRotatedDegrees(180) // ->> this thing was added
+
   }
 
   /** Flips the image vertically. */
@@ -908,6 +910,8 @@ class CropImageView @JvmOverloads constructor(
       center = true,
       animate = false,
     )
+    imageView.setImageManuallyRotatedDegrees(180) // ->> this thing was added
+
   }
 
   /**
@@ -981,6 +985,8 @@ class CropImageView @JvmOverloads constructor(
       clearImageInt()
       originalBitmap = bitmap
       imageView.setImageBitmap(originalBitmap)
+      imageView.setOriginalBitmap(originalBitmap)
+      imageView.setOriginalUri(imageUri)
       this.imageUri = imageUri
       mImageResource = imageResource
       loadedSampleSize = loadSampleSize

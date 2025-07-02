@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import androidx.core.content.FileProvider
+import com.lassi.BuildConfig
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -12,6 +13,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import androidx.core.net.toUri
 
 internal fun Context.authority() = "$packageName.cropper.fileprovider"
 
@@ -29,13 +31,14 @@ internal fun Context.authority() = "$packageName.cropper.fileprovider"
  * the cache from time to time,
  */
 internal fun getUriForFile(context: Context, file: File): Uri {
+  Log.d("Debugging", "called from buildUri and inside the getUri")
   val authority = context.authority()
   try {
     Log.i("AIC", "Try get URI for scope storage - content://")
     return FileProvider.getUriForFile(context, authority, file)
   } catch (e: Exception) {
     try {
-      Log.e("AIC", "${e.message}")
+      Log.e("AIC", "getUriForFile ------------------------> ${e.message}")
       Log.w(
         "AIC",
         "ANR Risk -- Copying the file the location cache to avoid 'external-files-path' bug for N+ devices",
@@ -65,14 +68,13 @@ internal fun getUriForFile(context: Context, file: File): Uri {
           val directory = File(path)
           if (!directory.exists()) directory.mkdirs()
         }
-
-        return Uri.parse("$path${file.name}")
+        return "$path${file.name}".toUri()
       } finally {
         input?.close()
         output?.close()
       }
     } catch (e: Exception) {
-      Log.e("AIC", "${e.message}")
+      Log.e("AIC", "first catch block --------------> ${e.message}")
 
       if (SDK_INT < 29) {
         val cacheDir = context.externalCacheDir
@@ -84,7 +86,7 @@ internal fun getUriForFile(context: Context, file: File): Uri {
             )
             return Uri.fromFile(File(cacheDir.path, file.absolutePath))
           } catch (e: Exception) {
-            Log.e("AIC", "${e.message}")
+            Log.e("AIC", "second catch block --------------> ${e.message}")
           }
         }
       }

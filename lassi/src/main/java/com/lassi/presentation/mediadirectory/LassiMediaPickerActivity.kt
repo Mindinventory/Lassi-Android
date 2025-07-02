@@ -310,7 +310,6 @@ class LassiMediaPickerActivity :
         setResultOk(mediaPaths)
     }
 
-
     private fun initCamera() {
         if (viewModel.selectedMediaLiveData.value?.size == config.maxCount) {
             ToastUtils.showToast(this, MultiLangConfig.getConfig().alreadySelectedMaxItems)
@@ -340,34 +339,25 @@ class LassiMediaPickerActivity :
         finish()
     }
 
-    private fun croppingOptions(
-        uri: Uri? = null, includeCamera: Boolean? = false, includeGallery: Boolean? = false,
-    ) {
-        // Start picker to get image for cropping and then use the image in cropping activity.
-        cropImage.launch(includeCamera?.let {
-            includeGallery?.let { includeGallery ->
-                config.cropAspectRatio?.x?.let { x ->
-                    config.cropAspectRatio?.y?.let { y ->
-                        CropImageOptions(
-                            imageSourceIncludeCamera = includeCamera,
-                            imageSourceIncludeGallery = includeGallery,
-                            cropShape = config.cropType,
-                            showCropOverlay = true,
-                            guidelines = CropImageView.Guidelines.ON,
-                            multiTouchEnabled = false,
-                            aspectRatioX = x,
-                            aspectRatioY = y,
-                            fixAspectRatio = config.enableActualCircleCrop,
-                            outputCompressQuality = LassiConfig.getConfig().compressionRatio
-                        )
-                    }
-                }
-            }
-        }?.let {
-            CropImageContractOptions(
-                uri = uri,
-                cropImageOptions = it,
-            )
-        })
+    private fun croppingOptions(uri: Uri) {
+        val config = LassiConfig.getConfig()
+        val aspectX: Int = config.cropAspectRatio?.x ?: return
+        val aspectY: Int = config.cropAspectRatio?.y ?: return
+
+        val cropOptions = CropImageOptions(
+            imageSourceIncludeCamera = false,
+            imageSourceIncludeGallery = false,
+            cropShape = config.cropType,
+            showCropOverlay = true,
+            guidelines = CropImageView.Guidelines.ON,
+            multiTouchEnabled = false,
+            aspectRatioX = aspectX,
+            aspectRatioY = aspectY,
+            fixAspectRatio = config.enableActualCircleCrop,
+            outputCompressQuality = config.compressionRatio
+        )
+
+        val contractOptions = CropImageContractOptions(uri, cropOptions)
+        cropImage.launch(contractOptions)
     }
 }

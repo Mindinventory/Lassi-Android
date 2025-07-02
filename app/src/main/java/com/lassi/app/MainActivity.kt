@@ -3,11 +3,13 @@ package com.lassi.app
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +27,7 @@ import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import java.io.File
+import java.io.IOException
 import java.util.Locale
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -94,7 +97,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
                     .enableActualCircleCrop()
-                    .disableCrop()
+//                    .disableCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -286,6 +289,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 } else {
                     @Suppress("DEPRECATION")
                     it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA)
+                }
+                Log.d("CameraFragment", "selectedMedia in the main activity: $selectedMedia")
+
+                selectedMedia?.forEachIndexed { index, miMedia ->
+                    miMedia.path?.let { path ->
+                        try {
+                            val exif = ExifInterface(path)
+                            val orientation = exif.getAttributeInt(
+                                ExifInterface.TAG_ORIENTATION,
+                                ExifInterface.ORIENTATION_NORMAL
+                            )
+                            exif.javaClass.declaredFields
+                                .filter { it.name.startsWith("TAG_") }
+                                .forEach { field ->
+                                    field.isAccessible = true
+                                    val tag = field.get(null) as? String ?: return@forEach
+                                    val value = exif.getAttribute(tag)
+                                    Log.d("EXIF_CHECK", "$tag = $value")
+                                }
+
+                            Log.d("EXIF_CHECK", "Image $index at $path has orientation: $orientation")
+                        } catch (e: IOException) {
+                            Log.e("EXIF_CHECK", "Failed to read EXIF for $path", e)
+                        }
+                    } ?: Log.w("EXIF_CHECK", "Image $index has null path")
                 }
 
                 if (!selectedMedia.isNullOrEmpty()) {

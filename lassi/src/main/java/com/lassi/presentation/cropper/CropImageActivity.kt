@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
+import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
@@ -31,6 +32,7 @@ import com.lassi.databinding.CropImageActivityBinding
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.cropper.utils.getUriForFile
 import java.io.File
+import java.io.IOException
 
 open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriCompleteListener,
     CropImageView.OnCropImageCompleteListener {
@@ -346,7 +348,14 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
 
             if (hasManualZoomOrPan) {
                 val transformedBitmap = cropImageView?.imageView?.getTransformedBitmap()
-                cropImageView?.setImageBitmap(transformedBitmap)
+                // todo: here the exif data needs to be passed
+//                cropImageView?.setImageBitmap(
+//                    transformedBitmap,
+//                    exif = TODO()
+//                )
+                cropImageView?.setImageBitmap(
+                    transformedBitmap
+                )
             }
             // i need to keep here some conditionality before the new bitmap is created and saved.
             cropImageView?.croppedImageAsync(
@@ -409,7 +418,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 val intent = Intent().apply {
                     putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
-                setResult(Activity.RESULT_OK, intent)
+                setResult(RESULT_OK, intent)
                 finish()
             } catch (e: Exception) {
                 Logger.e(logTag, "onFileScanComplete $e")
@@ -423,7 +432,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 val intent = Intent().apply {
                     putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
-                setResult(Activity.RESULT_OK, intent)
+                setResult(RESULT_OK, intent)
                 finish()
             }
         }

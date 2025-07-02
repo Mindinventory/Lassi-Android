@@ -57,6 +57,7 @@ import kotlin.math.log
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCameraBinding>(),
     View.OnClickListener {
 
+    private val TAG: String = "CameraFragment"
     private lateinit var cameraMode: Mode
     private val config = LassiConfig.getConfig()
     private val cameraViewModel by lazy {
@@ -64,8 +65,87 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             this, SelectedMediaViewModelFactory(requireContext())
         )[SelectedMediaViewModel::class.java]
     }
-//    private var cameraMaxCount = config.maxCount
-    private var cameraMaxCount = 1
+
+    private var currentCropIndex = 0
+    private var croppedMediaList: ArrayList<MiMedia> = ArrayList()
+    private var mediaList: ArrayList<MiMedia> = ArrayList()
+    private var selected =
+        LassiConfig.getConfig().selectedMedias // this gives the gallery selected images.
+    private var isFromCropNext = false
+
+    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
+        if (LassiConfig.isSingleMediaSelection()) {
+            isFromCropNext = true
+            miMedia?.let { setResultOk(arrayListOf(it)) }
+            return@registerForActivityResult
+        }
+
+        if (miMedia != null) {
+            // Replace cropped into selected
+            selected[currentCropIndex] = miMedia
+
+            // Compress the cropped image
+            val compressed = compressSingleMedia(miMedia)
+            selected[currentCropIndex] = compressed
+
+            croppedMediaList.add(compressed)
+        }
+        cropNext()
+    }
+
+    private fun getSelectedAndCapturedImages() {
+        selected = config.selectedMedias
+        selected.addAll(mediaList)
+    }
+
+    private fun startCroppingSequence() {
+        if (selected.isNotEmpty()) {
+            currentCropIndex = 0
+            croppedMediaList.clear()
+            val firstPath = selected[0].path
+            if (!firstPath.isNullOrEmpty()) {
+                val uri = Uri.fromFile(File(firstPath))
+                croppingOptions(uri)
+            } else {
+                // skip invalid first path
+                cropImage.launch(null)
+            }
+        } else {
+            Log.d(TAG, "startCroppingSequence: selected is empty")
+        }
+    }
+
+    private fun cropNext() {
+        currentCropIndex++
+        if (currentCropIndex < selected.size) {
+            val path = selected[currentCropIndex].path
+            if (!path.isNullOrEmpty()) {
+                val uri = Uri.fromFile(File(path))
+                croppingOptions(uri)
+            } else {
+                cropNext()
+            }
+        } else {
+            isFromCropNext = true
+            setResultOk(selected)
+        }
+    }
+
+    private fun compressSingleMedia(miMedia: MiMedia): MiMedia {
+        miMedia.path?.let { path ->
+            val uri = Uri.fromFile(File(path))
+            val compressFormat = getCompressFormatForUri(uri, requireContext())
+            val newUri = writeBitmapToUri(
+                requireContext(),
+                decodeUriToBitmap(requireContext(), uri),
+                compressQuality = LassiConfig.getConfig().compressionRatio,
+                customOutputUri = null,
+                compressFormat = compressFormat
+            )
+            return miMedia.copy(path = newUri.path)
+        }
+        return miMedia // return original if path is null
+    }
 
     private val folderViewModel by lazy {
         ViewModelProvider(
@@ -75,6 +155,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
 
     private val startVideoContract = registerForActivityResult(StartVideoContract()) { miMedia ->
         if (LassiConfig.isSingleMediaSelection()) {
+            isFromCropNext = true
             miMedia?.let { setResultOk(arrayListOf(it)) }
         } else {
             LassiConfig.getConfig().selectedMedias.add(miMedia!!)
@@ -82,20 +163,6 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             folderViewModel.checkInsert()
             if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
                 setResultOk(arrayListOf(miMedia))
-            }
-        }
-    }
-
-    private val cropImage = registerForActivityResult(CropImageContract()) { miMedia ->
-        if (LassiConfig.isSingleMediaSelection()) {
-            miMedia?.let { setResultOk(arrayListOf(it)) }
-        } else {
-            LassiConfig.getConfig().selectedMedias.add(miMedia!!)
-            cameraViewModel.addSelectedMedia(miMedia)
-            folderViewModel.checkInsert()
-            if (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.GALLERY) {
-                setResultOk(arrayListOf(miMedia))
-                parentFragmentManager.popBackStack()
             }
         }
     }
@@ -174,15 +241,14 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         viewModel.startVideoRecord.observe(this, SafeObserver(this::handleVideoRecord))
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
             val config = LassiConfig.getConfig()
-            if (config.isCrop && cameraMaxCount <= 1) {
-                croppingOptions(uri)
-            } else {
-                val mediaList = arrayListOf(createMiMedia(uri.path))
-                if (config.compressionRatio > 0) {
-                    compressMedia(mediaList)
-                } else {
-                    setResultOk(mediaList)
-                }
+
+
+            mediaList = arrayListOf(createMiMedia(uri.path))
+            croppedMediaList.addAll(config.selectedMedias + mediaList)
+            if (config.compressionRatio > 0 && !config.isCrop) {
+                compressMedia(croppedMediaList)
+            } else { // user has selected the crop option.
+                setResultOk(croppedMediaList)
             }
         })
     }
@@ -210,73 +276,27 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         setResultOk(mediaPaths)
     }
 
-//    private fun croppingOptions(
-//        uri: Uri? = null,
-//        includeCamera: Boolean? = false,
-//        includeGallery: Boolean? = false
-//    ) {
-//        /**
-//         * Start picker to get image for cropping and then use the image in cropping activity.
-//         */
-//        cropImage.launch(
-//            includeCamera?.let {
-//                includeGallery?.let { includeGallery ->
-//                    CropImageOptions(
-//                        imageSourceIncludeCamera = it,
-//                        imageSourceIncludeGallery = includeGallery,
-//                        cropShape = CropImageView.CropShape.RECTANGLE,
-//                        showCropOverlay = true,
-//                        guidelines = CropImageView.Guidelines.ON,
-//                        multiTouchEnabled = false,
-//                        outputCompressQuality = LassiConfig.getConfig().compressionRatio
-//                    )
-//                }
-//            }?.let {
-//                CropImageContractOptions(
-//                    uri = uri,
-//                    cropImageOptions = it,
-//                )
-//            }
-//        )
-//    }
+    private fun croppingOptions(uri: Uri) {
+        val config = LassiConfig.getConfig()
+        val aspectX: Int = config.cropAspectRatio?.x ?: return
+        val aspectY: Int = config.cropAspectRatio?.y ?: return
 
-    private fun croppingOptions(
-        uri: Uri? = null,
-        includeCamera: Boolean? = false,
-        includeGallery: Boolean? = false
-    ) {
-        /**
-         * Start picker to get image for cropping and then use the image in cropping activity.
-         */
-        cropImage.launch(
-            includeCamera?.let {
-                includeGallery?.let { includeGallery ->
-                    config.cropAspectRatio?.x?.let { x ->
-                        config.cropAspectRatio?.y?.let { y ->
-                            CropImageOptions(
-                                imageSourceIncludeCamera = it,
-                                imageSourceIncludeGallery = includeGallery,
-                                cropShape = config.cropType,
-                                showCropOverlay = true,
-                                guidelines = CropImageView.Guidelines.ON,
-                                multiTouchEnabled = false,
-                                aspectRatioX = x,
-                                aspectRatioY = y,
-                                fixAspectRatio = config.enableActualCircleCrop,
-                                outputCompressQuality = config.compressionRatio
-                            )
-                        }
-                    }
-                }
-            }?.let {
-                CropImageContractOptions(
-                    uri = uri,
-                    cropImageOptions = it,
-                )
-            }
+        val cropOptions = CropImageOptions(
+            imageSourceIncludeCamera = false,
+            imageSourceIncludeGallery = false,
+            cropShape = config.cropType,
+            showCropOverlay = true,
+            guidelines = CropImageView.Guidelines.ON,
+            multiTouchEnabled = false,
+            aspectRatioX = aspectX,
+            aspectRatioY = aspectY,
+            fixAspectRatio = config.enableActualCircleCrop,
+            outputCompressQuality = config.compressionRatio
         )
-    }
 
+        val contractOptions = CropImageContractOptions(uri, cropOptions)
+        cropImage.launch(contractOptions)
+    }
 
     private fun toggleCamera() {
         binding.apply {
@@ -449,14 +469,12 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
             ) != PackageManager.PERMISSION_GRANTED
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-
             needsStorage =
                 ActivityCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) != PackageManager.PERMISSION_GRANTED
         } else
-
             if (needsAudio)
                 needsAudio =
                     ActivityCompat.checkSelfPermission(
@@ -468,11 +486,23 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
     }
 
     private fun setResultOk(selectedMedia: ArrayList<MiMedia>?) {
-        val intent = Intent().apply {
-            putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+        if (isFromCropNext || !config.isCrop) { // the !config.isCrop condition is given as when the crop is been disabled from the main activity, we don't go to the else part.
+            /**
+             * this will be when calling from the cropNext()
+             */
+            val intent = Intent().apply {
+                putExtra(KeyUtils.SELECTED_MEDIA, selectedMedia)
+            }
+            activity?.setResult(Activity.RESULT_OK, intent)
+            activity?.finish()
+            isFromCropNext = false
+        } else {
+            /**
+             * everytime else
+             */
+            getSelectedAndCapturedImages()
+            startCroppingSequence()
         }
-        activity?.setResult(Activity.RESULT_OK, intent)
-        activity?.finish()
     }
 
     private fun requestForPermissions() {
