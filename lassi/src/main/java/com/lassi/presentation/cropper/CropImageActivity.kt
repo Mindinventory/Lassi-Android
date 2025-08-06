@@ -348,11 +348,6 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
 
             if (hasManualZoomOrPan) {
                 val transformedBitmap = cropImageView?.imageView?.getTransformedBitmap()
-                // todo: here the exif data needs to be passed
-//                cropImageView?.setImageBitmap(
-//                    transformedBitmap,
-//                    exif = TODO()
-//                )
                 cropImageView?.setImageBitmap(
                     transformedBitmap
                 )

@@ -42,6 +42,19 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
     private var exifAngle: Float = 0f
     private var rotatedDegrees = 0
 
+    var flipHorizontally = false
+    var flipVertically = false
+
+    fun flipImageHorizontally() {
+        flipHorizontally = !flipHorizontally
+        fitImageToView()
+    }
+
+    fun flipImageVertically() {
+        flipVertically = !flipVertically
+        fitImageToView()
+    }
+
     fun setOriginalBitmap(bitmap: Bitmap?) {
         originalBitmap = bitmap
     }
@@ -224,6 +237,13 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
         baseMatrix.setScale(scale, scale)
 //        gestureMatrix.setScale(scale*2,scale*2)
 
+
+        // Apply flipping
+        val flipScaleX = if (flipHorizontally) -1f else 1f
+        val flipScaleY = if (flipVertically) -1f else 1f
+        baseMatrix.postScale(flipScaleX, flipScaleY, viewWidth / 2f, viewHeight / 2f)
+
+        // Centering
         val redundantYSpace = (viewHeight.toFloat() - scale * drawableHeight) / 2 // this is for centering the image
         val redundantXSpace = (viewWidth.toFloat() - scale * drawableWidth) / 2   // this is for centering the image
 
