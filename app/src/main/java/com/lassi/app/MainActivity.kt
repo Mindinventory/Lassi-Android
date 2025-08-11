@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
                     .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
                     .enableActualCircleCrop()
-//                    .disableCrop()
+                    .disableCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
