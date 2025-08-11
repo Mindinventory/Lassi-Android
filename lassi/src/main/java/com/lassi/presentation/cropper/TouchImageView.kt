@@ -224,6 +224,7 @@ class TouchImageView(context: Context, attrs: AttributeSet?) : AppCompatImageVie
     }
 
     private fun fitImageToView() {
+        Log.d("Debugging", "fitImageToView: manual zoom matrix: $baseMatrix")
         val drawable = drawable ?: return
 
         val drawableWidth = drawable.intrinsicWidth

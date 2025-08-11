@@ -892,30 +892,12 @@ class CropImageView @JvmOverloads constructor(
 
     /** Flips the image horizontally. */
     fun flipImageHorizontally() {
-//    mFlipHorizontally = !mFlipHorizontally
         imageView.flipImageHorizontally()
-//    applyImageMatrix(
-//      width = width.toFloat(),
-//      height = height.toFloat(),
-//      center = true,
-//      animate = false,
-//    )
-//    imageView.setImageManuallyRotatedDegrees(180) // ->> this thing was added
-//    imageView.scaleX = -1f
     }
 
     /** Flips the image vertically. */
     fun flipImageVertically() {
-//    mFlipVertically = !mFlipVertically
         imageView.flipImageVertically()
-//    applyImageMatrix(
-//      width = width.toFloat(),
-//      height = height.toFloat(),
-//      center = true,
-//      animate = false,
-//    )
-//    imageView.setImageManuallyRotatedDegrees(180) // ->> this thing was added
-//    imageView.scaleY = -1f
     }
 
     /**
@@ -986,6 +968,7 @@ class CropImageView @JvmOverloads constructor(
         degreesRotated: Int,
     ) {
         if (originalBitmap == null || originalBitmap != bitmap) {
+            Log.d("Debugging", "clearImageInt called from: setBitmap")
             clearImageInt()
             originalBitmap = bitmap
             imageView.setImageBitmap(originalBitmap)
@@ -1015,6 +998,7 @@ class CropImageView @JvmOverloads constructor(
      */
     private fun clearImageInt() {
         // if we allocated the bitmap, release it as fast as possible
+        Log.d("Debugging", "clearImageInt: CALLED--------------------")
         if (originalBitmap != null && (mImageResource > 0 || imageUri != null)) {
             originalBitmap!!.recycle()
         }
@@ -1382,6 +1366,7 @@ class CropImageView @JvmOverloads constructor(
      * [height] the height of the image view
      */
     private fun applyImageMatrix(width: Float, height: Float, center: Boolean, animate: Boolean) {
+        Log.d("Debugging", "applyImageMatrix: ---------------- CALLED -----------------")
         val bitmap = originalBitmap
         if (bitmap != null && width > 0 && height > 0) {
             mImageMatrix.invert(mImageInverseMatrix)
@@ -1832,6 +1817,7 @@ class CropImageView @JvmOverloads constructor(
     }
 
     init {
+        Log.d("Debugging", "mImageMatrix: $mImageMatrix")
         val options =
             (context as? Activity)?.intent?.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)
                 ?.parcelable(

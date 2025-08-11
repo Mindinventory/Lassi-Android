@@ -13,6 +13,7 @@ import android.graphics.Region
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -1092,7 +1093,7 @@ internal class CropOverlayView @JvmOverloads constructor(
   override fun onTouchEvent(event: MotionEvent): Boolean {
     // If this View is not enabled, don't allow for touch interactions.
 
-    // the below code is for manual zooming in the crop-shape area...
+    // the below code block is for manual zooming in the crop-shape area...
     val cropRect = mCropWindowHandler.getRect()
     val centerX = cropRect.centerX()
     val centerY = cropRect.centerY()
@@ -1135,6 +1136,7 @@ internal class CropOverlayView @JvmOverloads constructor(
    * if press is far from crop window then no move handler is returned (null).
    */
   private fun onActionDown(x: Float, y: Float) {
+    Log.d("Debugging", "onActionDown: ")
     mMoveHandler =
       mCropWindowHandler.getMoveHandler(x, y, mTouchRadius, cropShape!!, mCenterMoveEnabled)
 
@@ -1143,6 +1145,7 @@ internal class CropOverlayView @JvmOverloads constructor(
 
   /** Clear move handler starting in [onActionDown] if exists. */
   private fun onActionUp() {
+    Log.d("Debugging", "onActionUp: ")
     if (mMoveHandler != null) {
       mMoveHandler = null
       mCropWindowChangeListener?.onCropWindowChanged(false)
@@ -1155,6 +1158,7 @@ internal class CropOverlayView @JvmOverloads constructor(
    * The move handler will do the proper move/resize of the crop window.
    */
   private fun onActionMove(x: Float, y: Float) {
+    Log.d("Debugging", "onActionMove: ")
     if (mMoveHandler != null) {
       var snapRadius = mSnapRadius
       val rect = mCropWindowHandler.getRect()
