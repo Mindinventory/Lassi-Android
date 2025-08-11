@@ -250,7 +250,7 @@ internal object BitmapUtils {
         )
         if (result == bitmap) {
             // corner case when all bitmap is selected, no worth optimizing for it
-            result = bitmap.copy(bitmap.config, false)
+            result = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, false)
         }
         // rotating by 0, 90, 180 or 270 degrees doesn't require extra cropping
         if (degreesRotated % 90 != 0) {
@@ -614,7 +614,7 @@ internal object BitmapUtils {
                     )
                 }
             } catch (e: OutOfMemoryError) {
-                result.recycle()
+                result?.recycle()
                 throw e
             }
             BitmapSampled(result, sampleSize)
