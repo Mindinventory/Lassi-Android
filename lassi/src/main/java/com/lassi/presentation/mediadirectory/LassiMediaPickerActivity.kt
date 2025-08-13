@@ -275,7 +275,7 @@ class LassiMediaPickerActivity :
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuCamera?.isVisible =
             (config.lassiOption == LassiOption.CAMERA ||
-                    config.lassiOption == LassiOption.CAMERA_AND_GALLERY)
+                    config.lassiOption == LassiOption.CAMERA_AND_GALLERY || config.lassiOption == LassiOption.PICKER)
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }

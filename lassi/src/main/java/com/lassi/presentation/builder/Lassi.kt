@@ -197,6 +197,9 @@ class Lassi(private val context: Context) {
      * Allow Media picket to capture/record from camera while multiple media selection
      */
     fun with(lassiOption: LassiOption): Lassi {
+        // Reset config to defaults for every new build chain to avoid leaking
+        // previous session state (e.g., isCrop from disableCrop()).
+        lassiConfig = LassiConfig()
         lassiConfig.lassiOption = lassiOption
         return this
     }

@@ -548,7 +548,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menuCamera)?.isVisible =
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA || LassiConfig.getConfig().lassiOption == LassiOption.PICKER)
             } else {
                 false
             }

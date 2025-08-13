@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnPhotoVideoPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setMediaType(MediaType.PHOTO_VIDEO_PICKER)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
@@ -253,7 +253,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnPhotoPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.PHOTO_PICKER)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
@@ -273,7 +273,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnVideoMediaPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setMediaType(MediaType.VIDEO_PICKER)
                     .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)

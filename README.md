@@ -19,6 +19,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * Enable/disable camera from LassiOption
 * You can open System Default view for file selection by using MediaType.FILE_TYPE_WITH_SYSTEM_VIEW
 * Photo Picker feature integration
+* Group picked album images with camera capture for editing
 
 # Usage
 
@@ -65,7 +66,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     
     ```kotlin
             val intent = Lassi(this)
-                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY or CAMERA_AND_GALLERY
+                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY, CAMERA_AND_GALLERY or PICKER
                 .setMaxCount(5)
                 .setGridSize(3)
                 .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC
