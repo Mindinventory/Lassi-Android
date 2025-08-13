@@ -14,6 +14,10 @@ import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.lassi.R
@@ -140,6 +144,26 @@ class LassiMediaPickerActivity :
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         initiateFragment()
+
+        // Gives the text of the status bar dark color
+        WindowInsetsControllerCompat(window, window.decorView)
+            .isAppearanceLightStatusBars = true
+
+        // this thing ensures that the padding removed for the edge-to-edge support is not overridden again
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // giving the padding according to the edge-to-edge support.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root_layout_media_picker)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setBackgroundColor(config.statusBarColor)
+            view.setPadding(
+                view.paddingLeft,
+                systemBars.top,
+                view.paddingRight,
+                systemBars.bottom
+            )
+            insets
+        }
     }
 
     private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {

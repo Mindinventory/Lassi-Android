@@ -26,6 +26,11 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import java.io.File
 import java.util.Locale
+import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
@@ -35,9 +40,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // this thing ensures that the padding removed for the edge-to-edge support is not overridden again
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // this thing adds the black color to the text of status bar.
+        WindowInsetsControllerCompat(window, window.decorView)
+            .isAppearanceLightStatusBars = true
+
         _binding = ActivityMainBinding.inflate(layoutInflater)
         binding.also {
             setContentView(it.root)
+            // Apply system bar padding to root layout
+            ViewCompat.setOnApplyWindowInsetsListener(it.root) { view, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.setPadding(
+                    view.paddingLeft,
+                    systemBars.top,  // top padding for status bar
+                    view.paddingRight,
+                    systemBars.bottom // bottom padding for nav bar
+                )
+                insets
+            }
             it.btnImagePicker.setOnClickListener(this)
             it.btnVideoPicker.setOnClickListener(this)
             it.btnAudioPicker.setOnClickListener(this)
@@ -337,9 +361,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     try {
                         val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                         intent.addCategory("android.intent.category.DEFAULT")
-                        intent.data = Uri.parse(
-                            String.format("package:%s", applicationContext?.packageName)
-                        )
+                        intent.data =
+                            String.format("package:%s", applicationContext?.packageName).toUri()
                         mPermissionSettingResult.launch(intent)
                     } catch (e: Exception) {
                         val intent = Intent()

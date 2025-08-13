@@ -27,6 +27,9 @@ import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import androidx.core.util.component1
 import androidx.core.util.component2
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
 import com.lassi.presentation.cropper.CropOverlayView
@@ -1885,6 +1888,24 @@ class CropImageView @JvmOverloads constructor(
     mProgressBar = v.findViewById(R.id.CropProgressBar)
     mProgressBar.indeterminateTintList = ColorStateList.valueOf(options.progressBarColor)
     setProgressBarVisibility()
+
+    // Gives the text of the status bar dark color
+    (context as? Activity)?.let { activity ->
+      WindowInsetsControllerCompat(activity.window, activity.window.decorView)
+        .isAppearanceLightStatusBars = true
+    }
+    // giving the padding according to the edge-to-edge support.
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+      val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+      v.setPadding(
+        v.paddingLeft,
+        systemBars.top,
+        v.paddingRight,
+        systemBars.bottom
+      )
+      insets
+    }
   }
 
   override fun onCropWindowChanged(inProgress: Boolean) {

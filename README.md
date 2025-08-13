@@ -11,7 +11,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 
 ### Key features
 
-* Android 14 support
+* Android 15 support
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
