@@ -23,6 +23,7 @@ import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.SortingOption
+import com.lassi.domain.media.ZoomType
 import com.lassi.presentation.builder.Lassi
 import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
@@ -190,6 +191,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setAlertDialogNegativeButtonColor(R.color.cherry_red)
                     .setAlertDialogPositiveButtonColor(R.color.emerald_green)
                     .setMediaType(MediaType.IMAGE).setCropType(CropImageView.CropShape.OVAL)
+                    .setZoomType(ZoomType.MANUAL)
                     .setCropAspectRatio(1, 1).setCompressionRatio(0).setMinFileSize(0)
                     .setMaxFileSize(Int.MAX_VALUE.toLong()).enableActualCircleCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()

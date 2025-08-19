@@ -30,6 +30,7 @@ import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
+import com.lassi.domain.media.ZoomType
 import com.lassi.presentation.cropper.CropOverlayView.CropWindowChangeListener
 import com.lassi.presentation.cropper.utils.getFilePathFromUri
 import java.lang.ref.WeakReference
@@ -392,6 +393,29 @@ class CropImageView @JvmOverloads constructor(
         mShowProgressBar = options.showProgressBar
         mProgressBar.indeterminateTintList = ColorStateList.valueOf(options.progressBarColor)
     }
+
+    /*
+        fun setImageCropOptions(options: CropImageOptions) {
+        scaleType = options.scaleType
+        customOutputUri = options.customOutputUri
+        mCropOverlayView?.setInitialAttributeValues(options)
+        // Enforce zoom behavior based on zoomType
+        setMultiTouchEnabled(options.zoomType == com.lassi.domain.media.ZoomType.MANUAL || options.multiTouchEnabled)
+        imageView.isManualGesturesEnabled = options.zoomType == com.lassi.domain.media.ZoomType.MANUAL
+        setCenterMoveEnabled(options.centerMoveEnabled)
+        isShowCropOverlay = options.showCropOverlay
+        isShowProgressBar = options.showProgressBar
+        // Auto zoom only when ZoomType is AUTO
+        isAutoZoomEnabled = options.zoomType == com.lassi.domain.media.ZoomType.AUTO && options.autoZoomEnabled
+        maxZoom = options.maxZoom
+        isFlippedHorizontally = options.flipHorizontally
+        isFlippedVertically = options.flipVertically
+        mAutoZoomEnabled = options.zoomType == com.lassi.domain.media.ZoomType.AUTO && options.autoZoomEnabled
+        mShowCropOverlay = options.showCropOverlay
+        mShowProgressBar = options.showProgressBar
+        mProgressBar.indeterminateTintList = ColorStateList.valueOf(options.progressBarColor)
+    }
+     */
 
     /** Clears set aspect ratio values and sets fixed aspect ratio to FALSE. */
     fun clearAspectRatio() {
@@ -1937,7 +1961,7 @@ class CropImageView @JvmOverloads constructor(
                             minCropResultWidth = a.getFloat(
                                 R.styleable.CropImageView_ls_cropMinCropResultWidthPX,
                                 default.minCropResultWidth.toFloat()
-                            ).toInt(),
+                            ).toInt(),  
                             minCropResultHeight = a.getFloat(
                                 R.styleable.CropImageView_ls_cropMinCropResultHeightPX,
                                 default.minCropResultHeight.toFloat()
@@ -1962,6 +1986,10 @@ class CropImageView @JvmOverloads constructor(
                                 R.styleable.CropImageView_ls_cropperLabelTextSize,
                                 default.cropperLabelTextSize
                             ),
+                            zoomType = ZoomType.values()[a.getInt(
+                                R.styleable.CropImageView_ls_zoomType,
+                                default.zoomType.ordinal // fallback to default if not set
+                            )],
                             cropperLabelTextColor = a.getInteger(
                                 R.styleable.CropImageView_ls_cropperLabelTextColor,
                                 default.cropperLabelTextColor
@@ -1996,6 +2024,8 @@ class CropImageView @JvmOverloads constructor(
                 } else {
                     CropImageOptions()
                 }
+
+        Log.d("Debugging", "zoom type: ${options.zoomType}")
 
         mScaleType = options.scaleType
         mAutoZoomEnabled = options.autoZoomEnabled

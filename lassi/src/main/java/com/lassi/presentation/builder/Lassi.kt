@@ -14,6 +14,7 @@ import com.lassi.domain.media.LassiOption
 import com.lassi.domain.media.MediaType
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.domain.media.SortingOption
+import com.lassi.domain.media.ZoomType
 import com.lassi.presentation.cameraview.controls.AspectRatio
 import com.lassi.presentation.cropper.CropImageView
 import com.lassi.presentation.mediadirectory.LassiMediaPickerActivity
@@ -147,6 +148,13 @@ class Lassi(private val context: Context) {
         return this
     }
 
+    /**
+     * Set the type of zoom for the image cropping
+     */
+    fun setZoomType(zoomType: ZoomType): Lassi {
+        lassiConfig.zoomType = zoomType
+        return this
+    }
     /**
      * Limit max item selection
      */

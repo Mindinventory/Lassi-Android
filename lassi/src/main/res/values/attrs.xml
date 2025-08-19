@@ -6,6 +6,12 @@
             <enum name="onTouch" value="1" />
             <enum name="on" value="2" />
         </attr>
+
+        <attr name="ls_zoomType" format="enum">
+            <enum name="auto" value="0"/>
+            <enum name="manual" value="1"/>
+        </attr>
+
         <attr name="ls_cropScaleType">
             <enum name="fitCenter" value="0" />
             <enum name="center" value="1" />
