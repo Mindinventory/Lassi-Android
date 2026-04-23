@@ -255,22 +255,6 @@ class Lassi(private val context: Context) {
     }
 
     /**
-     * Set statusBar color resource (Only applicable for >= Lollipop)
-     */
-    fun setStatusBarColor(@ColorRes statusBarColor: Int): Lassi {
-        lassiConfig.statusBarColor = ContextCompat.getColor(context, statusBarColor)
-        return this
-    }
-
-    /**
-     * Set statusBar color hex (Only applicable for >= Lollipop)
-     */
-    fun setStatusBarColor(statusBarColor: String): Lassi {
-        lassiConfig.statusBarColor = Color.parseColor(statusBarColor)
-        return this
-    }
-
-    /**
      * Set toolbar color resource
      */
     fun setToolbarResourceColor(@ColorRes toolbarResourceColor: Int): Lassi {

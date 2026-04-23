@@ -185,6 +185,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 viewModel.deleteMediaFilesFromDB()
                 viewModel.addPhotoPickerDataInDatabase()
                 pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
+            } else if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_VIDEO] == true) {
+                viewModel.addPhotoPickerDataInDatabase()
+            } else if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_VIDEO] == false) {
+                viewModel.deleteMediaFilesFromDB()
+                viewModel.addPhotoPickerDataInDatabase()
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 showPermissionDisableAlert()
             }
