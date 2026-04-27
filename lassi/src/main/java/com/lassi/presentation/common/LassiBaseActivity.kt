@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.lassi.common.extenstions.applyEdgeToEdge
 import com.livefront.bridge.Bridge
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -21,6 +22,7 @@ abstract class LassiBaseActivity<VB : ViewBinding> : AppCompatActivity() {
     protected open fun getBundle() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyEdgeToEdge()
         super.onCreate(savedInstanceState)
         getBundle()
         _binding = inflateLayout(layoutInflater)

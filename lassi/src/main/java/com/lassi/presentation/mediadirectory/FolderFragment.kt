@@ -185,6 +185,12 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 viewModel.deleteMediaFilesFromDB()
                 viewModel.addPhotoPickerDataInDatabase()
                 pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
+            } else if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_VIDEO] == true) {
+                viewModel.addPhotoPickerDataInDatabase()
+            } else if (map[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true && map[Manifest.permission.READ_MEDIA_VIDEO] == false) {
+                viewModel.deleteMediaFilesFromDB()
+                viewModel.addPhotoPickerDataInDatabase()
+                pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
                 showPermissionDisableAlert()
             }
@@ -548,7 +554,7 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.menuCamera)?.isVisible =
             if (LassiConfig.getConfig().mediaType == MediaType.IMAGE || LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA)
+                (LassiConfig.getConfig().lassiOption == LassiOption.CAMERA_AND_GALLERY || LassiConfig.getConfig().lassiOption == LassiOption.CAMERA || LassiConfig.getConfig().lassiOption == LassiOption.PICKER)
             } else {
                 false
             }

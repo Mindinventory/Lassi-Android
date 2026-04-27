@@ -15,7 +15,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class LassiConfig(
     var toolbarColor: Int = Color.BLACK,
-    var statusBarColor: Int = Color.BLACK,
     var toolbarResourceColor: Int = Color.WHITE,
     var progressBarColor: Int = Color.BLACK,
     var galleryBackgroundColor: Int = Color.WHITE,
@@ -31,7 +30,7 @@ data class LassiConfig(
     var maxCount: Int = KeyUtils.DEFAULT_MEDIA_COUNT,
     var ascFlag: Int = KeyUtils.DEFAULT_ORDER,
     var gridSize: Int = KeyUtils.DEFAULT_GRID_SIZE,
-    var lassiOption: LassiOption = LassiOption.CAMERA_AND_GALLERY,
+    var lassiOption: LassiOption = LassiOption.PICKER,
     var minTime: Long = KeyUtils.DEFAULT_DURATION,
     var maxTime: Long = KeyUtils.DEFAULT_DURATION,
     var cropType: CropImageView.CropShape = CropImageView.CropShape.RECTANGLE,
@@ -47,7 +46,7 @@ data class LassiConfig(
     var alertDialogNegativeButtonColor: Int = Color.BLACK,
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
     var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG,
-    var isMultiPicker : Boolean = false
+    var isMultiPicker: Boolean = false
 ) : Parcelable {
     companion object {
 
@@ -56,7 +55,7 @@ data class LassiConfig(
         fun setConfig(lassiConfig: LassiConfig) {
             this.mediaPickerConfig.apply {
                 toolbarColor = lassiConfig.toolbarColor
-                statusBarColor = lassiConfig.statusBarColor
+//                statusBarColor = lassiConfig.statusBarColor
                 toolbarResourceColor = lassiConfig.toolbarResourceColor
                 progressBarColor = lassiConfig.progressBarColor
                 galleryBackgroundColor = lassiConfig.galleryBackgroundColor

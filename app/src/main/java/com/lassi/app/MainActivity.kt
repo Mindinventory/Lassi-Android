@@ -13,9 +13,12 @@ import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import com.lassi.app.adapter.SelectedMediaAdapter
 import com.lassi.app.databinding.ActivityMainBinding
+import com.lassi.common.extenstions.applyEdgeToEdge
+import com.lassi.common.extenstions.applySystemBarsInsets
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
 import com.lassi.domain.media.LassiOption
@@ -26,11 +29,6 @@ import com.lassi.presentation.common.decoration.GridSpacingItemDecoration
 import com.lassi.presentation.cropper.CropImageView
 import java.io.File
 import java.util.Locale
-import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var _binding: ActivityMainBinding? = null
@@ -39,29 +37,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var lassi: Lassi
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // this thing ensures that the padding removed for the edge-to-edge support is not overridden again
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        // this thing adds the black color to the text of status bar.
-        WindowInsetsControllerCompat(window, window.decorView)
-            .isAppearanceLightStatusBars = true
-
         _binding = ActivityMainBinding.inflate(layoutInflater)
+
         binding.also {
             setContentView(it.root)
-            // Apply system bar padding to root layout
-            ViewCompat.setOnApplyWindowInsetsListener(it.root) { view, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                view.setPadding(
-                    view.paddingLeft,
-                    systemBars.top,  // top padding for status bar
-                    view.paddingRight,
-                    systemBars.bottom // bottom padding for nav bar
-                )
-                insets
-            }
+
+            it.root.applySystemBarsInsets(top = true, bottom = true)
+
             it.btnImagePicker.setOnClickListener(this)
             it.btnVideoPicker.setOnClickListener(this)
             it.btnAudioPicker.setOnClickListener(this)
@@ -108,7 +93,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setAlertDialogNegativeButtonColor(R.color.cherry_red)
@@ -131,7 +115,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .setMaxTime(Int.MAX_VALUE.toLong()) // Set time larger to let file be visible
                         .setMinFileSize(0)
                         .setMaxFileSize(Integer.MAX_VALUE.toLong()) // For setting file size
-                        .setMediaType(MediaType.VIDEO).setStatusBarColor(R.color.colorPrimaryDark)
+                        .setMediaType(MediaType.VIDEO)
                         .setToolbarColor(R.color.colorPrimary)
                         .setToolbarResourceColor(android.R.color.white)
                         .setAlertDialogNegativeButtonColor(R.color.cherry_red)
@@ -146,15 +130,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnAudioPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.AUDIO).setMaxCount(4).setGridSize(2)
-                    .setPlaceHolder(R.drawable.ic_audio_placeholder)
-                    .setErrorDrawable(R.drawable.ic_audio_placeholder)
-                    .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
-                    .setToolbarColor(R.color.colorPrimary)
-                    .setToolbarResourceColor(android.R.color.white)
-                    .setProgressBarColor(R.color.colorAccent)
-                    .setGalleryBackgroundColor(R.color.colorGrey).build()
+                val intent =
+                    lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.AUDIO)
+                        .setMaxCount(4).setGridSize(2)
+                        .setPlaceHolder(R.drawable.ic_audio_placeholder)
+                        .setErrorDrawable(R.drawable.ic_audio_placeholder)
+                        .setSelectionDrawable(R.drawable.ic_checked_media)
+                        .setToolbarColor(R.color.colorPrimary)
+                        .setToolbarResourceColor(android.R.color.white)
+                        .setProgressBarColor(R.color.colorAccent)
+                        .setGalleryBackgroundColor(R.color.colorGrey).build()
                 receiveData.launch(intent)
             }
 
@@ -188,7 +173,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         "xlsx",
                         "xls"
                     ).setMaxCount(3)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
@@ -203,7 +187,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
@@ -224,7 +207,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .setMaxTime(30).setPlaceHolder(R.drawable.ic_image_placeholder)
                         .setErrorDrawable(R.drawable.ic_image_placeholder)
                         .setSelectionDrawable(R.drawable.ic_checked_media)
-                        .setStatusBarColor(R.color.colorPrimaryDark)
                         .setToolbarColor(R.color.colorPrimary).setMediaType(MediaType.VIDEO)
                         .setToolbarResourceColor(android.R.color.white)
                         .setAlertDialogNegativeButtonColor(R.color.cherry_red)
@@ -232,7 +214,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         .setProgressBarColor(R.color.colorAccent)
                         .setGalleryBackgroundColor(R.color.colorGrey)
                         .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
-                        .setCompressionRatio(0).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
+                        .setCompressionRatio(0).setMinFileSize(0)
+                        .setMaxFileSize(Int.MAX_VALUE.toLong())
                         .enableActualCircleCrop()
                         .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                         .enableRotate().build()
@@ -240,9 +223,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnPhotoVideoPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setMediaType(MediaType.PHOTO_VIDEO_PICKER)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
@@ -253,13 +235,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnPhotoPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setAscSort(SortingOption.ASCENDING).setGridSize(2)
                     .setMediaType(MediaType.PHOTO_PICKER)
                     .setPlaceHolder(R.drawable.ic_image_placeholder)
                     .setErrorDrawable(R.drawable.ic_image_placeholder)
                     .setSelectionDrawable(R.drawable.ic_checked_media)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setAlertDialogNegativeButtonColor(R.color.cherry_red)
@@ -273,9 +254,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btnVideoMediaPicker -> {
-                val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMaxCount(4)
+                val intent = lassi.with(LassiOption.PICKER).setMaxCount(4)
                     .setMediaType(MediaType.VIDEO_PICKER)
-                    .setStatusBarColor(R.color.colorPrimaryDark)
                     .setToolbarColor(R.color.colorPrimary)
                     .setToolbarResourceColor(android.R.color.white)
                     .setProgressBarColor(R.color.colorAccent)
@@ -288,17 +268,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun launchDocPicker() {
-        val intent = lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.DOC).setMaxCount(4).setGridSize(2)
-            .setPlaceHolder(R.drawable.ic_document_placeholder)
-            .setErrorDrawable(R.drawable.ic_document_placeholder)
-            .setSelectionDrawable(R.drawable.ic_checked_media)
-            .setStatusBarColor(R.color.colorPrimaryDark).setToolbarColor(R.color.colorPrimary)
-            .setToolbarResourceColor(android.R.color.white)
-            .setAlertDialogNegativeButtonColor(R.color.cherry_red)
-            .setAlertDialogPositiveButtonColor(R.color.emerald_green)
-            .setGalleryBackgroundColor(R.color.colorGrey).setSupportedFileTypes(
-                "pdf", "odt", "doc", "docs", "docx", "txt", "ppt", "pptx", "rtf", "xlsx", "xls"
-            ).setProgressBarColor(R.color.colorAccent).build()
+        val intent =
+            lassi.with(LassiOption.CAMERA_AND_GALLERY).setMediaType(MediaType.DOC).setMaxCount(4)
+                .setGridSize(2)
+                .setPlaceHolder(R.drawable.ic_document_placeholder)
+                .setErrorDrawable(R.drawable.ic_document_placeholder)
+                .setSelectionDrawable(R.drawable.ic_checked_media)
+                .setToolbarResourceColor(android.R.color.white)
+                .setAlertDialogNegativeButtonColor(R.color.cherry_red)
+                .setAlertDialogPositiveButtonColor(R.color.emerald_green)
+                .setGalleryBackgroundColor(R.color.colorGrey).setSupportedFileTypes(
+                    "pdf", "odt", "doc", "docs", "docx", "txt", "ppt", "pptx", "rtf", "xlsx", "xls"
+                ).setProgressBarColor(R.color.colorAccent).build()
         receiveData.launch(intent)
     }
 
@@ -306,7 +287,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 val selectedMedia = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA, MiMedia::class.java)
+                    it.data?.getParcelableArrayListExtra(
+                        KeyUtils.SELECTED_MEDIA,
+                        MiMedia::class.java
+                    )
                 } else {
                     @Suppress("DEPRECATION")
                     it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA)
