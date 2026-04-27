@@ -54,7 +54,7 @@ Using these APIs may lead to:
 
 ### Key features
 
-* Android 15 support
+* Android 16 support
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
