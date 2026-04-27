@@ -9,18 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.lassi.R
+import com.lassi.common.extenstions.applyBottomInset
+import com.lassi.common.extenstions.applyTopInset
 import com.lassi.common.extenstions.getFileName
 import com.lassi.common.extenstions.getFileSize
 import com.lassi.common.extenstions.show
@@ -145,25 +142,8 @@ class LassiMediaPickerActivity :
         setThemeAttributes()
         initiateFragment()
 
-        // Gives the text of the status bar dark color
-        WindowInsetsControllerCompat(window, window.decorView)
-            .isAppearanceLightStatusBars = true
-
-        // this thing ensures that the padding removed for the edge-to-edge support is not overridden again
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        // giving the padding according to the edge-to-edge support.
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root_layout_media_picker)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setBackgroundColor(config.statusBarColor)
-            view.setPadding(
-                view.paddingLeft,
-                systemBars.top,
-                view.paddingRight,
-                systemBars.bottom
-            )
-            insets
-        }
+        binding.toolbar.applyTopInset()
+        binding.root.applyBottomInset()
     }
 
     private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {
@@ -242,8 +222,6 @@ class LassiMediaPickerActivity :
                     toolbarResourceColor
                 )
             )
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = statusBarColor
         }
     }
 
@@ -275,7 +253,7 @@ class LassiMediaPickerActivity :
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuCamera?.isVisible =
             (config.lassiOption == LassiOption.CAMERA ||
-                    config.lassiOption == LassiOption.CAMERA_AND_GALLERY)
+                    config.lassiOption == LassiOption.CAMERA_AND_GALLERY || config.lassiOption == LassiOption.PICKER)
         menuDone?.isVisible = !viewModel.selectedMediaLiveData.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }

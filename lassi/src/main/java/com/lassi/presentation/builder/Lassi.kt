@@ -197,6 +197,9 @@ class Lassi(private val context: Context) {
      * Allow Media picket to capture/record from camera while multiple media selection
      */
     fun with(lassiOption: LassiOption): Lassi {
+        // Reset config to defaults for every new build chain to avoid leaking
+        // previous session state (e.g., isCrop from disableCrop()).
+        lassiConfig = LassiConfig()
         lassiConfig.lassiOption = lassiOption
         return this
     }
@@ -248,22 +251,6 @@ class Lassi(private val context: Context) {
      */
     fun setToolbarColor(toolbarColor: String): Lassi {
         lassiConfig.toolbarColor = Color.parseColor(toolbarColor)
-        return this
-    }
-
-    /**
-     * Set statusBar color resource (Only applicable for >= Lollipop)
-     */
-    fun setStatusBarColor(@ColorRes statusBarColor: Int): Lassi {
-        lassiConfig.statusBarColor = ContextCompat.getColor(context, statusBarColor)
-        return this
-    }
-
-    /**
-     * Set statusBar color hex (Only applicable for >= Lollipop)
-     */
-    fun setStatusBarColor(statusBarColor: String): Lassi {
-        lassiConfig.statusBarColor = Color.parseColor(statusBarColor)
         return this
     }
 

@@ -9,9 +9,52 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 ### Lassi Media picker
 ![image](/media/image-picker.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](/media/image-picker-camera.gif)
 
+# 📱 Edge-to-Edge Support & Status Bar API Update
+
+## 🚀 Overview
+
+This update introduces modern **edge-to-edge UI support** and removes deprecated system bar APIs to ensure compatibility with the latest Android versions, including Android 15+.
+
+---
+
+## ✨ What's New
+
+### 1. ✅ Edge-to-Edge Support
+
+We have implemented full edge-to-edge UI across all screens.
+
+#### 🔹 Key Improvements:
+- App content now draws behind the **status bar** and **navigation bar**
+- Improved immersive UI experience
+- Proper handling of system insets
+
+### 2. ❌ Removal of Deprecated APIs
+
+We have removed usage of deprecated system bar APIs to ensure compliance with the latest Android guidelines and Play Console requirements.
+
+### 🚫 Removed APIs
+
+The following APIs are no longer used in the library:
+
+- `android.view.Window.setStatusBarColor`
+- `android.view.Window.setNavigationBarColor`
+- `setStatusBarColor()`
+- `getStatusBarColor()`
+
+---
+
+### ⚠️ Why this change?
+
+Starting from **Android 15 (API 35)**, direct control over system bar colors is deprecated.
+
+Using these APIs may lead to:
+- ⚠️ Google Play Console warnings
+- ❌ Future incompatibility with newer Android versions
+- 🚫 Potential app rejection in future policies
+
 ### Key features
 
-* Android 14 support
+* Android 16 support
 * Simple implementation 
 * Set your own custom styles
 * Filter by particular media type
@@ -19,6 +62,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
 * Enable/disable camera from LassiOption
 * You can open System Default view for file selection by using MediaType.FILE_TYPE_WITH_SYSTEM_VIEW
 * Photo Picker feature integration
+* Group picked album images with camera capture for editing
 
 # Usage
 
@@ -65,7 +109,7 @@ Lassi is simplest way to pick media (either image, video, audio or doc)
     
     ```kotlin
             val intent = Lassi(this)
-                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY or CAMERA_AND_GALLERY
+                .with(LassiOption.CAMERA_AND_GALLERY) // choose Option CAMERA, GALLERY, CAMERA_AND_GALLERY or PICKER
                 .setMaxCount(5)
                 .setGridSize(3)
                 .setMediaType(MediaType.VIDEO) // MediaType : VIDEO IMAGE, AUDIO OR DOC

@@ -5,17 +5,17 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import android.widget.MediaController
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import com.lassi.R
+import com.lassi.common.extenstions.applyBottomInset
+import com.lassi.common.extenstions.applyTopInset
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.data.media.MiMedia
@@ -50,6 +50,9 @@ class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
             setMediaController(controller)
             setVideoURI(Uri.fromFile(File(videoPath)))
         }
+
+        binding.toolbar.applyTopInset()
+        binding.root.applyBottomInset()
     }
 
     private fun setThemeAttributes() {
@@ -65,10 +68,6 @@ class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
                 BlendModeCompat.SRC_ATOP
             )
             supportActionBar?.setHomeAsUpIndicator(upArrow)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                window.statusBarColor = statusBarColor
-            }
         }
     }
 
