@@ -12,7 +12,6 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
@@ -25,7 +24,6 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
-import androidx.annotation.RequiresApi
 import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.exifinterface.media.ExifInterface
@@ -59,7 +57,7 @@ class CropImageView @JvmOverloads constructor(
     private val mCropOverlayView: CropOverlayView?
 
     /** The matrix used to transform the cropping image in the image view  */
-    private val mImageMatrix = Matrix()
+    val mImageMatrix = Matrix()
 
     /** Reusing matrix instance for reverse matrix calculations. */
     private val mImageInverseMatrix = Matrix()
@@ -194,6 +192,10 @@ class CropImageView @JvmOverloads constructor(
 
     /** Task used to crop bitmap async from UI thread  */
     private var bitmapCroppingWorkerJob: WeakReference<BitmapCroppingWorkerJob>? = null
+
+    var isManualMode: Boolean = false
+    var isMatrixSynced = false
+    var lastManualEndTime = 0L
 
     /** Get / set the scale type of the image in the crop view. */
     private var scaleType: ScaleType
@@ -643,6 +645,17 @@ class CropImageView @JvmOverloads constructor(
      * [options] the resize method to use
      * @return a new Bitmap representing the cropped image
      */
+
+    private fun syncManualImageMatrixBeforeCrop() {
+        if (isManualMode) {
+            mImageMatrix.set(imageView.getCurrentMatrix())
+            imageView.imageMatrix = mImageMatrix
+
+            mapImagePointsByImageMatrix()
+            updateImageBounds(false)
+        }
+    }
+
     @JvmOverloads
     fun getCroppedImage(
         reqWidth: Int = 0,
@@ -650,6 +663,7 @@ class CropImageView @JvmOverloads constructor(
         options: RequestSizeOptions = RequestSizeOptions.RESIZE_INSIDE,
     ): Bitmap? {
         if (originalBitmap != null) {
+            syncManualImageMatrixBeforeCrop()
             val newReqWidth = if (options != RequestSizeOptions.NONE) reqWidth else 0
             val newReqHeight = if (options != RequestSizeOptions.NONE) reqHeight else 0
             val croppedBitmap =
@@ -712,6 +726,7 @@ class CropImageView @JvmOverloads constructor(
         customOutputUri: Uri? = null,
     ) {
         requireNotNull(mOnCropImageCompleteListener) { "mOnCropImageCompleteListener is not set" }
+        syncManualImageMatrixBeforeCrop()
         startCropWorkerTask(
             reqWidth = reqWidth,
             reqHeight = reqHeight,
@@ -1328,12 +1343,25 @@ class CropImageView @JvmOverloads constructor(
      * [animate] if to animate the change to the image matrix, or set it directly
      */
     private fun handleCropWindowChanged(inProgress: Boolean, animate: Boolean) {
+
+        // 🔥 HARD STOP during manual zoom (prevents flicker)
+        if (isManualMode) return
+
+        // 🔥 Prevent auto zoom immediately after manual
+        val now = System.currentTimeMillis()
+        if (now - lastManualEndTime < 150) return
+
         val width = width
         val height = height
+
         if (originalBitmap != null && width > 0 && height > 0) {
+
             val cropRect = mCropOverlayView!!.cropWindowRect
+
             if (inProgress) {
-                if (cropRect.left < 0 || cropRect.top < 0 || cropRect.right > width || cropRect.bottom > height) {
+                if (cropRect.left < 0 || cropRect.top < 0 ||
+                    cropRect.right > width || cropRect.bottom > height
+                ) {
                     applyImageMatrix(
                         width = width.toFloat(),
                         height = height.toFloat(),
@@ -1342,41 +1370,65 @@ class CropImageView @JvmOverloads constructor(
                     )
                 }
             } else if (mAutoZoomEnabled || mZoom > 1) {
-                var newZoom = 0f
-                // keep the cropping window covered area to 50%-65% of zoomed sub-area
-                if (mZoom < mMaxZoom && cropRect.width() < width * 0.5f && cropRect.height() < height * 0.5f) {
-                    newZoom = min(
-                        mMaxZoom.toFloat(),
-                        min(
-                            width / (cropRect.width() / mZoom / 0.64f),
-                            height / (cropRect.height() / mZoom / 0.64f),
-                        ),
-                    )
-                }
-                if (mZoom > 1 && (cropRect.width() > width * 0.65f || cropRect.height() > height * 0.65f)) {
-                    newZoom = max(
-                        1f,
-                        min(
-                            width / (cropRect.width() / mZoom / 0.51f),
-                            height / (cropRect.height() / mZoom / 0.51f),
-                        ),
-                    )
-                }
-                if (!mAutoZoomEnabled) newZoom = 1f
 
-                if (newZoom > 0 && newZoom != mZoom) {
+                var newZoom = mZoom // keep current zoom
+
+                // ✅ ONLY auto zoom when NOT in manual mode
+                if (!isManualMode && mAutoZoomEnabled) {
+
+                    // Zoom IN
+                    if (mZoom < mMaxZoom &&
+                        cropRect.width() < width * 0.5f &&
+                        cropRect.height() < height * 0.5f
+                    ) {
+                        newZoom = min(
+                            mMaxZoom.toFloat(),
+                            min(
+                                width / (cropRect.width() / mZoom / 0.64f),
+                                height / (cropRect.height() / mZoom / 0.64f),
+                            ),
+                        )
+                    }
+
+                    // Zoom OUT
+                    if (mZoom > 1 &&
+                        (cropRect.width() > width * 0.65f ||
+                                cropRect.height() > height * 0.65f)
+                    ) {
+                        newZoom = max(
+                            1f,
+                            min(
+                                width / (cropRect.width() / mZoom / 0.51f),
+                                height / (cropRect.height() / mZoom / 0.51f),
+                            ),
+                        )
+                    }
+
+                    if (!mAutoZoomEnabled) {
+                        newZoom = 1f
+                    }
+                }
+
+                if (newZoom != mZoom) {
+
                     if (animate) {
                         if (mAnimation == null) {
-                            // lazy create animation single instance
                             mAnimation = CropImageAnimation(imageView, mCropOverlayView)
                         }
-                        // set the state for animation to start from
                         mAnimation!!.setStartState(mImagePoints, mImageMatrix)
                     }
+
                     mZoom = newZoom
-                    applyImageMatrix(width.toFloat(), height.toFloat(), true, animate)
+
+                    applyImageMatrix(
+                        width.toFloat(),
+                        height.toFloat(),
+                        true,
+                        animate
+                    )
                 }
             }
+
             if (mOnSetCropWindowChangeListener != null && !inProgress) {
                 mOnSetCropWindowChangeListener!!.onCropWindowChanged()
             }
@@ -1390,20 +1442,29 @@ class CropImageView @JvmOverloads constructor(
      * [height] the height of the image view
      */
     private fun applyImageMatrix(width: Float, height: Float, center: Boolean, animate: Boolean) {
-        Log.d("Debugging", "applyImageMatrix: ---------------- CALLED -----------------")
+
+        // 🔥 HARD STOP during manual zoom (prevents flicker)
+        if (isManualMode) return
+
         val bitmap = originalBitmap
         if (bitmap != null && width > 0 && height > 0) {
+
             mImageMatrix.invert(mImageInverseMatrix)
+
             val cropRect = mCropOverlayView!!.cropWindowRect
             mImageInverseMatrix.mapRect(cropRect)
+
             mImageMatrix.reset()
-            // move the image to the center of the image view first, so we can manipulate it from there
+
+            // Center image
             mImageMatrix.postTranslate(
                 (width - bitmap.width) / 2,
                 (height - bitmap.height) / 2,
             )
+
             mapImagePointsByImageMatrix()
-            // rotate the image the required degrees from center of image
+
+            // Rotation
             if (mDegreesRotated > 0) {
                 mImageMatrix.postRotate(
                     mDegreesRotated.toFloat(),
@@ -1412,13 +1473,16 @@ class CropImageView @JvmOverloads constructor(
                 )
                 mapImagePointsByImageMatrix()
             }
-            // scale the image to the image view, image rect transformed to know new width/height
+
+            // Base scale
             val scale = min(
                 width / BitmapUtils.getRectWidth(mImagePoints),
                 height / BitmapUtils.getRectHeight(mImagePoints),
             )
-            if (mScaleType == ScaleType.FIT_CENTER || mScaleType == ScaleType.CENTER_INSIDE && scale < 1 ||
-                scale > 1 && mAutoZoomEnabled
+
+            if (mScaleType == ScaleType.FIT_CENTER ||
+                (mScaleType == ScaleType.CENTER_INSIDE && scale < 1) ||
+                (scale > 1 && mAutoZoomEnabled && !isManualMode) // ✅ FIXED
             ) {
                 mImageMatrix.postScale(
                     scale,
@@ -1427,29 +1491,33 @@ class CropImageView @JvmOverloads constructor(
                     BitmapUtils.getRectCenterY(mImagePoints),
                 )
                 mapImagePointsByImageMatrix()
-            } else if (mScaleType == ScaleType.CENTER_CROP) {
+            } else if (mScaleType == ScaleType.CENTER_CROP && !isManualMode) {
                 mZoom = max(
-                    getWidth() / BitmapUtils.getRectWidth(mImagePoints),
-                    getHeight() / BitmapUtils.getRectHeight(mImagePoints),
+                    width / BitmapUtils.getRectWidth(mImagePoints),
+                    height / BitmapUtils.getRectHeight(mImagePoints),
                 )
             }
-            // scale by the current zoom level
+
+            // Apply zoom
             val scaleX = if (mFlipHorizontally) -mZoom else mZoom
             val scaleY = if (mFlipVertically) -mZoom else mZoom
+
             mImageMatrix.postScale(
                 scaleX,
                 scaleY,
                 BitmapUtils.getRectCenterX(mImagePoints),
                 BitmapUtils.getRectCenterY(mImagePoints),
             )
+
             mapImagePointsByImageMatrix()
             mImageMatrix.mapRect(cropRect)
 
+            // Translation
             if (mScaleType == ScaleType.CENTER_CROP && center && !animate) {
                 mZoomOffsetX = 0f
                 mZoomOffsetY = 0f
             } else if (center) {
-                // set the zoomed area to be as to the center of cropping window as possible
+
                 mZoomOffsetX =
                     if (width > BitmapUtils.getRectWidth(mImagePoints)) {
                         0f
@@ -1459,7 +1527,7 @@ class CropImageView @JvmOverloads constructor(
                                 width / 2 - cropRect.centerX(),
                                 -BitmapUtils.getRectLeft(mImagePoints),
                             ),
-                            getWidth() - BitmapUtils.getRectRight(mImagePoints),
+                            width - BitmapUtils.getRectRight(mImagePoints),
                         ) / scaleX
                     }
 
@@ -1472,43 +1540,78 @@ class CropImageView @JvmOverloads constructor(
                                 height / 2 - cropRect.centerY(),
                                 -BitmapUtils.getRectTop(mImagePoints),
                             ),
-                            getHeight() - BitmapUtils.getRectBottom(mImagePoints),
+                            height - BitmapUtils.getRectBottom(mImagePoints),
                         ) / scaleY
                     }
-            } else {
-                // adjust the zoomed area so the crop window rectangle will be inside the area in case it
-                // was moved outside
-                mZoomOffsetX = (
-                        min(
-                            max(mZoomOffsetX * scaleX, -cropRect.left),
-                            -cropRect.right + width,
-                        ) / scaleX
-                        )
 
-                mZoomOffsetY = (
-                        min(
-                            max(mZoomOffsetY * scaleY, -cropRect.top),
-                            -cropRect.bottom + height,
-                        ) / scaleY
-                        )
+            } else {
+
+                mZoomOffsetX =
+                    min(
+                        max(mZoomOffsetX * scaleX, -cropRect.left),
+                        -cropRect.right + width,
+                    ) / scaleX
+
+                mZoomOffsetY =
+                    min(
+                        max(mZoomOffsetY * scaleY, -cropRect.top),
+                        -cropRect.bottom + height,
+                    ) / scaleY
             }
-            // apply to zoom offset translate and update the crop rectangle to offset correctly
+
             mImageMatrix.postTranslate(mZoomOffsetX * scaleX, mZoomOffsetY * scaleY)
             cropRect.offset(mZoomOffsetX * scaleX, mZoomOffsetY * scaleY)
+
             mCropOverlayView.cropWindowRect = cropRect
+
             mapImagePointsByImageMatrix()
             mCropOverlayView.invalidate()
-            // set matrix to apply
+
             if (animate) {
-                // set the state for animation to end in, start animation now
                 mAnimation!!.setEndState(mImagePoints, mImageMatrix)
                 imageView.startAnimation(mAnimation)
             } else {
-                imageView.imageMatrix = mImageMatrix
+                if (!isManualMode) {
+                    imageView.imageMatrix = mImageMatrix
+                }
             }
-            // update the image rectangle in the crop overlay
+
             updateImageBounds(false)
         }
+    }
+
+    fun beginManualMatrixMode() {
+        if (!isManualMode) {
+            isManualMode = true
+        }
+
+        if (!isMatrixSynced) {
+            isMatrixSynced = true
+            imageView.setExternalMatrix(mImageMatrix)
+        }
+    }
+
+    fun getCropBoundsForTouchImage(): RectF {
+        return RectF(mCropOverlayView!!.cropWindowRect)
+    }
+
+    fun endManualMatrixMode(matrix: Matrix) {
+        lastManualEndTime = System.currentTimeMillis()
+
+        mImageMatrix.set(matrix)
+        imageView.imageMatrix = mImageMatrix
+
+        mapImagePointsByImageMatrix()
+        updateImageBounds(false)
+
+        mCropOverlayView?.invalidate()
+        invalidate()
+
+        isMatrixSynced = false
+
+        // Important:
+        // Do NOT set isManualMode = false here.
+        // Once user manually zooms/pans, CropImageView should not auto-fight the matrix.
     }
 
     /**
@@ -1961,7 +2064,7 @@ class CropImageView @JvmOverloads constructor(
                             minCropResultWidth = a.getFloat(
                                 R.styleable.CropImageView_ls_cropMinCropResultWidthPX,
                                 default.minCropResultWidth.toFloat()
-                            ).toInt(),  
+                            ).toInt(),
                             minCropResultHeight = a.getFloat(
                                 R.styleable.CropImageView_ls_cropMinCropResultHeightPX,
                                 default.minCropResultHeight.toFloat()
