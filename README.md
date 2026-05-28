@@ -25,8 +25,6 @@ We have implemented full edge-to-edge UI across all screens.
 
 ### 2. ✅ Auto & Manual Zoom Support
 
-Added support for both automatic and manual zoom handling in the image cropper.
-
 - Improved pinch-to-zoom and drag gesture handling.
 - Preserves the current zoom and pan position during cropping.
 - Prevents zoom reset and image snap-back issues.
