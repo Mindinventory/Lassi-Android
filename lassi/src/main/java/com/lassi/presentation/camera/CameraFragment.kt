@@ -244,7 +244,8 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
 
             mediaList = arrayListOf(createMiMedia(uri.path))
             croppedMediaList.addAll(config.selectedMedias + mediaList)
-            croppedMediaList.addAll(config.selectedMedias + mediaList)if (config.compressionRatio > 0 && !config.isCrop) {
+            croppedMediaList.addAll(config.selectedMedias + mediaList)
+            if (config.compressionRatio > 0 && !config.isCrop) {
                 compressMedia(croppedMediaList)
             } else { // user has selected the crop option.
                 setResultOk(croppedMediaList)
