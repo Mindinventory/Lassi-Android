@@ -21,14 +21,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
+import com.lassi.common.extenstions.applyBottomInset
+import com.lassi.common.extenstions.applyEdgeToEdge
+import com.lassi.common.extenstions.applyTopInset
+import com.lassi.common.utils.DrawableUtils.changeIconColor
 import com.lassi.common.utils.FilePickerUtils
 import com.lassi.common.utils.KeyUtils
 import com.lassi.common.utils.Logger
 import com.lassi.data.media.MiMedia
 import com.lassi.databinding.CropImageActivityBinding
+import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.cropper.utils.getUriForFile
 import java.io.File
@@ -50,6 +56,9 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
     private var cropImageView: CropImageView? = null
     private lateinit var binding: CropImageActivityBinding
     private var latestTmpUri: Uri? = null
+
+    private val config = LassiConfig.getConfig()
+
     private val pickImageGallery =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             onPickImageResult(uri)
@@ -64,10 +73,16 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+        applyEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = CropImageActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setCropImageView(binding.cropImageView)
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setThemeAttributes()
+
         val bundle = intent.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)
         cropImageUri = bundle?.parcelable(CropImage.CROP_IMAGE_EXTRA_SOURCE)
         cropImageOptions =
@@ -101,8 +116,25 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         onBackPressedDispatcher.addCallback {
             setResultCancel()
         }
+
+        binding.toolbar.applyTopInset()
+        binding.cropImageView.applyBottomInset()
     }
 
+    private fun setThemeAttributes() {
+        with(config) {
+            binding.toolbar.background =
+                toolbarColor.toDrawable()
+            binding.toolbar.setTitleTextColor(toolbarResourceColor)
+            supportActionBar?.setHomeAsUpIndicator(
+                changeIconColor(
+                    this@CropImageActivity,
+                    R.drawable.ic_back_white,
+                    toolbarResourceColor
+                )
+            )
+        }
+    }
 
     private fun setCustomizations() {
         cropImageOptions.activityBackgroundColor.let { activityBackgroundColor ->
@@ -279,26 +311,32 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
             cropImage()
             true
         }
+
         R.id.ic_rotate_left_24 -> {
             rotateImage(-cropImageOptions.rotationDegrees)
             true
         }
+
         R.id.ic_rotate_right_24 -> {
             rotateImage(cropImageOptions.rotationDegrees)
             true
         }
+
         R.id.ic_flip_24_horizontally -> {
             cropImageView?.flipImageHorizontally()
             true
         }
+
         R.id.ic_flip_24_vertically -> {
             cropImageView?.flipImageVertically()
             true
         }
+
         android.R.id.home -> {
             setResultCancel()
             true
         }
+
         else -> super.onOptionsItemSelected(item)
     }
 

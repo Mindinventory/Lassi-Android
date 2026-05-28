@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -17,6 +16,8 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.lassi.R
+import com.lassi.common.extenstions.applyBottomInset
+import com.lassi.common.extenstions.applyTopInset
 import com.lassi.common.extenstions.getFileName
 import com.lassi.common.extenstions.getFileSize
 import com.lassi.common.extenstions.show
@@ -140,6 +141,9 @@ class LassiMediaPickerActivity :
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setThemeAttributes()
         initiateFragment()
+
+        binding.toolbar.applyTopInset()
+        binding.root.applyBottomInset()
     }
 
     private fun setToolbarTitle(selectedMedias: ArrayList<MiMedia>) {
@@ -218,8 +222,6 @@ class LassiMediaPickerActivity :
                     toolbarResourceColor
                 )
             )
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = statusBarColor
         }
     }
 

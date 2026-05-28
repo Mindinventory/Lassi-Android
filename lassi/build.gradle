@@ -10,12 +10,12 @@ group='com.github.Mindinventory'
 
 android {
     namespace 'com.lassi'
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
         minSdk 21
-        targetSdk 34
-        versionCode 30
-        versionName "1.4.2"
+        targetSdk 36
+        versionCode 32
+        versionName "1.5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -62,7 +62,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
 
     // Google material
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.13.0'
 
     // glide
     implementation 'com.github.bumptech.glide:glide:4.14.2'

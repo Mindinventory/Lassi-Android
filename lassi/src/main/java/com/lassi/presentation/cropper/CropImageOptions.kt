@@ -104,7 +104,7 @@ data class CropImageOptions @JvmOverloads constructor(
     @JvmField @Px var maxCropResultHeight: Int = 99999,
     @JvmField var activityTitle: CharSequence = "",
     @JvmField @ColorInt var activityMenuIconColor: Int = 0,
-    @JvmField @ColorInt var activityMenuTextColor: Int? = null,
+    @JvmField @ColorInt var activityMenuTextColor: Int? = Color.WHITE,
     /** The Android Uri to save the cropped image to. */
     @JvmField var customOutputUri: Uri? = null,
     @JvmField var outputCompressFormat: CompressFormat = CompressFormat.JPEG,

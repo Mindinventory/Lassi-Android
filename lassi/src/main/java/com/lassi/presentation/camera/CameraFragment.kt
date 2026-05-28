@@ -52,7 +52,6 @@ import com.lassi.presentation.mediadirectory.FolderViewModel
 import com.lassi.presentation.mediadirectory.FolderViewModelFactory
 import com.lassi.presentation.mediadirectory.SelectedMediaViewModelFactory
 import java.io.File
-import kotlin.math.log
 
 class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCameraBinding>(),
     View.OnClickListener {
@@ -245,7 +244,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
 
             mediaList = arrayListOf(createMiMedia(uri.path))
             croppedMediaList.addAll(config.selectedMedias + mediaList)
-            if (config.compressionRatio > 0 && !config.isCrop) {
+            croppedMediaList.addAll(config.selectedMedias + mediaList)if (config.compressionRatio > 0 && !config.isCrop) {
                 compressMedia(croppedMediaList)
             } else { // user has selected the crop option.
                 setResultOk(croppedMediaList)
@@ -321,6 +320,7 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
                     }
                 }
             }
+
             R.id.ivFlipCamera -> toggleCamera()
             R.id.ivFlash -> {
                 //Check whether the flashlight is available or not?
