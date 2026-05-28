@@ -30,6 +30,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
+import androidx.core.graphics.scale
 
 /**
  * Utility class that deals with operations with an ImageView.
@@ -526,12 +527,8 @@ internal object BitmapUtils {
                     val height = bitmap.height
                     val scale = max(width / reqWidth.toFloat(), height / reqHeight.toFloat())
                     if (scale > 1 || options === RequestSizeOptions.RESIZE_FIT) {
-                        resized = Bitmap.createScaledBitmap(
-                            bitmap,
-                            (width / scale).toInt(),
-                            (height / scale).toInt(),
-                            false,
-                        )
+                        resized =
+                            bitmap.scale((width / scale).toInt(), (height / scale).toInt(), false)
                     }
                 }
                 if (resized != null) {

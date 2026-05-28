@@ -241,7 +241,9 @@ class CameraFragment : LassiBaseViewModelFragment<CameraViewModel, FragmentCamer
         viewModel.cropImageLiveData.observe(this, SafeObserver { uri ->
             val config = LassiConfig.getConfig()
 
+
             mediaList = arrayListOf(createMiMedia(uri.path))
+            croppedMediaList.addAll(config.selectedMedias + mediaList)
             croppedMediaList.addAll(config.selectedMedias + mediaList)
             if (config.compressionRatio > 0 && !config.isCrop) {
                 compressMedia(croppedMediaList)
