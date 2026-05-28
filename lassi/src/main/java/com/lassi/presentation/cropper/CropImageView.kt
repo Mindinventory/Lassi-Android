@@ -399,29 +399,6 @@ class CropImageView @JvmOverloads constructor(
         mProgressBar.indeterminateTintList = ColorStateList.valueOf(options.progressBarColor)
     }
 
-    /*
-        fun setImageCropOptions(options: CropImageOptions) {
-        scaleType = options.scaleType
-        customOutputUri = options.customOutputUri
-        mCropOverlayView?.setInitialAttributeValues(options)
-        // Enforce zoom behavior based on zoomType
-        setMultiTouchEnabled(options.zoomType == com.lassi.domain.media.ZoomType.MANUAL || options.multiTouchEnabled)
-        imageView.isManualGesturesEnabled = options.zoomType == com.lassi.domain.media.ZoomType.MANUAL
-        setCenterMoveEnabled(options.centerMoveEnabled)
-        isShowCropOverlay = options.showCropOverlay
-        isShowProgressBar = options.showProgressBar
-        // Auto zoom only when ZoomType is AUTO
-        isAutoZoomEnabled = options.zoomType == com.lassi.domain.media.ZoomType.AUTO && options.autoZoomEnabled
-        maxZoom = options.maxZoom
-        isFlippedHorizontally = options.flipHorizontally
-        isFlippedVertically = options.flipVertically
-        mAutoZoomEnabled = options.zoomType == com.lassi.domain.media.ZoomType.AUTO && options.autoZoomEnabled
-        mShowCropOverlay = options.showCropOverlay
-        mShowProgressBar = options.showProgressBar
-        mProgressBar.indeterminateTintList = ColorStateList.valueOf(options.progressBarColor)
-    }
-     */
-
     /** Clears set aspect ratio values and sets fixed aspect ratio to FALSE. */
     fun clearAspectRatio() {
         mCropOverlayView!!.aspectRatioX = 1
@@ -1010,7 +987,6 @@ class CropImageView @JvmOverloads constructor(
         degreesRotated: Int,
     ) {
         if (originalBitmap == null || originalBitmap != bitmap) {
-            Log.d("Debugging", "clearImageInt called from: setBitmap")
             clearImageInt()
             originalBitmap = bitmap
             imageView.setImageBitmap(originalBitmap)
@@ -1040,7 +1016,6 @@ class CropImageView @JvmOverloads constructor(
      */
     private fun clearImageInt() {
         // if we allocated the bitmap, release it as fast as possible
-        Log.d("Debugging", "clearImageInt: CALLED--------------------")
         if (originalBitmap != null && (mImageResource > 0 || imageUri != null)) {
             originalBitmap!!.recycle()
         }
@@ -1947,7 +1922,6 @@ class CropImageView @JvmOverloads constructor(
     }
 
     init {
-        Log.d("Debugging", "mImageMatrix: $mImageMatrix")
         val options =
             (context as? Activity)?.intent?.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)
                 ?.parcelable(
@@ -2130,8 +2104,6 @@ class CropImageView @JvmOverloads constructor(
                 } else {
                     CropImageOptions()
                 }
-
-        Log.d("Debugging", "zoom type: ${options.zoomType}")
 
         mScaleType = options.scaleType
         mAutoZoomEnabled = options.autoZoomEnabled

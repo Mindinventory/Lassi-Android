@@ -104,9 +104,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     .setProgressBarColor(R.color.colorAccent)
                     .setGalleryBackgroundColor(R.color.colorGrey)
                     .setCropType(CropImageView.CropShape.OVAL).setCropAspectRatio(1, 1)
-                    .setCompressionRatio(10).setMinFileSize(0).setMaxFileSize(Int.MAX_VALUE.toLong())
+                    .setCompressionRatio(10).setMinFileSize(0)
+                    .setMaxFileSize(Int.MAX_VALUE.toLong())
                     .enableActualCircleCrop()
-//                    .disableCrop()
                     .setSupportedFileTypes("jpg", "jpeg", "png", "webp", "gif").enableFlip()
                     .enableRotate().build()
                 receiveData.launch(intent)
@@ -300,7 +300,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     @Suppress("DEPRECATION")
                     it.data?.getParcelableArrayListExtra(KeyUtils.SELECTED_MEDIA)
                 }
-                Log.d("CameraFragment", "selectedMedia in the main activity: $selectedMedia")
 
                 selectedMedia?.forEachIndexed { index, miMedia ->
                     miMedia.path?.let { path ->
@@ -316,14 +315,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                                     field.isAccessible = true
                                     val tag = field.get(null) as? String ?: return@forEach
                                     val value = exif.getAttribute(tag)
-                                    Log.d("EXIF_CHECK", "$tag = $value")
                                 }
-
-                            Log.d("EXIF_CHECK", "Image $index at $path has orientation: $orientation")
                         } catch (e: IOException) {
                             Log.e("EXIF_CHECK", "Failed to read EXIF for $path", e)
                         }
-                    } ?: Log.w("EXIF_CHECK", "Image $index has null path")
+                    }
                 }
 
                 if (!selectedMedia.isNullOrEmpty()) {

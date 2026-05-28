@@ -97,7 +97,6 @@ class LassiMediaPickerActivity :
                                     fileSize = getFileSize(uri)
                                     path =
                                         getFilePathFromUri(this@LassiMediaPickerActivity, uri, true)
-                                    Log.d("TAG", "!@# SLOWER MEDIA ITEM: $name")
                                 }
                             } as ArrayList<MiMedia>
                         }

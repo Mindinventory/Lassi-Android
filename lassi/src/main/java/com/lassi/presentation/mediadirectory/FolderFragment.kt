@@ -219,7 +219,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
     }
 
     private fun handleEmptySelection() {
-        Log.d("PhotoPicker", "!@# PHOTO-PICKER:: No media selected")
         activity?.finish()
     }
 
@@ -271,7 +270,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
         if (config.compressionRatio != 0) {
             compressMedia(mediaPaths, config)
         } else {
-            Log.d("PhotoPicker", "!@# PHOTO-PICKER:: Media paths: $mediaPaths")
             setResultOk(mediaPaths)
         }
     }
@@ -391,8 +389,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     requestPermission.launch(photoPermissionAnd14.toTypedArray())
                 }
             } else if (LassiConfig.getConfig().mediaType == MediaType.VIDEO) {
-                Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.VIDEO")
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                     needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                         requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
@@ -405,11 +401,9 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                     requestPermission.launch(vidPermissionAnd14.toTypedArray())
                 }
             } else if (LassiConfig.getConfig().mediaType in pickerTypes) {
-                Log.d("TAG", "!@# PHOTO-PICKER:: mediaType == MediaType.PHOTOPICKER")
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
-                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
                 pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
@@ -425,7 +419,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
-                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
                 pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {
@@ -438,7 +431,6 @@ class FolderFragment : LassiBaseViewModelFragment<FolderViewModel, FragmentMedia
                 needsStorage = needsStorage && ActivityCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 ) != PackageManager.PERMISSION_GRANTED
-                Log.d("TAG", "!@# PHOTO-PICKER:: PickVisualMedia.VideoOnly")
                 binding.progressBar.show()
                 pickMedia(mediaType = LassiConfig.getConfig().mediaType, mediaPickerLauncher)
             } else {

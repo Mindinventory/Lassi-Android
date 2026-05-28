@@ -23,6 +23,15 @@ This update introduces modern **edge-to-edge UI support** and removes deprecated
 
 We have implemented full edge-to-edge UI across all screens.
 
+### 2. ✅ Auto & Manual Zoom Support
+
+Added support for both automatic and manual zoom handling in the image cropper.
+
+- Improved pinch-to-zoom and drag gesture handling.
+- Preserves the current zoom and pan position during cropping.
+- Prevents zoom reset and image snap-back issues.
+- Ensures cropped output matches the visible preview area.
+
 #### 🔹 Key Improvements:
 - App content now draws behind the **status bar** and **navigation bar**
 - Improved immersive UI experience
@@ -141,6 +150,7 @@ Using these APIs may lead to:
                 .enableFlip() // Enable flip image option while image cropping (for MediaType.IMAGE only)
                 .enableRotate() // Enable rotate image option while image cropping (for MediaType.IMAGE only)
                 .enableActualCircleCrop() // Enable actual circular crop (only for MediaType.Image and CropImageView.CropShape.OVAL)
+                .setZoomType(ZoomType.MANUAL) // (1) AUTO   -> Automatically adjusts zoom based on crop window changes. (2) MANUAL -> Enables user-controlled pinch zoom and drag gestures.
                 .build()
              receiveData.launch(intent)
     ```

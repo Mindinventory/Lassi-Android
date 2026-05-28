@@ -380,22 +380,6 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
         if (cropImageOptions.noOutputImage) {
             setResult(null, null, 1)
         } else {
-
-            /*val imageView = cropImageView?.imageView
-
-            val scale = imageView?.getScale() ?: 1f
-            val (tx, ty) = imageView?.getTranslation() ?: (0f to 0f)
-
-            val hasManualZoomOrPan =
-                kotlin.math.abs(scale - 1f) > 0.01f ||
-                        kotlin.math.abs(tx) > 1f ||
-                        kotlin.math.abs(ty) > 1f
-
-            if (hasManualZoomOrPan) {
-                val transformedBitmap = imageView?.getTransformedBitmap()
-                cropImageView?.setImageBitmap(transformedBitmap)
-            }*/
-
             cropImageView?.croppedImageAsync(
                 saveCompressFormat = cropImageOptions.outputCompressFormat,
                 saveCompressQuality = cropImageOptions.outputCompressQuality,

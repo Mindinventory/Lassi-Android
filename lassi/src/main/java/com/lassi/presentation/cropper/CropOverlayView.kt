@@ -1136,7 +1136,6 @@ internal class CropOverlayView @JvmOverloads constructor(
    * if press is far from crop window then no move handler is returned (null).
    */
   private fun onActionDown(x: Float, y: Float) {
-//    Log.d("Debugging", "onActionDown: ")
     mMoveHandler =
       mCropWindowHandler.getMoveHandler(x, y, mTouchRadius, cropShape!!, mCenterMoveEnabled)
 
@@ -1145,7 +1144,6 @@ internal class CropOverlayView @JvmOverloads constructor(
 
   /** Clear move handler starting in [onActionDown] if exists. */
   private fun onActionUp() {
-//    Log.d("Debugging", "onActionUp: ")
     if (mMoveHandler != null) {
       mMoveHandler = null
       mCropWindowChangeListener?.onCropWindowChanged(false)
@@ -1158,7 +1156,6 @@ internal class CropOverlayView @JvmOverloads constructor(
    * The move handler will do the proper move/resize of the crop window.
    */
   private fun onActionMove(x: Float, y: Float) {
-//    Log.d("Debugging", "onActionMove: ")
     if (mMoveHandler != null) {
       var snapRadius = mSnapRadius
       val rect = mCropWindowHandler.getRect()
