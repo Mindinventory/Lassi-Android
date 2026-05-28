@@ -47,7 +47,6 @@ data class LassiConfig(
     var alertDialogPositiveButtonColor: Int = Color.BLACK,
     var customLimitExceedingErrorMessage: String = ERROR_EXCEEDING_MSG,
     var isMultiPicker: Boolean = false,
-    var zoomType : ZoomType = ZoomType.AUTO
 ) : Parcelable {
     companion object {
 
@@ -89,7 +88,6 @@ data class LassiConfig(
                 alertDialogPositiveButtonColor = lassiConfig.alertDialogPositiveButtonColor
                 customLimitExceedingErrorMessage = lassiConfig.customLimitExceedingErrorMessage
                 isMultiPicker = lassiConfig.isMultiPicker
-                zoomType = lassiConfig.zoomType
             }
         }
 

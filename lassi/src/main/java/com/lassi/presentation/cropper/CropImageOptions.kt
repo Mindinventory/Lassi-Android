@@ -10,7 +10,6 @@ import android.util.TypedValue
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
-import com.lassi.domain.media.ZoomType
 import com.lassi.presentation.cropper.CropImageView.*
 import kotlinx.parcelize.Parcelize
 
@@ -142,7 +141,6 @@ data class CropImageOptions @JvmOverloads constructor(
     ),
     @JvmField @ColorInt var cropperLabelTextColor: Int = Color.WHITE,
     @JvmField var cropperLabelText: String? = "",
-    @JvmField var zoomType: ZoomType = ZoomType.AUTO,
     @JvmField @ColorInt var activityBackgroundColor: Int = Color.WHITE,
     @JvmField @ColorInt var toolbarColor: Int? = null,
     @JvmField @ColorInt var toolbarTitleColor: Int? = null,

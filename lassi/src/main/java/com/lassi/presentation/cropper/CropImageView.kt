@@ -31,7 +31,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
-import com.lassi.domain.media.ZoomType
 import com.lassi.presentation.cropper.CropOverlayView.CropWindowChangeListener
 import com.lassi.presentation.cropper.utils.getFilePathFromUri
 import java.lang.ref.WeakReference
@@ -2066,10 +2065,6 @@ class CropImageView @JvmOverloads constructor(
                                 R.styleable.CropImageView_ls_cropperLabelTextSize,
                                 default.cropperLabelTextSize
                             ),
-                            zoomType = ZoomType.values()[a.getInt(
-                                R.styleable.CropImageView_ls_zoomType,
-                                default.zoomType.ordinal // fallback to default if not set
-                            )],
                             cropperLabelTextColor = a.getInteger(
                                 R.styleable.CropImageView_ls_cropperLabelTextColor,
                                 default.cropperLabelTextColor

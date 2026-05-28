@@ -128,8 +128,8 @@ Using these APIs may lead to:
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
                 .setMinFileSize(100) // Restrict by minimum file size 
                 .setMaxFileSize(1024) // Restrict by maximum file size
-                // **Note:** Crop-related methods such as `enableFlip()`, `enableRotate()`, `setAspectRatio()`, `setCropType()`, and `setZoomType()` will not work when `disableCrop()` is enabled.
-                .disableCrop() // to remove crop from the single image selection (crop is enabled by default for single image)
+                // **Note:** Crop-related methods such as `enableFlip()`, `enableRotate()`, `setAspectRatio()`, and `setCropType()`, will not work when `disableCrop()` is enabled.
+                .disableCrop() // to remove crop from the image selection
                 /*
                  * Configuration for  UI
                  */
@@ -151,7 +151,6 @@ Using these APIs may lead to:
                 .enableFlip() // Enable flip image option while image cropping (for MediaType.IMAGE only)
                 .enableRotate() // Enable rotate image option while image cropping (for MediaType.IMAGE only)
                 .enableActualCircleCrop() // Enable actual circular crop (only for MediaType.Image and CropImageView.CropShape.OVAL)
-                .setZoomType(ZoomType.MANUAL) // (1) AUTO   -> Automatically adjusts zoom based on crop window changes. (2) MANUAL -> Enables user-controlled pinch zoom and drag gestures.
                 .build()
              receiveData.launch(intent)
     ```
