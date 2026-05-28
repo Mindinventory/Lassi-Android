@@ -128,6 +128,7 @@ Using these APIs may lead to:
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
                 .setMinFileSize(100) // Restrict by minimum file size 
                 .setMaxFileSize(1024) // Restrict by maximum file size
+                // **Note:** Crop-related methods such as `enableFlip()`, `enableRotate()`, `setAspectRatio()`, `setCropType()`, and `setZoomType()` will not work when `disableCrop()` is enabled.
                 .disableCrop() // to remove crop from the single image selection (crop is enabled by default for single image)
                 /*
                  * Configuration for  UI
