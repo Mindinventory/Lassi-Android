@@ -23,6 +23,13 @@ This update introduces modern **edge-to-edge UI support** and removes deprecated
 
 We have implemented full edge-to-edge UI across all screens.
 
+### 2. ✅ Auto & Manual Zoom Support
+
+- Improved pinch-to-zoom and drag gesture handling.
+- Preserves the current zoom and pan position during cropping.
+- Prevents zoom reset and image snap-back issues.
+- Ensures cropped output matches the visible preview area.
+
 #### 🔹 Key Improvements:
 - App content now draws behind the **status bar** and **navigation bar**
 - Improved immersive UI experience
@@ -119,7 +126,8 @@ Using these APIs may lead to:
                 .setSupportedFileTypes("mp4", "mkv", "webm", "avi", "flv", "3gp") // Filter by limited media format (Optional)
                 .setMinFileSize(100) // Restrict by minimum file size 
                 .setMaxFileSize(1024) // Restrict by maximum file size
-                .disableCrop() // to remove crop from the single image selection (crop is enabled by default for single image)
+                // **Note:** Crop-related methods such as `enableFlip()`, `enableRotate()`, `setAspectRatio()`, and `setCropType()`, will not work when `disableCrop()` is enabled.
+                .disableCrop() // to remove crop from the image selection
                 /*
                  * Configuration for  UI
                  */

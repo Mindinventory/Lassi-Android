@@ -23,6 +23,7 @@ import com.lassi.databinding.ActivityVideoPreviewBinding
 import com.lassi.domain.media.LassiConfig
 import com.lassi.presentation.common.LassiBaseActivity
 import java.io.File
+import androidx.core.graphics.drawable.toDrawable
 
 class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
     private var videoPath: String? = null
@@ -48,7 +49,9 @@ class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
             controller.setAnchorView(this)
             controller.setMediaPlayer(this)
             setMediaController(controller)
-            setVideoURI(Uri.fromFile(File(videoPath)))
+            videoPath?.let {
+                setVideoURI(Uri.fromFile(File(it)))
+            }
         }
 
         binding.toolbar.applyTopInset()
@@ -59,7 +62,7 @@ class VideoPreviewActivity : LassiBaseActivity<ActivityVideoPreviewBinding>() {
         binding.toolbar.title = ""
         with(LassiConfig.getConfig()) {
             binding.toolbar.background =
-                ColorDrawable(toolbarColor)
+                toolbarColor.toDrawable()
             binding.toolbar.setTitleTextColor(toolbarResourceColor)
             val upArrow =
                 ContextCompat.getDrawable(this@VideoPreviewActivity, R.drawable.ic_back_white)

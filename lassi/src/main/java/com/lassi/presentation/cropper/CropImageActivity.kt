@@ -2,6 +2,7 @@ package com.lassi.presentation.cropper
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -22,6 +23,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
+import androidx.exifinterface.media.ExifInterface
 import com.lassi.R
 import com.lassi.common.extenstions.applyBottomInset
 import com.lassi.common.extenstions.applyEdgeToEdge
@@ -36,13 +38,13 @@ import com.lassi.domain.media.LassiConfig
 import com.lassi.domain.media.MultiLangConfig
 import com.lassi.presentation.cropper.utils.getUriForFile
 import java.io.File
+import java.io.IOException
 
 open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriCompleteListener,
     CropImageView.OnCropImageCompleteListener {
     private val logTag = CropImageActivity::class.java.simpleName
-    /**
-     * The crop image view library widget used in the activity
-     */
+
+    var isAutoZoomed: Boolean = false
 
     /** Persist URI image to crop URI if specific permissions are required. */
     private var cropImageUri: Uri? = null
@@ -438,7 +440,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 val intent = Intent().apply {
                     putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
-                setResult(Activity.RESULT_OK, intent)
+                setResult(RESULT_OK, intent)
                 finish()
             } catch (e: Exception) {
                 Logger.e(logTag, "onFileScanComplete $e")
@@ -452,7 +454,7 @@ open class CropImageActivity : AppCompatActivity(), CropImageView.OnSetImageUriC
                 val intent = Intent().apply {
                     putExtra(KeyUtils.MEDIA_PREVIEW, miMedia)
                 }
-                setResult(Activity.RESULT_OK, intent)
+                setResult(RESULT_OK, intent)
                 finish()
             }
         }
